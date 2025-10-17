@@ -6,6 +6,7 @@ library('rstudioapi')
 
 ui <- page_sidebar(
   sidebar = sidebar(
+    "v1.0.3",
     selectInput(
       'in_species',
       'Penguin species',
