@@ -1,6 +1,8 @@
 library(shiny)
 library(bslib)
 library(ggplot2)
+library("miniUI")
+library('rstudioapi')
 
 ui <- page_sidebar(
   sidebar = sidebar(
