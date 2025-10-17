@@ -52,7 +52,7 @@ server <- function(input, output, session) {
 
   my_folder_package <- reactive({
 
-    the_package_path <- find.package("exp001RShiny")
+    the_package_path <- find.package("exp002RShiny")
     vector_folder_paths <- list.dirs(path = the_package_path, recursive = T)
     dt_selected_quarto_folder <- grepl("quarto$", vector_folder_paths, ignore.case = TRUE)
     selected_quarto_folder_path <- vector_folder_paths[dt_selected_quarto_folder]
