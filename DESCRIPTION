@@ -1,11 +1,11 @@
 Package: exp002RShiny
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 1.0.4
+Version: 1.0.5
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "David", "Elias Panigo",
+      email = "d.eliaspanigo@gmail.com",
       role = c("aut", "cre")
     )
   )
@@ -21,10 +21,16 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     bslib,
+    digest,
     dplyr,
+    fs,
     ggplot2,
     miniUI,
+    openxlsx,
     palmerpenguins,
+    quarto,
+    rmarkdown,
     rstudioapi,
     shiny,
+    shinyjs,
     usethis
