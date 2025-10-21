@@ -1,0 +1,241 @@
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot001_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot001")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot002_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot002")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot003_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot003")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot004_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot004")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot005_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot005")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot006_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot006")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot007_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot007")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot008_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot008")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot009_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot009")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot010_residuals")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_residuals_plot010")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+

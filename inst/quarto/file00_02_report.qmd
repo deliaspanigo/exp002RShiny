@@ -1,0 +1,67 @@
+::: {.columns}
+
+::: {.column width="35%"}
+
+# Report (Automated Statistical Assistant)
+
+* **Dataset file name:** jaja  
+* **Response Variable:** `r var_name_rv`  
+* **Factor:** `r var_name_factor`  
+* **Alpha value:** `r alpha_value`  
+
+```{r}
+#| eval: true
+#| include: false
+#| warning: false
+#| echo: false
+
+
+
+my_text <-c(phrase_shapiro_selected, phrase_bartlett_selected, 
+                  phrase_requeriments_selected, phrase_anova_selected)
+
+
+# Unir cada elemento en una línea separada
+# my_text <- paste(my_text, collapse = "  ")
+
+# Mostrar en Quarto
+# knitr::asis_output(my_text)
+```
+`r my_text[1]`  
+`r my_text[2]`  
+`r my_text[3]`  
+`r my_text[4]`
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="61%"}
+# 1) Anova test
+```{r}
+#| warning: false
+#| echo: false
+
+
+
+my_df <- df_summary_anova
+library(knitr)
+library(kableExtra)
+# Mostrar con kable para mejor estética
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+plot007_factor
+```
+:::
+
+
+
+:::
+

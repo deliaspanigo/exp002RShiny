@@ -1,0 +1,172 @@
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot001_factor")
+mget(vector_obj)[[1]]
+
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot001")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot002_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot002")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot003_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot003")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot004_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot004")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot005_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot005")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot006_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot006")
+mget(vector_obj)
+```
+:::
+:::
+
+***
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("plot007_factor")
+mget(vector_obj)[[1]]
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+#| warning: false
+#| echo: false
+
+vector_obj <- c("df_table_factor_plot007")
+mget(vector_obj)[[1]]
+```
+:::
+:::
+
+***
+
+

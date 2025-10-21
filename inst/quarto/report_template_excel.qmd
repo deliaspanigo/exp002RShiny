@@ -1,0 +1,21 @@
+---
+title: "Parameterized Penguins Script Runner"
+author: 'David Elias Panigo'
+output: false
+knitr: 
+    opts_chunk: 
+        collapse: true
+params:
+    species: Adelie
+---
+
+```{r }
+library("openxlsx")
+```
+ 
+  
+```{r eval=TRUE, include=FALSE, child='_script_modulo.qmd'}
+```
+
+```{r eval=TRUE, include=FALSE, child='_script_gen_excel.qmd'}
+```

@@ -1,75 +1,30 @@
 ---
 title: "Parameterized Penguins Report"
-author: 'Albert Rapp'
-format: 
+author: 'David Elias Panigo'
+format:
     typst:
         template-partials: 
-            - typst-show.typ
-            - typst-template.typ
+            - _typst_assets/typst-show.typ
+            - _typst_assets/typst-template.typ
 knitr: 
     opts_chunk: 
-      collapse: true
+        collapse: false
+        comment: ""
+        # Puedes mantener dev: "png" si usas librerías de gráficos avanzadas
+        # o eliminar las tres líneas siguientes si solo usas ggplot o base R nativo.
+        dev: "png" 
+        fig-ext: "png"
 params:
     species: Adelie
 ---
+```{r eval=TRUE, include=TRUE, echo =TRUE}
+library("webshot2")
 
-[Species: **`r params$species`**]{style='font-size:1.6em'}
-
-Penguin, penguin, blah blah blah. 
-Some informative stuff about this particular penguin species.
-You know, because Penguins are cool.
-And this species in particular.
-Also, I have to use some placeholder text here anyway.
-So this is kind of the result of that.
-
-
-## And here's another section.
-
-In this section, we could have code chunks.
-There are this many penguins of the species **`r params$species`**.
-
-```{r}
-palmerpenguins::penguins |>
-  dplyr::filter(species == params$species) |>
-  nrow()
+```
+  
+```{r eval=TRUE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
 ```
 
-But only code chunks with text output are boring.
-So we might as well throw in chart.
 
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-#| out.width: "100%"
-#| fig.height: 2.5
-library(ggplot2)
-
-palmerpenguins::penguins |>
-  ggplot(
-    aes(
-      x = body_mass_g,
-      y = flipper_length_mm,
-      fill = (species == params$species)
-    )
-  ) +
-  geom_point(
-    size = 4,
-    shape = 21,
-    col = 'white',
-    show.legend = FALSE
-  ) +
-  geom_point(
-    data = palmerpenguins::penguins |>
-      dplyr::filter(species == params$species),
-    size = 4,
-    shape = 21,
-    col = 'white',
-    show.legend = FALSE
-  ) +
-  scale_fill_manual(
-    values = c("TRUE" = 'dodgerblue4', "FALSE" = 'grey80')
-  ) +
-  theme_minimal(base_size = 12, base_family = 'Source Sans Pro') +
-  labs(x = 'Weight (g)', y = 'Flipper length (mm)')
+```{r eval=FALSE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
 ```

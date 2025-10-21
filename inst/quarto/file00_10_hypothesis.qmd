@@ -1,0 +1,50 @@
+---
+title: "Parameterized Penguins Report"
+author: 'David Elias Panigo'
+format: 
+    html:
+        toc: true
+        self-contained: true 
+
+knitr: 
+    opts_chunk: 
+        collapse: false
+        comment: ""
+params:
+    species: Adelie
+---
+
+This section details the statistical hypotheses for the tests used to validate the assumptions and primary conclusion of the One-Way Analysis of Variance (ANOVA).
+
+## One-Way ANOVA Hypotheses
+
+The one-way ANOVA (Analysis of Variance) test determines if there are any statistically significant differences between the means of three or more independent groups.
+
+| Hypothesis Type | Notation | English Statement |
+| :--- | :--- | :--- |
+| **Null Hypothesis** | $H_0$ | The means of all population groups are equal. |
+| **Alternative Hypothesis** | $H_a$ | At least one group mean is different from the others. |
+
+**Null Hypothesis Equation:** $$\mu_1 = \mu_2 = \mu_3 = \dots = \mu_k$$
+
+---
+
+## Shapiro-Wilk Test (Residual Normality)
+
+The Shapiro-Wilk test is used to check if the sample data (the **ANOVA residuals**) follows a normal distribution, which is a required assumption for the ANOVA test.
+
+| Hypothesis Type | Notation | English Statement |
+| :--- | :--- | :--- |
+| **Null Hypothesis** | $H_0$ | The data (residuals) are drawn from a normally distributed population. |
+| **Alternative Hypothesis** | $H_a$ | The data (residuals) are **not** drawn from a normally distributed population. |
+
+---
+
+## Levene's Test (Homogeneity of Variances)
+
+Levene's test is used to verify the assumption of **homoscedasticity** (\(\sigma^2_1 = \sigma^2_2 = \dots = \sigma^2_k\)) across the different groups being compared in the ANOVA.
+
+| Hypothesis Type | Notation | English Statement |
+| :--- | :--- | :--- |
+| **Null Hypothesis** | $H_0$ | The population variances of the groups are equal. |
+| **Alternative Hypothesis** | $H_a$ | The population variances of the groups are **not** equal. |

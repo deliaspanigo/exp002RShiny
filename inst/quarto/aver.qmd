@@ -1,0 +1,23 @@
+
+
+
+```{r}
+print(df_selected_vars)
+```
+
+
+```{r}
+  df_show_n
+
+```
+
+
+```{r}
+  df_table_anova
+
+```
+
+```{r}
+    df_summary_anova
+
+```

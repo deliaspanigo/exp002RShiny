@@ -20,17 +20,23 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    agricolae,
     bslib,
     digest,
     dplyr,
+    EnvStats,
     fs,
     ggplot2,
+    kableExtra,
     miniUI,
     openxlsx,
     palmerpenguins,
+    plotly,
     quarto,
+    reticulate,
     rmarkdown,
     rstudioapi,
     shiny,
     shinyjs,
-    usethis
+    usethis,
+    webshot2

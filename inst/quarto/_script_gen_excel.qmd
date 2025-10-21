@@ -1,0 +1,22 @@
+
+```{r}
+file_name <- "averaver.xlsx"
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, "Data")
+
+header_style <- openxlsx::createStyle(textDecoration = "bold")
+openxlsx::writeData(
+  wb,
+  "Data",
+  minibase,
+  headerStyle = header_style
+)
+openxlsx::setColWidths(
+  wb,
+  "Data",
+  cols = 1:ncol(minibase),
+  widths = c(rep(20, 6), 10, 5)
+)
+
+openxlsx::saveWorkbook(wb, file_name, overwrite = TRUE)
+```

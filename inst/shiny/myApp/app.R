@@ -13,7 +13,11 @@ library('rstudioapi')
 library("shiny")
 library("shinyjs")
 library("usethis")
-
+library("EnvStats")
+library("agricolae")
+library("plotly")
+library("reticulate")
+library("webshot2")
 MY_PACKAGE_NAME <- "exp002RShiny"
 
 ui <- page_sidebar(
@@ -46,7 +50,7 @@ ui <- page_sidebar(
   ),
 
   sidebar = sidebar(
-    "v1.0.4",
+    "v1.0.6",
     selectInput(
       'in_species',
       'Penguin species',
@@ -68,7 +72,7 @@ ui <- page_sidebar(
 
   navset_card_tab(
     # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-    card_header('Look at them penguins!'),
+    title = 'Look at them penguins!',
 
 
     nav_panel(
@@ -239,93 +243,183 @@ server <- function(input, output, session) {
   str_output_file_path_pdf   <- reactiveVal(NULL)
   the_time_here_format        <- reactiveVal(NULL)
   # --- Lógica del Botón "Generar" (Naranja -> Verde) ---
+  # Asegúrate de que shinyjs::useShinyjs() esté en tu UI
+  # Asegúrate de que shinyjs::useShinyjs() esté en tu UI
   observeEvent(input$generar, {
 
-    create_new_temporal_output_folder_path <- function(){
+    # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
 
-      # Lógica de Creación del Archivo Temporal (Mantenida)
+    progress <- Progress$new(session, min = 0, max = 1)
+
+    # Modal inicial con la barra de progreso integrada
+    showModal(modalDialog(
+      id = "processing_modal",
+      title = tags$div(
+        tags$i(class = "fa fa-cog fa-spin fa-1x"), # Spinner en el título
+        " Rscience Proccesing Data..."
+      ),
+      tagList(
+        tags$div(id = "modal_content",
+
+                 # Inicialmente un spinner grande.
+
+                 tags$p(tags$b("Proccesing state:"), tags$span(id = "ID_progress_message", "Initializing...")),
+                 tags$p(tags$i(tags$span(id = "ID_progress_detail", ""))),
+
+                 # Barra de progreso: style="height: 30px;" para hacerla más gruesa
+                 tags$div(class = "progress", style = "height: 30px;",
+                          tags$div(id = "ID_progress_bar",
+                                   class = "progress-bar progress-bar-striped active",
+                                   role = "progressbar",
+                                   style = "width: 0%;")),
+                 br(),
+                 # Contenedor del check/spinner que vamos a manipular
+                 tags$div(id = "ID_my_check",
+                         style = "text-align: center; height: 200px;",
+                         tags$i(class = "fa fa-spinner fa-spin fa-6x")) # Spinner inicial
+        )
+      ),
+      easyClose = FALSE,
+      footer = NULL
+    ))
+
+    # 2. FUNCIÓN DE ACTUALIZACIÓN PERSONALIZADA (JS + R)
+    update_modal_progress <- function(value, message, detail = "") {
+      progress$set(value = value, message = message, detail = detail)
+
+      # Lógica JavaScript para actualizar la UI del modal
+      percentage <- round(value * 100)
+
+      shinyjs::runjs(
+        paste0(
+          'document.getElementById("ID_progress_message").innerHTML = "<b>', message, '</b>";',
+          'document.getElementById("ID_progress_detail").innerHTML = "', detail, '";',
+          'document.getElementById("ID_progress_bar").style.width = "', percentage, '%";'
+        )
+      )
+    }
+
+    # Definición de la función de creación de carpeta (se mantiene)
+    create_new_temporal_output_folder_path <- function(){
       my_temp_folder <- tempdir()
       the_sys_time <- Sys.time()
       timestamp_format <- format(the_sys_time, "%Y%m%d_%H%M%S")
       the_time_here_format(timestamp_format)
 
-      timestamp_content <- format(the_sys_time, "%H:%M:%S del %d-%m-%Y")
       new_sub_folder <- paste0("temp_", timestamp_format)
       nueva_carpeta <- file.path(my_temp_folder, new_sub_folder)
       return(nueva_carpeta)
     }
 
-    withProgress(
-      message = 'Generando Reporte PDF...',
-      detail = 'Preparando entorno...',
-      value = 0, {
+    # 3. MANEJO DEL FLUJO CON tryCatch (Avanzando paso a paso)
+    tryCatch({
 
-    # PASO A: Lógica de creación/copia de archivos (0% - 30%)
-    incProgress(0.3, detail = "Copiando archivos de plantilla...")
+      # === PASOS INTERMEDIOS (Se mantienen iguales) ===
+      update_modal_progress(value = 0.05, message= "Inicializando", detail = "Preparando variables y entorno...")
 
-    # 01 - Str new folder output
-    my_output_folder01 <- create_new_temporal_output_folder_path()
-    str_output_folder01(my_output_folder01)
+      # 1. Crear carpeta temporal (10%)
+      update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
+      my_output_folder01 <- create_new_temporal_output_folder_path()
+      str_output_folder01(my_output_folder01)
+      dir.create(my_output_folder01, recursive = TRUE)
 
-    # 02 - Create new folder output
-    dir.create(my_output_folder01, recursive = TRUE)
+      # 2. Copiar archivos (25%)
+      update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
+      fs::dir_copy(
+        path = str_input_folder_quarto(),
+        new_path = str_output_folder01(),
+        overwrite = T
+      )
 
-    # 03 - Copy file from input folder to output folder
-    print("La 1:")
-    print(str_input_folder_quarto())
-    print("La 2:")
-    print(str_output_folder01())
+      # 3. Definir rutas (40%)
+      update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
+      file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd())
+      str_pdf_file_name <- paste0(file_name_no_ext,"_", the_time_here_format(), ".pdf")
+      str_output_file_name_pdf(str_pdf_file_name)
+      my_str_pdf <- file.path(str_output_folder01(), str_output_file_name_pdf())
+      str_output_file_path_pdf(my_str_pdf)
 
-    fs::dir_copy(
-      path = str_input_folder_quarto(),
-      new_path = str_output_folder01(),
-      overwrite = T
-    )
+      # 4. Configurar entorno de renderizado (50%)
+      update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+      dir_original <- getwd()
+      my_temporal_folder <- str_output_folder01()
+      setwd(my_temporal_folder)
 
-    # 03 - PDF - File name
-    file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd())
-    str_pdf_file_name <- paste0(file_name_no_ext,"_", the_time_here_format(), ".pdf")
-    str_output_file_name_pdf(str_pdf_file_name)
+      # 5. Llamada BLOQUEANTE (50% -> 90%)
+      update_modal_progress(0.55, "Renderizando Quarto", detail = "Ejecutando el renderizado (puede tardar)...")
 
-    # 04 - PDF file path
-    my_str_pdf <- file.path(str_output_folder01(), str_output_file_name_pdf())
-    str_output_file_path_pdf(my_str_pdf)
+      quarto::quarto_render(input = str_file_name_input_qmd(),
+                            output_format = "typst",
+                            output_file = str_output_file_name_pdf(),
+                            execute_params = list(species = input$in_species),
+                            quiet = FALSE)
 
-    # PASO B: Ejecutar Quarto Render (30% - 90%)
-    incProgress(0.6, detail = "Renderizando Quarto (Esto puede tardar)...")
+      setwd(dir_original)
 
-    # Run quarto
-    dir_original <- getwd()
-    my_temporal_folder <- str_output_folder01()
-    setwd(my_temporal_folder)
-
-
-    quarto::quarto_render(input = str_file_name_input_qmd(),
-                          output_format = "typst",
-                          output_file = str_output_file_name_pdf(),
-                          execute_params = list(species = input$in_species),
-                          #execute_params = my_bag,
-                          quiet = FALSE)
-
-    setwd(dir_original)
+      # 6. Progreso tras el bloqueo (90%)
+      update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
 
 
-    # PASO C: Finalización (90% - 100%)
-    incProgress(0.1, detail = "Finalizando y actualizando UI...")
+      # === PASO C: Finalización Exitosa (90% - 100%) ===
 
-    message(crayon::green("Process completed!"))
-    message("")
+      # C1. Terminar barra de progreso al 100%
+      update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
 
-    # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
-    removeClass("generar", "btn-warning")
-    addClass("generar", "btn-success")
+      # C2. Actualizar estado y color del botón
+      removeClass("generar", "btn-warning")
+      addClass("generar", "btn-success")
 
+      output$mensaje_estado <- renderText({
+        "¡Carpeta y archivo creados exitosamente! El Botón 1 está en verde. Listo para la descarga."
+      })
+      message(crayon::green("Process completed!"))
 
+      # ----------------------------------------------------
+      # 🟢 C3. CAMBIAR EL MODAL A CHECK DE ÉXITO (CORRECCIÓN FINAL) 🟢
+      # ----------------------------------------------------
 
-    output$mensaje_estado <- renderText({
-      "¡Carpeta y archivo creados exitosamente! El Botón 1 está en verde. Listo para la descarga."
+      shinyjs::runjs(
+        'document.getElementById("ID_my_check").innerHTML =
+      "<i class=\\"fa fa-check-circle fa-6x\\" style=\\"color: #4CAF50;\\"></i>";
+
+   document.getElementById("ID_progress_message").innerHTML =
+      "<b>Reporte Generado Exitosamente</b>";
+   document.getElementById("ID_progress_detail").innerHTML =
+      "Cerrando la ventana en 3 segundos...";
+
+   document.getElementById("ID_progress_bar").classList.remove("active");
+
+   document.getElementById("ID_progress_bar").style.width = "100%";
+  '
+      )
+
+      # C4. Esperar 3 segundos para confirmación visual
+      Sys.sleep(3)
+
+    }, error = function(e) {
+      # 🛑 MANEJO DE ERRORES:
+      warning("Error al renderizar Quarto: ", e$message)
+
+      # Cierra el modal de proceso
+      removeModal()
+
+      # Muestra un modal de error
+      showModal(modalDialog(
+        title = "⚠️ Error de Renderizado",
+        paste("Ha ocurrido un error. Consulte la consola de R para más detalles. Mensaje:", e$message),
+        easyClose = TRUE,
+        footer = modalButton("Cerrar")
+      ))
+
+      return(NULL)
+    }, finally = {
+      # 4. LIMPIEZA: Cerrar el objeto de progreso de R siempre
+      progress$close()
     })
-  })
+
+    # 5. 🟢 DESBLOQUEAR LA PANTALLA
+    removeModal()
+    message("")
   })
 
 
@@ -656,4 +750,4 @@ output$btn_export_excel <- downloadHandler(
 
 }
 
-shinyApp(ui, server) |> print()
+shinyApp(ui, server)

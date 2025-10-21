@@ -1,78 +1,244 @@
 ---
-title: "Parameterized Penguins Report"
-author: 'Albert Rapp'
+title: "Rscience - Parameterized Report"
 format: 
-    html:
-        toc: true
-        self-contained: true  # <--- Opción añadida para hacerlo autocontenido
-    typst:
-        template-partials: 
-            - typst-show.typ
-            - typst-template.typ
+  html:
+    grid:
+      body-width: 2000px
+      margin-width: 250px
+      gutter-width: 1.5rem
+    toc: true
+    toc-float: true
+    self-contained: true
+    link-citations: true # Util para ver referencias en el margen (ver `tufte.html` en la galería de Quarto)
+
 knitr: 
     opts_chunk: 
-        collapse: true
+        collapse: false
+        comment: ""
 params:
     species: Adelie
+    proc_time: ""
 ---
 
-[Species: **`r params$species`**]{style='font-size:1.6em'}
+<style>
+/* Oculta el contenido principal por defecto */
+#quarto-document-content {
+    visibility: hidden; /* Mantiene el espacio, pero lo hace invisible */
+    opacity: 0;         /* Para una transición suave */
+}
+</style>
 
-Penguin, penguin, blah blah blah. 
-Some informative stuff about this particular penguin species.
-You know, because Penguins are cool.
-And this species in particular.
-Also, I have to use some placeholder text here anyway.
-So this is kind of the result of that.
 
+```{r libraries, eval=TRUE, include=FALSE}
+library("base")
+library("knitr")
+library("stringr")
 
-## And here's another section.
-
-In this section, we could have code chunks.
-There are this many penguins of the species **`r params$species`**.
-
-```{r}
-palmerpenguins::penguins |>
-  dplyr::filter(species == params$species) |>
-  nrow()
 ```
 
-But only code chunks with text output are boring.
-So we might as well throw in chart.
 
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-#| out.width: "100%"
-#| fig.height: 2.5
-library(ggplot2)
+```{r cod101, eval=TRUE, include=FALSE, echo=FALSE}
 
-palmerpenguins::penguins |>
-  ggplot(
-    aes(
-      x = body_mass_g,
-      y = flipper_length_mm,
-      fill = (species == params$species)
-    )
-  ) +
-  geom_point(
-    size = 4,
-    shape = 21,
-    col = 'white',
-    show.legend = FALSE
-  ) +
-  geom_point(
-    data = palmerpenguins::penguins |>
-      dplyr::filter(species == params$species),
-    size = 4,
-    shape = 21,
-    col = 'white',
-    show.legend = FALSE
-  ) +
-  scale_fill_manual(
-    values = c("TRUE" = 'dodgerblue4', "FALSE" = 'grey80')
-  ) +
-  theme_minimal(base_size = 12, base_family = 'Source Sans Pro') +
-  labs(x = 'Weight (g)', y = 'Flipper length (mm)')
+# 1. Configuración de locale a inglés (temporalmente)
+original_locale <- Sys.getlocale("LC_TIME") # Guarda la configuración actual
+Sys.setlocale("LC_TIME", "C")               # 'C' o 'English' fuerza el inglés/POSIX
+
+# 2. Información de Tiempo
+current_time <- Sys.time()
+
+# El día de la semana ahora será en inglés
+day_of_week <- format(current_time, "%A") 
+
+# Revertir el locale a la configuración original (¡IMPORTANTE!)
+Sys.setlocale("LC_TIME", original_locale) 
+
+# 3. Resto de la Información de Tiempo (no necesita cambios de locale)
+local_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S %Z") 
+utc_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
+system_time_full <- local_time_full 
+tz_info <- Sys.timezone()
+
+# 4. Información del Sistema y Herramienta
+session_info <- Sys.info()
+os_info <- paste(session_info["sysname"], "-", session_info["release"])
+R_version <- paste(R.version$major, R.version$minor, sep = ".")
+tool_used <- "General Linnear Model, Fixed Effect, anova 1 way."
+
+# 5. Versión de la librería (stats)
+the_package <- "stats"
+if (the_package %in% installed.packages()[, "Package"]) {
+  package_version_info <- paste0("Paquete **'", the_package, "'**: ", as.character(packageVersion(the_package)))
+} else {
+  package_version_info <- paste0("Paquete **'", the_package, "'**: No instalado. Usando R base.")
+}
+
+script_used <- "Script 001"
 ```
+
+<!-- This report was generated on **`r day_of_week`**, using the following environment settings: -->
+# Work environment
+::: columns
+::: column
+* **Operating System:** `r os_info`  
+* **R Version:** `r R_version`  
+* **Rscience Version:** `r package_version_info`  
+* **Core Statistical Tool:** `r tool_used`  
+* **Core Script:** `r script_used`
+:::
+
+::: column
+* **UTC Time:** `r utc_time_full` UTC  
+* **System/Computer Time:** `r system_time_full`  
+* **Inferred Timezone Location:** `r tz_info`  
+  (R can only reliably determine the timezone, not the physical city/country.)
+:::
+
+
+:::
+
+---
+
+# Cita 
+
+---
+
+# Data Analysis 
+::: {.panel-tabset}
+# R Code and Outputs
+```{r cod01, eval=TRUE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
+```
+# Report
+```{r cod02, eval=TRUE, include=TRUE, echo =TRUE, child='file00_02_report.qmd'}
+```
+# Hypothesis
+```{r cod01B, eval=TRUE, include=TRUE, echo =TRUE, child='file00_10_hypothesis.qmd'}
+```
+# Requeriments
+```{r cod03, eval=TRUE, include=TRUE, echo =TRUE, child='file00_03_requeriments.qmd'}
+```
+# Plots - Raw Data
+```{r cod04, eval=TRUE, include=TRUE, echo =TRUE, child='file00_04_data_raw_plots.qmd'}
+```
+# Plots - Residuals
+```{r cod05, eval=TRUE, include=TRUE, echo =TRUE, child='file00_05_residuals_raw_plots.qmd'}
+```
+# Script
+```{r cod6, eval=TRUE, include=TRUE, echo =TRUE, child='file00_06_script.qmd'}
+```
+:::
+
+---
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Contenedor de los botones de las pestañas
+    const tabset = document.querySelector('.panel-tabset .nav-tabs');
+    // 2. Contenedor de los contenidos de las pestañas
+    const contentContainer = document.querySelector('.panel-tabset .tab-content');
+
+    if (tabset && contentContainer) {
+        const tabs = Array.from(tabset.children);
+
+        // ====================================================================
+        // 3. DEFINE EL NUEVO ORDEN DE LAS PESTAÑAS AQUÍ (DEBE INCLUIR TODAS)
+        // ====================================================================
+        const newOrderTitles = [
+            "Report",
+            "Hypothesis",
+            "R Code and Outputs",
+            "Requeriments",
+            "Plots - Raw Data",
+            "Plots - Residuals",
+            "Script"
+        ];
+
+        // Mapear los elementos <li> de las pestañas por su título
+        const tabMap = new Map();
+        tabs.forEach(tab => {
+            const title = tab.querySelector('.nav-link').textContent.trim();
+            tabMap.set(title, tab);
+        });
+        
+        // Mover los elementos <li> (botones de pestañas)
+        newOrderTitles.forEach(title => {
+            const tabElement = tabMap.get(title);
+            if (tabElement) {
+                // Al adjuntar el hijo, se elimina de su posición actual y se pone al final
+                tabset.appendChild(tabElement);
+            }
+        });
+
+        // ====================================================================
+        // REORDENAR LOS PANELES DE CONTENIDO (.tab-pane) - ¡ESTO ES CRUCIAL!
+        // ====================================================================
+        const contentPanes = Array.from(contentContainer.children);
+        const contentMap = new Map();
+
+        // Mapear los contenidos por su ID (que se usa para vincular al botón)
+        contentPanes.forEach(pane => {
+            contentMap.set(pane.id, pane);
+        });
+
+        // Reordenar los paneles en base al nuevo orden de los botones
+        newOrderTitles.forEach(title => {
+            // Encuentra el botón reordenado (<li>)
+            const newTab = tabset.querySelector(`[title="${title}"]`); 
+            
+            if (newTab) {
+                // Obtiene el ID del contenido del atributo 'data-bs-target' del enlace
+                const targetHref = newTab.querySelector('.nav-link').getAttribute('data-bs-target');
+                const targetId = targetHref ? targetHref.replace('#', '') : null;
+                
+                const contentElement = contentMap.get(targetId);
+                
+                if (contentElement) {
+                    // Mueve el panel de contenido al final
+                    contentContainer.appendChild(contentElement);
+                }
+            }
+        });
+    }
+});
+</script>
+
+
+
+<script>
+// SCRIPT 2: ACTIVACIÓN Y VISUALIZACIÓN FINAL
+document.addEventListener("DOMContentLoaded", function() {
+    const targetTitleToActivate = "Report"; 
+
+    // === PASOS DE ACTIVACIÓN ===
+    
+    // 1. Limpieza: Desactivar TODAS las pestañas y contenidos
+    document.querySelectorAll('.nav-link.active').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-pane.active').forEach(el => el.classList.remove('active', 'show'));
+    
+    // 2. Encontrar y activar el botón de la pestaña "Report"
+    const reportNavLink = Array.from(document.querySelectorAll('.panel-tabset .nav-link')).find(link => 
+        link.textContent.trim() === targetTitleToActivate
+    );
+
+    if (reportNavLink) {
+        reportNavLink.classList.add('active');
+        
+        // 3. Obtener y activar el panel de contenido asociado
+        const targetHref = reportNavLink.getAttribute('data-bs-target');
+        const reportContentId = targetHref ? targetHref.replace('#', '') : null;
+        
+        const reportContentPane = document.getElementById(reportContentId);
+        if (reportContentPane) {
+            reportContentPane.classList.add('active', 'show');
+        }
+    }
+
+    // === PASO DE VISUALIZACIÓN ===
+    // 4. PASO FINAL: MOSTRAR EL CONTENIDO DESPUÉS DE TODAS LAS MANIPULACIONES
+    const documentContent = document.getElementById('quarto-document-content');
+    if (documentContent) {
+        documentContent.style.visibility = 'visible';
+        documentContent.style.opacity = '1';
+        documentContent.style.transition = 'opacity 0.5s ease-in-out';
+    }
+});
+</script>

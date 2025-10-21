@@ -1,0 +1,37 @@
+## 1) Requeriment - Normaility test - Residuals
+```{r}
+#| warning: false
+#| echo: false
+nombres_aver <- c("test_residuals_normality")
+aver <- mget(nombres_aver)
+aver 
+
+```
+
+## 2) Requeriment - Homogeneity test - Residuals
+```{r}
+#| warning: false
+#| echo: false
+# 1. Definir los nombres que queremos
+nombres_aver <- c("test_residuals_homogeneity")
+
+aver <- mget(nombres_aver)
+aver 
+
+```
+
+## 3) Estimated variances - Residuals
+```{r}
+#| warning: false
+#| echo: false
+
+# Requiere el paquete rlang (o tidyverse)
+library(rlang)
+
+# 1. Definir los nombres que queremos
+nombres_aver <- c("df_model_error", "df_raw_error", "phrase_info_errors")
+aver <- mget(nombres_aver)
+aver 
+```
+
+
