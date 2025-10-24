@@ -1,0 +1,237 @@
+/*-- scss:defaults --*/
+// =============================================
+// VARIABLES GLOBALES Y CONFIGURACIÓN POR DEFECTO
+// =============================================
+
+// Colores principales
+$primary: #2E86C1;
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #343a40;
+
+// Colores del tema
+$body-bg: #FFFFFF;
+$body-color: #343a40;
+$link-color: $primary;
+
+// Tipografía
+$font-family-sans-serif: "Helvetica Neue", Arial, sans-serif;
+$font-family-monospace: "Fira Code", "Consolas", monospace;
+$headings-font-family: "Georgia", serif;
+
+// Espaciado
+$spacer: 1rem;
+
+// Borders
+$border-radius: 0.375rem;
+$border-width: 1px;
+
+/*-- scss:rules --*/
+// =============================================
+// REGLAS CSS PERSONALIZADAS
+// =============================================
+
+// ===== ESTILOS GENERALES =====
+body {
+  font-family: $font-family-sans-serif;
+  line-height: 1.6;
+  background-color: $body-bg;
+  color: $body-color;
+}
+
+// ===== ENCABEZADOS =====
+h1, h2, h3, h4, h5, h6 {
+  font-family: $headings-font-family;
+  color: $primary;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  border-bottom: 2px solid $light;
+  padding-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+  border-left: 4px solid $primary;
+  padding-left: 1rem;
+}
+
+// ===== CÓDIGO =====
+pre.sourceCode {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: $border-radius;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+code {
+  background-color: $light;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  color: $dark;
+  font-size: 0.9em;
+}
+
+// ===== TABLAS =====
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  text-align: left;
+}
+
+th {
+  background-color: $primary;
+  color: white;
+  font-weight: bold;
+}
+
+// ===== BLOQUES ESPECIALES =====
+.blockquote {
+  border-left: 4px solid $primary;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: $secondary;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: $border-radius;
+  margin: 1rem 0;
+  
+  &.alert-info {
+    background-color: lighten($info, 45%);
+    border: 1px solid $info;
+    color: darken($info, 20%);
+  }
+  
+  &.alert-warning {
+    background-color: lighten($warning, 45%);
+    border: 1px solid $warning;
+    color: darken($warning, 20%);
+  }
+}
+
+// ===== COMPONENTES DE QUARTO =====
+// Tabs
+.panel-tabset {
+  margin: 2rem 0;
+  
+  .nav-tabs {
+    border-bottom: 2px solid $light;
+    
+    .nav-link {
+      border: 1px solid transparent;
+      border-radius: $border-radius $border-radius 0 0;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      font-size: 1.3em;
+      background: white; 
+      border-color: $primary;
+      &.active {
+        background-color: $primary;
+        color: white;
+        border-color: $primary;
+      }
+    }
+  }
+  
+  .tab-content {
+    padding: 1.5rem;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 $border-radius $border-radius;
+  }
+}
+
+// Sidebar
+.sidebar {
+  background-color: lighten($primary, 40%);
+  padding: 1.5rem;
+  border-radius: $border-radius;
+  
+  h2 {
+    font-size: 1.25rem;
+    margin-top: 0;
+  }
+}
+
+
+
+// ===== GRÁFICOS Y FIGURAS =====
+.quarto-figure {
+  margin: 2rem 0;
+  text-align: center;
+  
+  .quarto-figure-title {
+    font-weight: bold;
+    margin-top: 0.5rem;
+    color: $secondary;
+  }
+}
+
+// Eliminar bordes de gráficos
+.cell-output-display,
+.quarto-figure,
+.figure {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+// ===== RESPONSIVE DESIGN =====
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+  }
+  
+  .panel-tabset .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  #quarto-document-content {
+    margin: 0;
+    padding: 1rem;
+  }
+}
+
+// ===== UTILIDADES =====
+.text-primary { color: $primary !important; }
+.bg-primary { background-color: $primary !important; }
+.border-primary { border-color: $primary !important; }
+
+// ===== ANIMACIONES =====
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

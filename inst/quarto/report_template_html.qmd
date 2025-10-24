@@ -2,12 +2,15 @@
 title: "Rscience - Parameterized Report"
 format: 
   html:
+    theme: 
+      - custom_theme.scss
     grid:
       body-width: 2000px
       margin-width: 250px
       gutter-width: 1.5rem
     toc: true
     toc-float: true
+    toc-location: right
     self-contained: true
     link-citations: true # Util para ver referencias en el margen (ver `tufte.html` en la galería de Quarto)
 
@@ -16,18 +19,105 @@ knitr:
         collapse: false
         comment: ""
 params:
-    species: Adelie
-    proc_time: ""
+    file_name: "mtcars"
+    file_source: "r_source" 
+    var_name_rv: "mpg"
+    var_name_factor: "cyl"
+    alpha_value: "0.05"
+    vector_ordered_levels:
+      - "6"
+      - "4"
+      - "8"
+    vector_ordered_colors: 
+      - "#FF0000"
+      - "#00FF00"
+      - "#0000FF"
+    current_time: "R_outside"
+    the_package: "exp002RShiny"
+    tool_used: "General Linnear Model, Fixed Effect, anova 1 way"
+    script_used: "R_outside"
 ---
+
+<!-- IMAGEN DEBAJO DEL TOC LATERAL -->
+
+<div style="position: fixed; right: 30px; top: 550px; width: 200px; text-align: center; z-index: 999;">
+Standard analysis, reporting and R for Science.
+![Imagen lateral](images/Rscience_logo_01.png){width="90%"}
+<br>
+<small>
+- Reproducibility.  
+- Transparency.  
+- Open Access.</small>
+</div>
 
 <style>
 /* Oculta el contenido principal por defecto */
 #quarto-document-content {
     visibility: hidden; /* Mantiene el espacio, pero lo hace invisible */
-    opacity: 0;         /* Para una transición suave */
-}
+    opacity: 0;         /* Para una transición suave */ 
+    }
 </style>
 
+
+
+::: columns
+::: {.column width="20%"}
+![](images/Rscience_logo_01.png){fig-alt="Descripción de la imagen" width="40%"}
+
+```{r, results='asis', echo=FALSE}
+# Definimos el estilo CSS para nuestra línea
+linea_azul_gruesa <- '<div style="
+  width: 100%;                  /* Ocupa todo el ancho disponible */
+  height: 0.5cm;                /* Medio centímetro de grosor */
+  background-color: #2E86C1;       /* Color azul */
+  margin-top: 20px;             /* Espacio superior para separación */
+  margin-bottom: 20px;          /* Espacio inferior para separación */
+"></div>'
+```
+
+
+:::
+::: {.column width="33%"}
+Standard analysis, reporting and R code for Science.  
+- Reproducibility.  
+- Transparency.  
+- Open Access.
+:::
+::: {.column width="33%"}
+```{r eval=TRUE, include=TRUE, echo=FALSE}
+# Cargar la librería si no está cargada
+library(fontawesome)
+library(htmltools) # Útil para construir el enlace completo
+library(DT)
+# Definir los iconos y enlaces
+github_icon <- fa("github", fill = "#333333", height = "1.5em")
+linkedin_icon <- fa("linkedin", fill = "#0077B5", height = "1.5em")
+
+# Construir los enlaces completos
+github_link <- tags$a(
+  href = "*https://github.com/deliaspanigo/exp002RShiny", 
+  target = "_blank", 
+  style = "margin-right: 30px; text-decoration: none; color: #333;",
+  github_icon#, " GitHub"
+)
+
+linkedin_link <- tags$a(
+  href = "https://www.linkedin.com/in/deliaspanigo/", 
+  target = "_blank", 
+  style = "text-decoration: none; color: #0077B5;",
+  linkedin_icon#, " LinkedIn"
+)
+
+# Mostrar los elementos HTML generados
+div(
+  style = "font-size: 1.5em; margin-top: 20px;",
+  github_link,
+  linkedin_link
+)
+```
+
+:::
+:::
 
 ```{r libraries, eval=TRUE, include=FALSE}
 library("base")
@@ -36,21 +126,47 @@ library("stringr")
 
 ```
 
+```{r inside101, eval=TRUE, include=FALSE, echo=FALSE}
+file_name <- params$"file_name"
+file_source <- params$"file_source" 
+var_name_rv <- params$"var_name_rv"
+var_name_factor <- params$"var_name_factor"
+alpha_value <- params$"alpha_value"
+    
+################################
+# 1. Configuración de locale a inglés (temporalmente)
+current_time <- params$"current_time"
+if(current_time == "R_outside") {
+  current_time <- Sys.time()
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+}
+
+script_used <-  params$"script_used"
+if(script_used == "R_outside"){
+  script_used <- "Script XXX-001"
+  script_used <- paste0('<span style="background-color: orange;">', script_used, '</span>')
+} 
+
+the_package <- params$"the_package"
+if(the_package == "R_outside"){
+  #the_package <- "agricolae"
+  #the_package <- paste0('<span style="background-color: orange;">', the_package, '</span>')
+} 
+
+tool_used <- params$"tool_used"
+if(tool_used == "R_outside"){
+  tool_used <- "XXX-General Linnear Model, Fixed Effect, Anova 1 Way."
+  tool_used <- paste0('<span style="background-color: orange;">', tool_used, '</span>')
+} else tool_used <- tool_used_styled <- paste0(
+  '<span style="background-color: green; font-weight: bold; font-size: 1.2em; color: white; padding: 2px;">', 
+  tool_used, 
+  '</span>'
+)
+
+
+```
 
 ```{r cod101, eval=TRUE, include=FALSE, echo=FALSE}
-
-# 1. Configuración de locale a inglés (temporalmente)
-original_locale <- Sys.getlocale("LC_TIME") # Guarda la configuración actual
-Sys.setlocale("LC_TIME", "C")               # 'C' o 'English' fuerza el inglés/POSIX
-
-# 2. Información de Tiempo
-current_time <- Sys.time()
-
-# El día de la semana ahora será en inglés
-day_of_week <- format(current_time, "%A") 
-
-# Revertir el locale a la configuración original (¡IMPORTANTE!)
-Sys.setlocale("LC_TIME", original_locale) 
 
 # 3. Resto de la Información de Tiempo (no necesita cambios de locale)
 local_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S %Z") 
@@ -59,54 +175,94 @@ system_time_full <- local_time_full
 tz_info <- Sys.timezone()
 
 # 4. Información del Sistema y Herramienta
-session_info <- Sys.info()
-os_info <- paste(session_info["sysname"], "-", session_info["release"])
-R_version <- paste(R.version$major, R.version$minor, sep = ".")
-tool_used <- "General Linnear Model, Fixed Effect, anova 1 way."
+session_info <- sessionInfo()
+os_info <- session_info$"running"
+platform_info <- session_info$"platform"
+#R_version <- paste(R.version$major, R.version$minor, sep = ".")
+R_version <- paste0(session_info$"R.version"$"version.string",  
+                    " -- ", '"', session_info$"R.version"$"nickname", '"')
+
 
 # 5. Versión de la librería (stats)
-the_package <- "stats"
+
 if (the_package %in% installed.packages()[, "Package"]) {
-  package_version_info <- paste0("Paquete **'", the_package, "'**: ", as.character(packageVersion(the_package)))
+  package_version_info <- paste0(the_package, " ", as.character(packageVersion(the_package)))
 } else {
-  package_version_info <- paste0("Paquete **'", the_package, "'**: No instalado. Usando R base.")
+  extra_pack <- "agricolae"
+  package_version_info <- paste0("XXX--- ",extra_pack, " ", as.character(packageVersion(extra_pack)))
+  package_version_info <- paste0('<span style="background-color: red;">', 
+                                 package_version_info, '</span>')
+
 }
 
-script_used <- "Script 001"
+
 ```
 
-<!-- This report was generated on **`r day_of_week`**, using the following environment settings: -->
+```{r, results='asis', echo=FALSE}
+cat(linea_azul_gruesa)
+```
+
+
+<!-- This report was generated on **`r utc_time_full`**, using the following environment settings: -->
 # Work environment
 ::: columns
 ::: column
 * **Operating System:** `r os_info`  
-* **R Version:** `r R_version`  
+* **Platform info:** `r platform_info`  
+* **R Info:** `r R_version`  
 * **Rscience Version:** `r package_version_info`  
-* **Core Statistical Tool:** `r tool_used`  
-* **Core Script:** `r script_used`
-:::
-
-::: column
 * **UTC Time:** `r utc_time_full` UTC  
 * **System/Computer Time:** `r system_time_full`  
 * **Inferred Timezone Location:** `r tz_info`  
   (R can only reliably determine the timezone, not the physical city/country.)
 :::
 
+::: column
+* **Rscience Tool:** `r tool_used`  
+* **Rscience Tool Script:** `r script_used`
+* **Dataset file name:** `r file_name` 
+* **Response Variable:** `r var_name_rv`  
+* **Factor:** `r var_name_factor`  
+* **Alpha value:** `r alpha_value` 
 
 :::
 
----
+
+:::
+
+```{r, results='asis', echo=FALSE}
+cat(linea_azul_gruesa)
+```
+
 
 # Cita 
+Rscience is currently in a preliminary phase. There is no formal citation for Rscience.
 
----
+```{r, results='asis', echo=FALSE}
+cat(linea_azul_gruesa)
+```
 
-# Data Analysis 
+
+# R Code
 ::: {.panel-tabset}
 # R Code and Outputs
 ```{r cod01, eval=TRUE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
 ```
+# Script
+```{r cod06, eval=TRUE, include=TRUE, echo =TRUE, child='file00_06_script.qmd'}
+```
+# Stock
+# FAQs
+:::
+
+```{r, results='asis', echo=FALSE}
+# Imprimimos el HTML directamente
+cat(linea_azul_gruesa)
+```
+
+# Data Analysis 
+::: {.panel-tabset}
+
 # Report
 ```{r cod02, eval=TRUE, include=TRUE, echo =TRUE, child='file00_02_report.qmd'}
 ```
@@ -122,12 +278,111 @@ script_used <- "Script 001"
 # Plots - Residuals
 ```{r cod05, eval=TRUE, include=TRUE, echo =TRUE, child='file00_05_residuals_raw_plots.qmd'}
 ```
-# Script
-```{r cod6, eval=TRUE, include=TRUE, echo =TRUE, child='file00_06_script.qmd'}
+
+# Stock
+```{r cod07, eval=TRUE, include=TRUE, echo =TRUE, child='file00_07_stock.qmd'}
+```
+# FAQs
+```{r cod08, eval=TRUE, include=TRUE, echo =TRUE, child='file00_08_FAQ.qmd'}
+```
+
+# Classic
+```{r cod11, eval=TRUE, include=TRUE, echo =TRUE, child='file00_11_classic.qmd'}
 ```
 :::
 
----
+```{r, results='asis', echo=FALSE}
+# Imprimimos el HTML directamente
+cat(linea_azul_gruesa)
+```
+
+
+# Theory
+::: {.panel-tabset}
+# Bibliography
+```{r cod09, eval=TRUE, include=TRUE, echo =TRUE, child='file00_09_bibliography.qmd'}
+```
+# FAQs
+:::
+
+```{r, results='asis', echo=FALSE}
+# Imprimimos el HTML directamente
+cat(linea_azul_gruesa)
+```
+
+
+
+# Reproducibility, Transparency and Open Access
+The fundamental pillars of Rscience are __*Reproducibility*__, __*Transparency*__, and __*Open Access*__.  
+We strongly believe that adherence to these principles helps make science better, more reliable, and more objective.
+
+This section provides a complete digital footprint of the computational environment used to generate this report.
+
+By documenting the exact R version, Rscience version, the operating system configuration, and the precise list of installed packages, we guarantee maximum transparency and portability of the analysis, ensuring that the results presented can be accurately validated and replicated by any third party.
+
+To achieve true, byte-for-byte reproducibility, a set of explicit commands leveraging the rix library is provided. These statements enable users to install the exact version of R and Rscience used when generating this report, along with every required dependency package locked to its specific version. This process eliminates environmental variance and ensures the analysis can be faithfully recreated across different systems.
+
+## R - Session Info
+Shows the currently loaded packages and R environment configuration for this specific analysis. This includes R version, locale settings, and attached packages that are actively being used in this report.
+
+```{r}
+sessionInfo()
+```
+
+## R Version
+```{r include=TRUE, eval=FALSE, echo = TRUE}
+R.version
+```
+```{r include=TRUE, eval=TRUE, echo = FALSE}
+df_libraries <- as.data.frame(unlist(R.version))
+df_libraries <- cbind.data.frame(rownames(df_libraries), df_libraries)
+colnames(df_libraries) <- c("Parameters", "values")
+rownames(df_libraries) <- NULL
+kable(df_libraries, align = "ll", format = "html")
+```
+
+
+## R - Installed Libraries
+Lists all packages installed in the R environment, providing a complete inventory of available tools. This comprehensive list helps recreate the computational environment for reproducibility purposes.
+```{r include=TRUE, eval=FALSE, echo = TRUE}
+# All installed package on system
+installed.packages()
+
+```
+```{r include=TRUE, eval=TRUE, echo = FALSE}
+# R - System Info
+df_installed_libreries <- installed.packages()
+#rownames(df_installed_libreries) <- NULL
+# kable(df_installed_libreries, align = "ll", format = "html")
+
+
+DT::datatable(
+  df_installed_libreries,
+  options = list(
+    pageLength = 10, # Sets the default number of rows per page to 10
+    lengthMenu = c(5, 10, 25, 50) # Provides options to change rows per page
+  )
+)
+```
+
+
+
+## R - System Info
+Displays system-level information including user details, machine name, and operating system specifics. This context is valuable for debugging and understanding the execution environment, particularly in multi-user or server-based scenarios.
+```{r include=TRUE, eval=FALSE, echo = TRUE}
+Sys.info()
+```
+```{r include=TRUE, eval=TRUE, echo = FALSE}
+# R - System Info
+sys_info <- Sys.info()
+sys_df <- data.frame(
+  Parameter = names(sys_info),
+  Value = as.character(sys_info),
+  stringsAsFactors = FALSE
+)
+kable(sys_df, align = "ll", format = "html")
+```
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -143,13 +398,15 @@ document.addEventListener("DOMContentLoaded", function() {
         // 3. DEFINE EL NUEVO ORDEN DE LAS PESTAÑAS AQUÍ (DEBE INCLUIR TODAS)
         // ====================================================================
         const newOrderTitles = [
-            "Report",
-            "Hypothesis",
-            "R Code and Outputs",
-            "Requeriments",
-            "Plots - Raw Data",
-            "Plots - Residuals",
-            "Script"
+            <!-- "Report", -->
+            <!-- "Hypothesis", -->
+            <!-- "R Code and Outputs", -->
+            <!-- "Requeriments", -->
+            <!-- "Plots - Raw Data", -->
+            <!-- "Plots - Residuals", -->
+            <!-- "Script", -->
+            <!-- "Stock", -->
+            <!-- "FAQs" -->
         ];
 
         // Mapear los elementos <li> de las pestañas por su título
@@ -240,5 +497,51 @@ document.addEventListener("DOMContentLoaded", function() {
         documentContent.style.opacity = '1';
         documentContent.style.transition = 'opacity 0.5s ease-in-out';
     }
+});
+</script>
+
+<script>
+// SCRIPT 3: SOLUCIÓN SIMPLE PARA SCROLL
+document.addEventListener("DOMContentLoaded", function() {
+    setTimeout(function() {
+        document.querySelectorAll('.panel-tabset .nav-link').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const y = window.scrollY;
+                const x = window.scrollX;
+                
+                // Restaurar posición múltiples veces
+                [10, 50, 100, 200].forEach(timeout => {
+                    setTimeout(() => window.scrollTo(x, y), timeout);
+                });
+            });
+        });
+    }, 1000);
+});
+</script>
+
+<script>
+// SOLUCIÓN DEFINITIVA DE SCROLL EN FASE DE CAPTURA
+document.addEventListener("DOMContentLoaded", function() {
+    
+    function handleTabClick(event) {
+        // Detener la acción del enlace que causa el salto
+        if (event.currentTarget.getAttribute('href') && event.currentTarget.getAttribute('href').startsWith('#')) {
+            event.preventDefault(); 
+        }
+        
+        const tabLink = event.currentTarget;
+        
+        // Usar la API de Bootstrap para cambiar la pestaña
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+            const tab = new bootstrap.Tab(tabLink);
+            tab.show();
+        }
+    }
+
+    // Usar la fase de captura (true) para interceptar el evento primero
+    document.querySelectorAll('.panel-tabset .nav-link').forEach(tab => {
+        tab.removeEventListener('click', handleTabClick, true); 
+        tab.addEventListener('click', handleTabClick, true); 
+    });
 });
 </script>

@@ -1,0 +1,36 @@
+
+```{r , eval=TRUE, include=TRUE}
+df_selected_vars
+```
+
+```{r , eval=TRUE, include=TRUE}
+df_show_n
+
+df_factor_info
+
+check_unbalanced_reps
+
+phrase_selected_check_unbalanced
+
+df_table_anova
+
+df_table_anova
+
+test_residuals_normality
+
+test_residuals_homogeneity
+
+phrase_info_errors
+
+df_summary_anova
+
+phrase_shapiro_selected 
+
+phrase_bartlett_selected
+
+phrase_requeriments_selected 
+
+phrase_anova_selected
+
+df_tukey_table
+```

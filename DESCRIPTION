@@ -24,6 +24,7 @@ Imports:
     bslib,
     digest,
     dplyr,
+    DT,
     EnvStats,
     fs,
     ggplot2,

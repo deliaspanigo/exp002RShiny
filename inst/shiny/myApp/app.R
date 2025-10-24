@@ -50,7 +50,8 @@ ui <- page_sidebar(
   ),
 
   sidebar = sidebar(
-    "v1.0.6",
+    "v1.0.7",
+    "Sin saltos, a lo largo.",
     selectInput(
       'in_species',
       'Penguin species',
@@ -638,7 +639,17 @@ output$btn_export_excel <- downloadHandler(
     quarto::quarto_render(input = basename(str_file_name_input_qmd02()),
                           output_format = "html",
                           output_file = basename(str_output_file_name_html()),
-                          execute_params = list(species = input$in_species),
+                          execute_params = list(file_name = "mtcars",
+                                                file_source = "r_source",
+                                                var_name_rv = "mpg",
+                                                var_name_factor = "cyl",
+                                                alpha_value = "0.05",
+                                                vector_ordered_levels = c("6", "4", "8"),
+                                                vector_ordered_colors = c("#000000", "#00FF00", "#0000FF"),
+                                                current_time = "R_outside",
+                                                script_used = "R_outside",
+                                                the_package = "R_outside",
+                                                tool_used = "R_outside"),
                           #execute_params = my_bag,
                           quiet = FALSE)
 

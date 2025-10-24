@@ -1,36 +1,87 @@
+---
+title: "Rscience - _script_modulo"
+format: 
+  html:
+    theme: 
+      - custom_theme.scss
+    grid:
+      body-width: 2000px
+      margin-width: 250px
+      gutter-width: 1.5rem
+    toc: true
+    toc-float: true
+    toc-location: right
+    self-contained: true
+    link-citations: true # Util para ver referencias en el margen (ver `tufte.html` en la galería de Quarto)
 
+knitr: 
+    opts_chunk: 
+        collapse: false
+        comment: ""
+params:
+    file_name: "mtcars"
+    file_source: "r_source" 
+    var_name_rv: "mpg"
+    var_name_factor: "cyl"
+    alpha_value: "0.05"
+    vector_ordered_levels:
+      - "6"
+      - "4"
+      - "8"
+    vector_ordered_colors: 
+      - "#000000"
+      - "#00FF00"
+      - "#0000FF"
+---
 
-### INIT CODE ###
-  # # # # # Section 01 - Libraries ---------------------------------------------
-  library("plotly")
+# Libraries
   library("htmlwidgets")
   library("knitr")
+
+# Initials
+file_name   <- params$"file_name"
+file_source <- params$"file_source"
+var_name_rv <- params$"var_name_rv"
+var_name_factor <- params$"var_name_factor"
+alpha_value <- as.numeric(as.character(params$"alpha_value"))
+vector_ordered_levels <- params$"vector_ordered_levels"
+vector_ordered_colors <- params$"vector_ordered_colors"
+
+#vector_ordered_colors <- params$"vector_ordered_colors"
+
+# Basics lvl 01
+check_r_source        <- file_source == "r_source"
+check_rscience_source <- file_source == "rscience_source"
+check_excel_source    <- file_source == "excel_source"
+check_csv_source      <- file_source == "csv_source"
+
+if(check_r_source) my_dataset <- get(file_name)
+
+### INIT CODE ###
+# # # # # Section 01 - Libraries ---------------------------------------------
+  library("stats")     # General Linear Models
   library("agricolae") # Tukey test
-  library("dplyr")     # Developing with %>%
- # Import files from xlsx
   library("plotly")    # Advanced graphical functions
+  library("dplyr")     # Developing with %>%
 
-my_dataset <- mtcars
-var_name_rv <- "mpg"
-var_name_factor <- "cyl"
-alpha_value <- 0.05
-  
-
-
-  # # # # # Section 02 - Import dataset ----------------------------------------
-  #---my_dataset <- _A_my_import_sentence_A_
+# # # # # Section 02 - Import dataset ----------------------------------------
+  #+++---my_dataset <- _+A+_my_import_sentence_+A+_
   head(x = my_dataset, n = 5)
   
-  # # # # # Section 03 - Settings ----------------------------------------------
-  #---var_name_rv     <- "_B_var_name_rv_B_"
-  #---var_name_factor <- "_B_var_name_factor_B_"
-  #---alpha_value     <- _B_alpha_value_B_
+# # # # # Section 03 - Settings ----------------------------------------------
+  #+++---var_name_rv     <- "_+B+_var_name_rv_+B+_"
+  #+++---var_name_factor <- "_+B+_var_name_factor_+B+_"
+  #+++---alpha_value     <- _+B+_alpha_value_+B+_
+  #+++---vector_ordered_levels <- _+C+_vector_ordered_levels_+C+_
+  #+++---vector_ordered_colors <- _+C+_vector_ordered_colors_+C+_
 
-  # # # # # Section 04 - Standard actions --------------------------------------
+
+# # # # # Section 04 - Standard actions --------------------------------------
   # The factor must be factor data type on R.
   my_dataset[,var_name_factor] <- as.factor(as.character(my_dataset[,var_name_factor]))
-  
-  # # # # # Section 05 - Alpha and confidence value ----------------------------
+  my_dataset[,var_name_factor] <- factor(my_dataset[,var_name_factor], levels = vector_ordered_levels)
+
+# # # # # Section 05 - Alpha and confidence value ----------------------------
   confidence_value <- 1 - alpha_value
   
   df_alpha_confidence <- data.frame(
@@ -41,10 +92,10 @@ alpha_value <- 0.05
   )
   df_alpha_confidence
 
-  # # # # # Section 06 - Selected variables and roles  -------------------------
+# # # # # Section 06 - Selected variables and roles  -------------------------
   vector_all_var_names <- colnames(my_dataset)
   vector_name_selected_vars <- c(var_name_rv, var_name_factor)
-  vector_rol_vars <- c("VR", "FACTOR")
+  vector_rol_vars <- c("RV", "FACTOR")
   
 
   df_selected_vars <- data.frame(
@@ -62,8 +113,8 @@ alpha_value <- 0.05
   # Only completed rows. 
   # Factor columns as factor object in R.
   minibase <- na.omit(my_dataset[vector_name_selected_vars])
-  colnames(minibase) <- vector_rol_vars
-  minibase[,"FACTOR"] <- as.factor(minibase[,"FACTOR"])
+  #colnames(minibase) <- vector_rol_vars
+  minibase[,var_name_factor] <- as.factor(minibase[,var_name_factor])
   head(x = minibase, n = 5)
   
 
@@ -75,7 +126,7 @@ alpha_value <- 0.05
     "var_name" = df_selected_vars$"var_name",
     "var_role" = df_selected_vars$"var_role",
     "control" = c("is.numeric()", "is.factor()"),
-    "verify" = c(is.numeric(minibase[,"VR"]), is.factor(minibase[,"FACTOR"]))
+    "verify" = c(is.numeric(minibase[,var_name_rv]), is.factor(minibase[,var_name_factor]))
   )
   df_control_minibase
   
@@ -99,7 +150,7 @@ alpha_value <- 0.05
     "level" = levels(minibase[,2]),
     "n" = as.vector(table(minibase[,2])),
     "mean" = tapply(minibase[,1], minibase[,2], mean),
-    "color" = rainbow(nlevels(minibase[,2]))
+    "color" = vector_ordered_colors
   )
   rownames(df_factor_info) <- 1:nrow(df_factor_info)
   df_factor_info
@@ -123,7 +174,9 @@ alpha_value <- 0.05
   
   # # # # # Section 06 - Anova Test ----------------------------------------------
   # # # Anova test
-  lm_anova <- lm(VR ~ FACTOR, data = minibase)               # Linear model
+  the_formula <- paste0(var_name_rv,  " ~ " , var_name_factor)
+  the_formula <- as.formula (the_formula)
+  lm_anova <- lm(formula = the_formula, data = minibase)               # Linear model
   aov_anova <- aov(lm_anova)                                 # R results for anova
   df_table_anova <- as.data.frame(summary(aov_anova)[[1]])   # Common anova table
   df_table_anova
@@ -177,7 +230,9 @@ alpha_value <- 0.05
   
   
   # # # Homogeinidy test (Bartlett)
-  test_residuals_homogeneity <- bartlett.test(residuals ~ FACTOR, data = minibase_mod)
+  the_formula_bartlett <- paste0("residuals", " ~ ", var_name_factor)
+  the_formula_bartlett <- as.formula(the_formula_bartlett)
+  test_residuals_homogeneity <- bartlett.test(the_formula_bartlett, data = minibase_mod)
   test_residuals_homogeneity
   
   
@@ -610,9 +665,9 @@ alpha_value <- 0.05
   plot001_factor <- plotly::add_trace(p = plot001_factor,
                                       type = "scatter",
                                       mode = "markers",
-                                      x = minibase_mod$FACTOR,
-                                      y = minibase_mod$VR,
-                                      color = minibase_mod$FACTOR,
+                                      x = minibase_mod[,var_name_factor],
+                                      y = minibase_mod[,var_name_rv],
+                                      color = minibase_mod[,var_name_factor],
                                       colors = df_factor_info$color,
                                       marker = list(size = 15, opacity = 0.7))
   
