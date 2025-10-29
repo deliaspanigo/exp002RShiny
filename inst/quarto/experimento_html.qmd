@@ -1,0 +1,132 @@
+---
+title: "Rscience - Parameterized Report"
+format: 
+  html:
+    grid:
+      body-width: 2000px
+      margin-width: 250px
+      gutter-width: 1.5rem
+    # Las opciones de 'toc' se han eliminado para usar las pestañas
+    self-contained: true
+    link-citations: true 
+
+knitr: 
+    opts_chunk: 
+        collapse: false
+        comment: ""
+params:
+    file_name: "mtcars"
+    file_source: "r_source" 
+    var_name_rv: "mpg"
+    var_name_factor: "cyl"
+    alpha_value: "0.05"
+    vector_ordered_levels:
+      - "6"
+      - "4"
+      - "8"
+    vector_ordered_colors: 
+      - "#FF0000"
+      - "#00FF00"
+      - "#0000FF"
+    current_time: "R_outside"
+    the_package: "exp002RShiny"
+    tool_used: "General Linear Model, Fixed Effect, anova 1 way"
+    script_used: "R_outside"
+---
+
+```{r}
+#| echo: false
+#| results: asis
+
+cat('
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(function() {
+    const tabContainer = document.querySelector(".panel-tabset.nav-pills.nav-fill.flex-column");
+    
+    if (tabContainer) {
+      const nav = tabContainer.querySelector(".nav");
+      const tabContent = tabContainer.querySelector(".tab-content");
+      
+      if (nav && tabContent) {
+        // Orden deseado
+        const desiredOrder = [
+          "Init",
+          "AutoReport", 
+          "Anova (Class Room)",
+          "Rscience Code",
+          "R Script",
+          "Others"
+        ];
+        
+        // Reordenar pestañas en el nav
+        desiredOrder.forEach(function(tabTitle) {
+          const navItems = Array.from(nav.querySelectorAll(".nav-item"));
+          const targetItem = navItems.find(item => 
+            item.querySelector(".nav-link").textContent.trim() === tabTitle
+          );
+          if (targetItem) {
+            nav.appendChild(targetItem);
+          }
+        });
+        
+        // Reordenar contenido de pestañas
+        desiredOrder.forEach(function(tabTitle) {
+          const tabPanes = Array.from(tabContent.querySelectorAll(".tab-pane"));
+          const targetPane = tabPanes.find(pane => {
+            const link = document.querySelector(`[href="#${pane.id}"]`);
+            return link && link.textContent.trim() === tabTitle;
+          });
+          if (targetPane) {
+            tabContent.appendChild(targetPane);
+          }
+        });
+      }
+    }
+  }, 200);
+});
+</script>
+')
+```
+
+```{r file00, eval=TRUE, include=TRUE, echo =TRUE, child='file00_00_Header.qmd'}
+```
+
+
+::: {.panel-tabset .nav-pills .nav-fill .flex-column}
+# Rscience Code
+```{r cod01, eval=TRUE, include=TRUE, echo =TRUE, child='file00_01_RQuarto.qmd'}
+```
+
+# Init
+```{r cod02, eval=TRUE, include=TRUE, echo =TRUE, child='file00_02_Init.qmd'}
+```
+
+# AutoReport
+```{r cod3, eval=TRUE, include=TRUE, echo =TRUE, child='file00_03_AutoReport.qmd'}
+```
+
+# Anova (Class Room)
+```{r cod04, eval=TRUE, include=TRUE, echo =TRUE, child='file00_04_ClassRoom.qmd'}
+```
+
+
+
+# R Script
+```{r cod06, eval=TRUE, include=TRUE, echo =TRUE, child='file00_06_Script.qmd'}
+```
+
+# Others
+::: {.panel-tabset .nav-pills .nav-fill .flex-column}
+## Stock
+```{r cod07, eval=TRUE, include=TRUE, echo =TRUE, child='file00_07_Stock.qmd'}
+```
+
+## Software
+```{r cod08, child='file00_09_Aver.qmd'}
+```
+
+## Cita
+Algo hay que colocar...
+:::
+:::

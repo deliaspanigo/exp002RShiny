@@ -1,0 +1,14 @@
+---
+title: "Parameterized Penguins Report"
+subtitle: "Análisis Estadístico con R"
+author:
+  - "David Elias Panigo"
+  - "Departamento de Análisis de Datos"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format:
+  typst:
+    toc: true
+    number-sections: true
+    papersize: a4
+---
+

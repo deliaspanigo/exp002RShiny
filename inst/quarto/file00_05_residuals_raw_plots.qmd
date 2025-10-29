@@ -1,6 +1,5 @@
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -8,23 +7,24 @@
 vector_obj <- c("plot001_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
+#| 
 
-vector_obj <- c("df_table_residuals_plot001")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot001"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -32,23 +32,24 @@ mget(vector_obj)
 vector_obj <- c("plot002_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot002")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot002"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -56,23 +57,24 @@ mget(vector_obj)
 vector_obj <- c("plot003_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot003")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot003"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -80,23 +82,25 @@ mget(vector_obj)
 vector_obj <- c("plot004_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot004")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot004"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -104,23 +108,25 @@ mget(vector_obj)
 vector_obj <- c("plot005_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot005")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot005"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -128,23 +134,24 @@ mget(vector_obj)
 vector_obj <- c("plot006_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot006")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot006"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -152,23 +159,23 @@ mget(vector_obj)
 vector_obj <- c("plot007_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot007")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot007"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -176,23 +183,23 @@ mget(vector_obj)
 vector_obj <- c("plot008_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot008")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot008"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -200,23 +207,23 @@ mget(vector_obj)
 vector_obj <- c("plot009_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot009")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot009"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
-:::
-:::
+
 
 ***
 
-::: {.columns}
-::: {.column width="50%"}
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -224,18 +231,19 @@ mget(vector_obj)
 vector_obj <- c("plot010_residuals")
 mget(vector_obj)[[1]]
 ```
-:::
 
-::: {.column width="50%"}
+
+
 ```{r}
 #| warning: false
 #| echo: false
 
-vector_obj <- c("df_table_residuals_plot010")
-mget(vector_obj)
+vector_obj <- "df_table_residuals_plot010"
+my_df <- mget(vector_obj)
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
 ```
-:::
-:::
+
 
 ***
 

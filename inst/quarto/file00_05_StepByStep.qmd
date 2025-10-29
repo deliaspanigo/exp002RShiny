@@ -1,0 +1,82 @@
+
+
+## Decision-Making Process in ANOVA
+The ANOVA test is specifically performed to make decisions.  
+The decision-making process has a set of sequential steps, in a particular order.  
+- Step 01: Control over the response variable.  
+- Step 02: Verification of the normality requirement of the residuals.  
+- Step 03: Verification of the homogeneity of variances requirement.  
+- Step 04: Interpretation of the ANOVA test.  
+- Step 05: Interpretation of the Tukey test.  
+
+
+### Step 01: Control over the response variable.  
+De la estadística descritiva buscamos los valores mínimo y máximos de la variable respuesta par cada nivel del factor.  
+Esto es acción que permite detectar posibles errores de tipeo realizados en nuestro dataset. El control solo puede ser llevado a cabo en aquellos contextos en los cuales se tiene noción de lo que podría ser un valor imposible para la variable. 
+Si se trabaja sin un marco de límite para la variable respuesta, deberá asumirse que los valores mínimos y máximos son válidos y se continúa con el siguiente paso.
+
+```{r}
+#| warning: false
+#| echo: false
+
+my_df <- df_vr_position_levels
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+```
+
+
+### Step 02: Verification of the normality requirement of the residuals.  
+```{r}
+#| warning: false
+#| echo: false
+nombres_aver <- c("test_residuals_normality")
+aver <- mget(nombres_aver)
+aver 
+
+knitr::asis_output(phrase_shapiro_selected)
+```
+
+
+### Step 03: Verification of the homogeneity of variances requirement.  
+```{r}
+#| warning: false
+#| echo: false
+nombres_aver <- c("test_residuals_homogeneity")
+aver <- mget(nombres_aver)
+aver 
+knitr::asis_output(phrase_bartlett_selected)
+```
+
+### Step 04: Interpretation of the ANOVA test.  
+```{r}
+#| warning: false
+#| echo: false
+my_df <- df_table_anova_mod
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+knitr::asis_output(phrase_requeriments_selected)
+knitr::asis_output(phrase_anova_selected)
+
+```
+
+### Step 05: Interpretation of the Tukey test.  
+```{r}
+#| warning: false
+#| echo: false
+my_df <- df_tukey_table
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+
+```
+
+
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("The means of each factor level are detailed with the standard error derived from the model.  
+                   The statistical groups from the Tukey test are detailed for each factor level.")
+```
+```{r , eval=TRUE, include=TRUE}
+plot007_factor
+```
+

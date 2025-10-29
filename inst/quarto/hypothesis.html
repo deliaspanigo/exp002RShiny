@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Your Name">
 
-<title>file00_07_stock</title>
+<title>One-Way ANOVA Hypotheses</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,17 +24,46 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="file00_07_stock_files/libs/clipboard/clipboard.min.js"></script>
-<script src="file00_07_stock_files/libs/quarto-html/quarto.js"></script>
-<script src="file00_07_stock_files/libs/quarto-html/popper.min.js"></script>
-<script src="file00_07_stock_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="file00_07_stock_files/libs/quarto-html/anchor.min.js"></script>
-<link href="file00_07_stock_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="file00_07_stock_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="file00_07_stock_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="file00_07_stock_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="file00_07_stock_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="hypothesis_files/libs/clipboard/clipboard.min.js"></script>
+<script src="hypothesis_files/libs/quarto-html/quarto.js"></script>
+<script src="hypothesis_files/libs/quarto-html/popper.min.js"></script>
+<script src="hypothesis_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="hypothesis_files/libs/quarto-html/anchor.min.js"></script>
+<link href="hypothesis_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="hypothesis_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="hypothesis_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="hypothesis_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="hypothesis_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -43,28 +73,166 @@ ul.task-list li input[type="checkbox"] {
 
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">One-Way ANOVA Hypotheses</h1>
+</div>
 
 
 
-<section id="stock" class="level2">
-<h2 class="anchored" data-anchor-id="stock">Stock</h2>
-<p>El script realiza todo lo relacionado al análisis de datos enmarcado en un diseño a un factor de efecto fijos completamente aleatorizado.</p>
-<p>El scriopt realiza:<br>
-- 4 test estadísticos.<br>
-- 15 gráficos.<br>
-- 20 tablas.</p>
-<p>Un poco más en detalle, el listado es el siguiente:<br>
-- Test ANOVA a 1 Factor.<br>
-- Test de Tukey.<br>
-- Test de Normalidad Shapiro-Wilks para los residuos.<br>
-- Test de Homogeneidad de Varianzas de Bartlett para los residuos.<br>
-- Estadísticas descriptivas para una variable cuantitativa particionada por lo niveles del factor.<br>
-- Estadísticas descriptivas aplicados a los residuos en su totalidad y aplicados a los residuos particionados por el factor.</p>
-<p>El script aborda toda la complejidad relacionada a un análisis de la varianza a 1 factor ya sea dentro del test Anova, su test de comparaciones múltibple, los test estadísticos para sus requisitos y para la generación de todas las tablas y gráficos asociados.</p>
-<p>El script realiza un manejo explícito de los datos faltantes, mendiante la utilización de la función na.omit() previo al ingreso de los datos a las funciones estadísticas. De esa manera se maneja todo el tiempo solo a las filas de datos que efectivamente ingresan al test estadístico, a tablas y a gráficos.</p>
-<p>El script contiene todos los criterios estadísticos relacionados a la toma de decisiones de para ANova a 1 Factor, otorgando al usuario frases directas y explícitas sobre cómo interpretar sus datos.</p>
-<p>Rscience es tajante, directo y claro en cuanto a la toma de decisiones. Deben tomarse las frases otorgadas como frases que orientan en un buena dirección y sentido a un operador. Rscience solo facilita interpretaciones estadísticas, luego el operador deberá terminar de entender la situación bajo análisis para poder dar interpretaciones de esos resultados en su marco de trabajo o estudio.</p>
-<p>Algunos detalles particularmente importantes del script 003 para ANova a 1 Factor, Efectos Fijos, Modelo Lineal General, son los gráficos generados para los niveles del factor utilizando la media de cada nivel y el error estándard obtenido del modelo y no del error estándard obtenido de los datos.</p>
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Your Name </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="one-way-anova-hypotheses" class="level1">
+<h1>One-Way ANOVA Hypotheses</h1>
+<section id="statistical-hypotheses" class="level2">
+<h2 class="anchored" data-anchor-id="statistical-hypotheses">Statistical Hypotheses</h2>
+<section id="form-1-treatment-effects-tau_i" class="level3">
+<h3 class="anchored" data-anchor-id="form-1-treatment-effects-tau_i">Form 1: Treatment Effects (<span class="math inline">\(\tau_i\)</span>)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 41%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis Type</th>
+<th>Mathematical Formulation</th>
+<th>Verbal Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Null Hypothesis (<span class="math inline">\(H_0\)</span>)</strong></td>
+<td><span class="math inline">\(H_0: \tau_1 = \tau_2 = \cdots = \tau_k = 0\)</span></td>
+<td>All treatment effects are zero</td>
+</tr>
+<tr class="even">
+<td><strong>Alternative Hypothesis (<span class="math inline">\(H_1\)</span>)</strong></td>
+<td><span class="math inline">\(H_1: \exists\; i \in \{1,2,\ldots,k\} \mid \tau_i \neq 0\)</span></td>
+<td>At least one treatment effect is different from zero</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="form-2-group-means-mu_i" class="level3">
+<h3 class="anchored" data-anchor-id="form-2-group-means-mu_i">Form 2: Group Means (<span class="math inline">\(\mu_i\)</span>)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 41%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis Type</th>
+<th>Mathematical Formulation</th>
+<th>Verbal Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Null Hypothesis (<span class="math inline">\(H_0\)</span>)</strong></td>
+<td><span class="math inline">\(H_0: \mu_1 = \mu_2 = \cdots = \mu_k\)</span></td>
+<td>All group means are equal</td>
+</tr>
+<tr class="even">
+<td><strong>Alternative Hypothesis (<span class="math inline">\(H_1\)</span>)</strong></td>
+<td><span class="math inline">\(H_1: \exists\; i,j \in \{1,2,\ldots,k\} \mid i \neq j \land \mu_i \neq \mu_j\)</span></td>
+<td>At least one group mean is different</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="assumption-tests-for-anova-residuals" class="level2">
+<h2 class="anchored" data-anchor-id="assumption-tests-for-anova-residuals">Assumption Tests for ANOVA Residuals</h2>
+<section id="normality-test-e.g.-shapiro-wilk" class="level3">
+<h3 class="anchored" data-anchor-id="normality-test-e.g.-shapiro-wilk">Normality Test (e.g., Shapiro-Wilk)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 41%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis Type</th>
+<th>Mathematical Formulation</th>
+<th>Verbal Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Null Hypothesis (<span class="math inline">\(H_0\)</span>)</strong></td>
+<td><span class="math inline">\(H_0: \varepsilon_{ij} \sim N(0, \sigma^2)\)</span></td>
+<td>The residuals are normally distributed</td>
+</tr>
+<tr class="even">
+<td><strong>Alternative Hypothesis (<span class="math inline">\(H_1\)</span>)</strong></td>
+<td><span class="math inline">\(H_1: \varepsilon_{ij} \not\sim N(0, \sigma^2)\)</span></td>
+<td>The residuals are not normally distributed</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="homogeneity-of-variances-test-e.g.-bartletts-test" class="level3">
+<h3 class="anchored" data-anchor-id="homogeneity-of-variances-test-e.g.-bartletts-test">Homogeneity of Variances Test (e.g., Bartlett’s Test)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 27%">
+<col style="width: 41%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Hypothesis Type</th>
+<th>Mathematical Formulation</th>
+<th>Verbal Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Null Hypothesis (<span class="math inline">\(H_0\)</span>)</strong></td>
+<td><span class="math inline">\(H_0: \sigma_1^2 = \sigma_2^2 = \cdots = \sigma_k^2\)</span></td>
+<td>All group variances are equal</td>
+</tr>
+<tr class="even">
+<td><strong>Alternative Hypothesis (<span class="math inline">\(H_1\)</span>)</strong></td>
+<td><span class="math inline">\(H_1: \exists\; i,j \in \{1,2,\ldots,k\} \mid i \neq j \land \sigma_i^2 \neq \sigma_j^2\)</span></td>
+<td>At least one group variance is different</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="decision-rule" class="level2">
+<h2 class="anchored" data-anchor-id="decision-rule">Decision Rule</h2>
+<p>The decision to reject or not reject the null hypothesis is based on the p-value and the significance level <span class="math inline">\(\alpha\)</span>:</p>
+<p><span class="math display">\[
+\text{If } p &lt; \alpha \Rightarrow \text{Reject } H_0
+\]</span></p>
+<p><span class="math display">\[
+\text{If } p \geq \alpha \Rightarrow \text{Fail to reject } H_0
+\]</span></p>
+<p><strong>Where:</strong> - <span class="math inline">\(p\)</span> = p-value from the statistical test - <span class="math inline">\(\alpha\)</span> = significance level (typically 0.05) - <span class="math inline">\(k\)</span> = number of groups or treatments - <span class="math inline">\(\sigma_i^2\)</span> = variance of group <span class="math inline">\(i\)</span> - <span class="math inline">\(\exists\)</span> = “there exists” (existential quantifier)</p>
+</section>
 </section>
 
 </main>

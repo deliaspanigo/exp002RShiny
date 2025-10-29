@@ -2,10 +2,10 @@
 title: "Parameterized Penguins Report"
 author: 'David Elias Panigo'
 format:
-    typst:
-        template-partials: 
-            - _typst_assets/typst-show.typ
-            - _typst_assets/typst-template.typ
+  typst:
+    toc: true
+    number-sections: true
+    papersize: a4
 knitr: 
     opts_chunk: 
         collapse: false
@@ -15,16 +15,160 @@ knitr:
         dev: "png" 
         fig-ext: "png"
 params:
-    species: Adelie
+    file_name: "mtcars"
+    file_source: "r_source" 
+    var_name_rv: "mpg"
+    var_name_factor: "cyl"
+    alpha_value: "0.05"
+    vector_ordered_levels:
+      - "6"
+      - "4"
+      - "8"
+    vector_ordered_colors: 
+      - "#FF0000"
+      - "#00FF00"
+      - "#0000FF"
+    current_time: "R_outside"
+    the_package: "exp002RShiny"
+    tool_used: "General Linnear Model, Fixed Effect, anova 1 way"
+    script_used: "R_outside"
 ---
+
+\newpage
 ```{r eval=TRUE, include=TRUE, echo =TRUE}
 library("webshot2")
 
 ```
   
-```{r eval=TRUE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
+# R Code and Outputs
+```{r cod01, eval=TRUE, include=FALSE, echo =FALSE, child='_script_modulo.qmd'}
+```
+
+\newpage
+
+# Report
+## User inputs
+
+* **Dataset file name:** jaja  
+* **Response Variable:** `r var_name_rv`  
+* **Factor:** `r var_name_factor`  
+* **Alpha value:** `r alpha_value`  
+
+
+
+## Summary Anova test
+```{r}
+#| warning: false
+#| echo: false
+
+
+
+my_df <- df_summary_anova
+library(knitr)
+library(kableExtra)
+# Mostrar con kable para mejor estética
+# kable(my_df, format = "pdf", caption = "") %>%
+#   kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+my_df <- df_summary_anova
+
+# Si quieres más control sobre el formato
+knitr::kable(
+  my_df, 
+  format = "pipe",
+  caption = "Resumen ANOVA",
+  align = c("l", "c", "c", "c", "c"),  # l=left, c=center, r=right
+  digits = 4  # Número de decimales
+)
+```
+
+## Automated Statistical Assistant
+```{r}
+#| eval: true
+#| include: false
+#| warning: false
+#| echo: false
+
+
+
+my_text <-c(phrase_shapiro_selected, phrase_bartlett_selected, 
+                  phrase_requeriments_selected, phrase_anova_selected)
+
+
+# Unir cada elemento en una línea separada
+# my_text <- paste(my_text, collapse = "  ")
+
+# Mostrar en Quarto
+# knitr::asis_output(my_text)
+```
+`r my_text[1]`  
+`r my_text[2]`  
+`r my_text[3]`  
+`r my_text[4]`
+
+\newpage
+
+# Tukey Test
+```{r}
+#| warning: false
+#| echo: false
+df_tukey_table
 ```
 
 
-```{r eval=FALSE, include=TRUE, echo =TRUE, child='_script_modulo.qmd'}
+
+```{r}
+#| warning: false
+#| echo: false
+plot007_factor
 ```
+
+
+\newpage
+
+# Original R Outputs
+Detallamos las variables seleccionadas.
+```{r}
+#| warning: false
+#| echo: false
+
+  df_selected_vars
+```
+
+Determinamos el n de la experiencia a partir de todas las filas que poseen datos en ambas variables.
+```{r}
+#| warning: false
+#| echo: false
+
+  df_show_n
+```
+
+Generamos el test de Anova
+```{r}
+#| warning: false
+#| echo: false
+
+  df_table_anova
+```
+
+Verificamos el supuesto de homogeneidad de los residuos
+```{r}
+#| warning: false
+#| echo: false
+  test_residuals_homogeneity
+```
+
+Verificamos el requisito de normalidad de los residuos
+```{r}
+#| warning: false
+#| echo: false
+  test_residuals_normality
+```
+
+
+Estimamos el Error
+```{r}
+#| warning: false
+#| echo: false
+  df_model_error
+```
+

@@ -3,7 +3,6 @@
 
 ```
 
-## Stock
 El script realiza todo lo relacionado al análisis de datos enmarcado en un diseño a un factor de efecto fijos completamente aleatorizado.
 
 El scriopt realiza:  

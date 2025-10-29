@@ -1,0 +1,143 @@
+\  
+
+The most important statistical output from Anova as R formatted objects.  
+\  
+
+::: {.panel-tabset}
+# Model
+```{r, eval=TRUE, include=TRUE, echo =TRUE, child='the_model.qmd'}
+```
+
+# Hypothesis
+```{r, eval=TRUE, include=TRUE, echo =TRUE, child='hypothesis.qmd'}
+```
+
+# User election
+## Selected variable and rol
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+my_df <- df_selected_vars
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## Alpha and confidence values
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+my_df <- df_alpha_confidence
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+## Amount of data to analysis
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+my_df <- df_show_n
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+# Anova Table
+
+## 1) Anova Table (Class Room format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("This is the table format detailed in the bibliography.")
+
+my_df <- df_table_anova_mod
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+## 2) Anova Table (R format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("The original R output does not contain the Source of Variation column, and it does not detail the row for the total source of variation.")
+
+my_df <- df_table_anova
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+
+
+
+
+# Tukey Test
+
+## 1) Tukey Test (Class Room format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("This is the table format detailed in the bibliography.")
+
+my_df <- df_tukey_table
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+## 2) Full info from Tukey (R format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("The Tukey table is only one part of all the information contained within the Tukey test.  
+                   The Tukey test contains more details that may be relevant, such as the honest significant difference (HSD).")
+
+```
+```{r , eval=TRUE, include=TRUE}
+tukey01_full_groups
+```
+
+## 3) Pairs comparation from Tukey test (R format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("Internally, the Tukey test performs t-tests between all possible pairs of factor levels.  
+                   In each t-test, a p-value is obtained with which decisions are made. All pairs are detailed below.")
+```
+```{r , eval=TRUE, include=TRUE}
+tukey02_full_pairs
+```
+
+## 4) Special plot for Tukey test
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("The means of each factor level are detailed with the standard error derived from the model.  
+                   The statistical groups from the Tukey test are detailed for each factor level.")
+```
+```{r , eval=TRUE, include=TRUE}
+plot007_factor
+```
+
+
+## 5) Tukey Test table (R format)
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+knitr::asis_output("This is the original R output for the Tukey test.
+                    The output differs slightly from what is detailed in the bibliography.")
+```
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+my_df <- df_tukey_original_table
+kable(my_df, format = "html", caption = "") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+# Requeriments
+```{r cod03, eval=TRUE, include=TRUE, echo =TRUE, child='file00_03_requeriments.qmd'}
+```
+# Plots - Raw Data
+```{r cod04, eval=TRUE, include=TRUE, echo =TRUE, child='file00_04_data_raw_plots.qmd'}
+```
+# Plots - Residuals
+```{r cod05, eval=TRUE, include=TRUE, echo =TRUE, child='file00_05_residuals_raw_plots.qmd'}
+```
+
+# Decision Plan
+```{r eval=TRUE, include=TRUE, echo =TRUE, child='file00_05_Decision.qmd'}
+```
+
+# Data Analysis (Step by step)
+```{r eval=TRUE, include=TRUE, echo =TRUE, child='file00_05_StepByStep.qmd'}
+```
+
+# FAQs
+```{r cod08, eval=TRUE, include=TRUE, echo =TRUE, child='file00_08_FAQ.qmd'}
+```
+
+:::

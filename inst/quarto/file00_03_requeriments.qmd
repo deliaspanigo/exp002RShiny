@@ -1,4 +1,4 @@
-## 1) Requeriment - Normaility test - Residuals
+## 1) Requeriment - Normaility test - Residuals (R format)
 ```{r}
 #| warning: false
 #| echo: false
@@ -8,7 +8,7 @@ aver
 
 ```
 
-## 2) Requeriment - Homogeneity test - Residuals
+## 2) Requeriment - Homogeneity test - Residuals (R format)
 ```{r}
 #| warning: false
 #| echo: false

@@ -1,0 +1,82 @@
+
+<!-- IMAGEN DEBAJO DEL TOC LATERAL -->
+
+<div style="position: fixed; right: 30px; top: 550px; width: 200px; text-align: center; z-index: 999;">
+  Standard analysis, reporting and R for Science.
+![Imagen lateral](images/Rscience_logo_01.png){width="90%"}
+<br>
+  <small>
+- Reproducibility.  
+- Transparency.  
+- Open Access.  
+  </small>
+  </div>
+
+  <!-- <style> -->
+  <!-- /* Oculta el contenido principal por defecto */ -->
+  <!-- #quarto-document-content { -->
+  <!--     visibility: hidden; /* Mantiene el espacio, pero lo hace invisible */ -->
+  <!--     opacity: 0;         /* Para una transición suave */  -->
+  <!--     } -->
+<!-- </style> -->
+
+
+
+::: columns
+::: {.column width="20%"}
+![](images/Rscience_logo_01.png){fig-alt="Descripción de la imagen" width="40%"}
+
+```{r, results='asis', echo=FALSE}
+# Definimos el estilo CSS para nuestra línea
+linea_azul_gruesa <- '<div style="
+  width: 100%;                  /* Ocupa todo el ancho disponible */
+  height: 0.5cm;                /* Medio centímetro de grosor */
+  background-color: #2E86C1;       /* Color azul */
+  margin-top: 20px;             /* Espacio superior para separación */
+  margin-bottom: 20px;          /* Espacio inferior para separación */
+"></div>'
+```
+
+
+:::
+::: {.column width="33%"}
+Standard analysis, reporting and R code for Science.
+- Reproducibility.
+- Transparency.
+- Open Access.
+:::
+::: {.column width="33%"}
+```{r eval=TRUE, include=TRUE, echo=FALSE}
+# Cargar la librería si no está cargada
+library(fontawesome)
+library(htmltools) # Útil para construir el enlace completo
+library(DT)
+# Definir los iconos y enlaces
+github_icon <- fa("github", fill = "#333333", height = "1.5em")
+linkedin_icon <- fa("linkedin", fill = "#0077B5", height = "1.5em")
+
+# Construir los enlaces completos
+github_link <- tags$a(
+  href = "*https://github.com/deliaspanigo/exp002RShiny",
+  target = "_blank",
+  style = "margin-right: 30px; text-decoration: none; color: #333;",
+  github_icon#, " GitHub"
+)
+
+linkedin_link <- tags$a(
+  href = "https://www.linkedin.com/in/deliaspanigo/",
+  target = "_blank",
+  style = "text-decoration: none; color: #0077B5;",
+  linkedin_icon#, " LinkedIn"
+)
+
+# Mostrar los elementos HTML generados
+div(
+  style = "font-size: 1.5em; margin-top: 20px;",
+  github_link,
+  linkedin_link
+)
+```
+
+:::
+:::
