@@ -10,110 +10,111 @@ The decision-making process has a set of sequential steps, in a particular order
 - Step 05: Interpretation of the Tukey test.  
 
 
-## Flowchart for ANOVA Analysis
-```{r}
-#| echo: false
-#| warning: false
-#| message: false
+<!-- ## Flowchart for ANOVA Analysis -->
+<!-- ```{r} -->
+<!-- #| echo: false -->
+<!-- #| warning: false -->
+<!-- #| message: false -->
 
-library(DiagrammeR)
-library(DiagrammeRsvg)
-library(magrittr)
+<!-- library(DiagrammeR) -->
+<!-- library(DiagrammeRsvg) -->
+<!-- library(magrittr) -->
 
-# Crear y guardar el diagrama como PNG
-dot_code <- '
-digraph ANOVA_DecisionTree {
-    
-    graph [
-        layout = dot,
-        rankdir = TB,
-        splines = true,
-        bgcolor = "transparent",
-        fontname = "Arial",
-        ranksep = 0.6,
-        nodesep = 0.3
-    ] 
-    
-    node [
-        fontname = "Arial",
-        fontsize = 12,
-        style = "filled, rounded",
-        color = "#34495e",
-        penwidth = 1.5
-    ]
-    
-    edge [
-        fontname = "Arial",
-        fontsize = 11,
-        penwidth = 1.3
-    ]
+<!-- # Crear y guardar el diagrama como PNG -->
+<!-- dot_code <- ' -->
+<!-- digraph ANOVA_DecisionTree { -->
 
-    // Nodos principales
-    A [label = "Resultados de R", shape = oval, fillcolor = "#2980b9", fontcolor = "white"]
-    B [label = "Control de min y máximo", shape = diamond, fillcolor = "#9b59b6", fontcolor = "white"]
-    C [label = "Normalidad residuos", shape = diamond, fillcolor = "#f1c40f", fontcolor = "black"]
-    D [label = "Homogeneidad residuos", shape = diamond, fillcolor = "#f1c40f", fontcolor = "black"]
-    E1 [label = "Kruskal-Wallis\\n(Falla Normalidad)", shape = box, fillcolor = "#c0392b", fontcolor = "white"]
-    E2 [label = "Kruskal-Wallis\\n(Falla Homogeneidad)", shape = box, fillcolor = "#c0392b", fontcolor = "white"]
-    F [label = "ANOVA", shape = diamond, fillcolor = "#27ae60", fontcolor = "white"]
-    G [label = "Revisión del dataset", shape = box, fillcolor = "#e74c3c", fontcolor = "white"]
-    H [label = "Test de Tukey", shape = diamond, fillcolor = "#2ecc71", fontcolor = "white"]
-    I1 [label = "Todas las medias son iguales", shape = box, fillcolor = "#bdc3c7", fontcolor = "black"]
-    I2 [label = "Define grupos estadísticos", shape = box, fillcolor = "#16a085", fontcolor = "white"]
-    I3 [label = "ANOVA garantiza diferencias entre\\nla media más baja y la más alta", shape = box, fillcolor = "#f39c12", fontcolor = "black"]
+<!--     graph [ -->
+<!--         layout = dot, -->
+<!--         rankdir = TB, -->
+<!--         splines = true, -->
+<!--         bgcolor = "transparent", -->
+<!--         fontname = "Arial", -->
+<!--         ranksep = 0.6, -->
+<!--         nodesep = 0.3 -->
+<!--     ]  -->
 
-    // Conexiones directas
-    A -> B
-    
-    // Desde Control de min y máximo
-    B -> C [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"]
-    B -> G [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"]
-    
-    // Desde Normalidad
-    C -> D [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"]
-    C -> E1 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"]
-    
-    // Desde Homogeneidad
-    D -> F [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"]
-    D -> E2 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"]
-    
-    // Desde ANOVA
-    F -> H [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"]
-    F -> I1 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"]
-    
-    // Desde Test de Tukey - DOS flechas
-    H -> I2 [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"]
-    H -> I3 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"]
+<!--     node [ -->
+<!--         fontname = "Arial", -->
+<!--         fontsize = 12, -->
+<!--         style = "filled, rounded", -->
+<!--         color = "#34495e", -->
+<!--         penwidth = 1.5 -->
+<!--     ] -->
 
-    // Alineación forzada
-    {rank = same; A}
-    {rank = same; B}
-    {rank = same; C; G}
-    {rank = same; D; E1}
-    {rank = same; F; E2}
-    {rank = same; H; I1}
-    {rank = same; I2; I3}
-    
-    // Forzar orden izquierda-derecha
-    C -> G [style = invis, weight = 100]
-    D -> E1 [style = invis, weight = 100]
-    F -> E2 [style = invis, weight = 100]
-    H -> I1 [style = invis, weight = 100]
-    I2 -> I3 [style = invis, weight = 100]
-}
-'
+<!--     edge [ -->
+<!--         fontname = "Arial", -->
+<!--         fontsize = 11, -->
+<!--         penwidth = 1.3 -->
+<!--     ] -->
 
-# Crear el diagrama
-diagram <- grViz(dot_code)
+<!--     // Nodos principales -->
+<!--     A [label = "Resultados de R", shape = oval, fillcolor = "#2980b9", fontcolor = "white"] -->
+<!--     B [label = "Control de min y máximo", shape = diamond, fillcolor = "#9b59b6", fontcolor = "white"] -->
+<!--     C [label = "Normalidad residuos", shape = diamond, fillcolor = "#f1c40f", fontcolor = "black"] -->
+<!--     D [label = "Homogeneidad residuos", shape = diamond, fillcolor = "#f1c40f", fontcolor = "black"] -->
+<!--     E1 [label = "Kruskal-Wallis\\n(Falla Normalidad)", shape = box, fillcolor = "#c0392b", fontcolor = "white"] -->
+<!--     E2 [label = "Kruskal-Wallis\\n(Falla Homogeneidad)", shape = box, fillcolor = "#c0392b", fontcolor = "white"] -->
+<!--     F [label = "ANOVA", shape = diamond, fillcolor = "#27ae60", fontcolor = "white"] -->
+<!--     G [label = "Revisión del dataset", shape = box, fillcolor = "#e74c3c", fontcolor = "white"] -->
+<!--     H [label = "Test de Tukey", shape = diamond, fillcolor = "#2ecc71", fontcolor = "white"] -->
+<!--     I1 [label = "Todas las medias son iguales", shape = box, fillcolor = "#bdc3c7", fontcolor = "black"] -->
+<!--     I2 [label = "Define grupos estadísticos", shape = box, fillcolor = "#16a085", fontcolor = "white"] -->
+<!--     I3 [label = "ANOVA garantiza diferencias entre\\nla media más baja y la más alta", shape = box, fillcolor = "#f39c12", fontcolor = "black"] -->
 
-# Guardar como PNG usando DiagrammeRsvg
-diagram %>%
-  export_svg() %>%
-  charToRaw() %>%
-  rsvg::rsvg_png("anova_diagram.png", width = 1200, height = 800)
+<!--     // Conexiones directas -->
+<!--     A -> B -->
 
-cat("✅ Diagrama guardado como: anova_diagram.png")
-```
+<!--     // Desde Control de min y máximo -->
+<!--     B -> C [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"] -->
+<!--     B -> G [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"] -->
+
+<!--     // Desde Normalidad -->
+<!--     C -> D [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"] -->
+<!--     C -> E1 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"] -->
+
+<!--     // Desde Homogeneidad -->
+<!--     D -> F [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"] -->
+<!--     D -> E2 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"] -->
+
+<!--     // Desde ANOVA -->
+<!--     F -> H [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"] -->
+<!--     F -> I1 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"] -->
+
+<!--     // Desde Test de Tukey - DOS flechas -->
+<!--     H -> I2 [label = "  SÍ  ", color = "#27ae60", fontcolor = "#27ae60"] -->
+<!--     H -> I3 [label = "  NO  ", color = "#c0392b", fontcolor = "#c0392b"] -->
+
+<!--     // Alineación forzada -->
+<!--     {rank = same; A} -->
+<!--     {rank = same; B} -->
+<!--     {rank = same; C; G} -->
+<!--     {rank = same; D; E1} -->
+<!--     {rank = same; F; E2} -->
+<!--     {rank = same; H; I1} -->
+<!--     {rank = same; I2; I3} -->
+
+<!--     // Forzar orden izquierda-derecha -->
+<!--     C -> G [style = invis, weight = 100] -->
+<!--     D -> E1 [style = invis, weight = 100] -->
+<!--     F -> E2 [style = invis, weight = 100] -->
+<!--     H -> I1 [style = invis, weight = 100] -->
+<!--     I2 -> I3 [style = invis, weight = 100] -->
+<!-- } -->
+<!-- ' -->
+
+<!-- # Crear el diagrama -->
+<!-- diagram <- DiagrammeR::grViz(dot_code) -->
+
+<!-- # Guardar como PNG usando DiagrammeRsvg -->
+<!-- diagram %>% -->
+<!--   DiagrammeRsvg::export_svg() %>% -->
+<!--   rawConversion::charToRaw() %>% -->
+<!--   rsvg::rsvg_png("anova_diagram.png", width = 1200, height = 800) -->
+
+<!-- cat("✅ Diagrama guardado como: anova_diagram.png") -->
+<!-- ``` -->
+
 
 <div align="center">
 <a href="anova_diagram.png" target="_blank" style="text-decoration: none;">
@@ -152,12 +153,12 @@ my_df$"Decision"[5] <- "All ANOVA requirements are met. It is valid to interpret
 my_df$"Decision"[6] <- "All ANOVA requirements are met. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret the Tukey test. In this case, the Tukey test distinguishes at least 2 statistical groups. The operator must observe the Tukey table and interpret the groups according to the letters assigned by the Tukey test, taking into account that Tukey can assign multiple letters to each factor level. The operator must make recommendations of factor levels taking into account the statistical framework and the original work framework. It is common to recommend the highest means or the lowest means according to the context of the data.
 In the context of Tukey, factor levels that share at least 1 letter are statistically equal. It takes some time to get used to correctly interpreting the Tukey table. There are also other contexts where the lowest or highest means are not necessarily sought, such as specifically looking for which factor levels are statistically equal to a particular level. The Tukey test can also be applied in this context." 
 
-library(knitr)
-library(kableExtra)
+# library(knitr)
+# library(kableExtra)
 
 # Mostrar con kable controlando anchos
-kable(my_df, format = "html", caption = "Resumen de Casos Posibles en ANOVA") %>%
-  kable_styling(
+knitr::kable(my_df, format = "html", caption = "Resumen de Casos Posibles en ANOVA") %>%
+  kableExtra::kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"), 
     full_width = FALSE,
     font_size = 12
