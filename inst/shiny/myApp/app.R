@@ -50,7 +50,7 @@ ui <- page_sidebar(
   ),
 
   sidebar = sidebar(
-    "v1.0.8",
+    "v1.0.9",
     "Version con pestañas.",
     selectInput(
       'in_species',
