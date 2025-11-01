@@ -17,7 +17,7 @@ $$
 Y_{ij} = \mu_i + \varepsilon_{ij}
 $$
 
-## Model Components
+### Model Components
 
 **Where:**
 - $Y_{ij}$ = $j$-th observation in the $i$-th group
@@ -26,7 +26,7 @@ $$
 - $\mu_i$ = Mean of the $i$-th group
 - $\varepsilon_{ij}$ = Random error term
 
-## Key Relationship
+### Key Relationship
 
 The relationship between the two formulations is given by:
 
@@ -34,7 +34,7 @@ $$
 \mu_i = \mu + \tau_i
 $$
 
-## Model Parameters
+### Model Parameters
 
 - $k$ = number of groups or treatments
 - $\mu_i$ = population mean of group $i$
@@ -42,7 +42,7 @@ $$
 - $j = 1, 2, \ldots, n_i$ (observation index within each group)
 - $n_i$ = number of observations in group $i$
 
-## Error Term Specification
+### Error Term Specification
 
 The random error term follows a normal distribution:
 
@@ -54,7 +54,7 @@ $$
 - $\sigma^2$ = common variance across all groups
 
 
-## Summary One-Way ANOVA Model
+### Summary One-Way ANOVA Model
 
 Every general linear model involves estimating parameters for a polynomial in order to predict a quantitative response variable with special requirements of normality, homogeneity of variances, and independence of residuals.
 

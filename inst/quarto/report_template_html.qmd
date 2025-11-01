@@ -34,6 +34,13 @@ params:
     script_used: "R_outside"
 ---
 
+```{r}
+#| echo: false
+library(knitr)
+library(kableExtra)
+source("fns.R")
+```
+
 
 ```{r}
 #| echo: false
@@ -128,44 +135,35 @@ document.addEventListener("DOMContentLoaded", function() {
 ')
 ```
 
-```{r file00, eval=TRUE, include=TRUE, echo =TRUE, child='file00_00_Header.qmd'}
+
+```{r file00_00_Header, child='file00_00_Header.qmd'}
 ```
 
 
 ::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
 # Rscience Code
-```{r cod01, eval=TRUE, include=TRUE, echo =TRUE, child='file00_01_RQuarto.qmd'}
+```{r cod01, child='file00_01_RQuarto.qmd'}
 ```
 
 # Init
-```{r cod02, eval=TRUE, include=TRUE, echo =TRUE, child='file00_02_Init.qmd'}
+```{r cod02, child='file00_02_Init.qmd'}
 ```
 
 # AutoReport
-```{r cod3, eval=TRUE, include=TRUE, echo =TRUE, child='file00_03_AutoReport.qmd'}
+```{r cod03, child='file00_03_AutoReport.qmd'}
 ```
 
 # ClassRoom (ANOVA)
-```{r cod04, eval=TRUE, include=TRUE, echo =TRUE, child='file00_04_ClassRoom.qmd'}
+```{r cod04, child='file00_04_ClassRoom.qmd'}
 ```
-
 
 
 # R Script
-```{r cod06, eval=TRUE, include=TRUE, echo =TRUE, child='file00_06_Script.qmd'}
+```{r cod05, child='file00_05_Script.qmd'}
 ```
 
 # Others
-::: {.panel-tabset .nav-pills .nav-fill .flex-column}
-## Stock
-```{r cod07, eval=TRUE, include=TRUE, echo =TRUE, child='file00_07_Stock.qmd'}
+```{r cod06, child='file00_06_Others.qmd'}
 ```
 
-## Software
-```{r cod08, child='file00_09_Aver.qmd'}
-```
-
-## Cita
-Algo hay que colocar...
-:::
 :::

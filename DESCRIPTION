@@ -1,7 +1,7 @@
 Package: exp002RShiny
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 1.0.10
+Version: 1.0.11
 Authors@R: c(
     person(
       "David", "Elias Panigo",
@@ -26,6 +26,7 @@ Imports:
     dplyr,
     DT,
     EnvStats,
+    fontawesome,
     fs,
     ggplot2,
     kableExtra,

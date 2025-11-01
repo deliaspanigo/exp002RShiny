@@ -1,6 +1,6 @@
 
 
-## Decision-Making Process in ANOVA
+### Decision-Making Process in ANOVA
 The ANOVA test is specifically performed to make decisions.  
 The decision-making process has a set of sequential steps, in a particular order.  
 - Step 01: Control over the response variable.  
@@ -125,7 +125,7 @@ The decision-making process has a set of sequential steps, in a particular order
 </div>
 
 
-## Possible Analysis Cases
+### Possible Analysis Cases
 Decision-making in One-Way ANOVA involves 5 steps.  
 Each step has 2 possibilities: Yes or No.  
 This implies that for a given dataset, the analysis can lead to one of 2^5 = 32 possibilities.  
@@ -135,40 +135,54 @@ Any dataset falls into one of these cases, and this implies at least the possibi
 ```{r}
 #| echo: false
 
-my_df <- data.frame("Caso" = "",
+df_decision_cases <- data.frame("Caso" = "",
                     "Control OK" = c("No", "Yes", "Yes", "Yes", "Yes", "Yes"), 
                     "Normalidad not rejected" = c("No/Yes", c("No", "Yes", "Yes", "Yes", "Yes")),
                     "Homogeneidad not rejected" = c("No/Yes", "No/Yes", "No", "Yes", "Yes", "Yes"), 
                     "Anova rejected" = c("No/Yes", "No/Yes", "No/Yes", "No", "Yes", "Yes"), 
                     "Tukey at least 2 groups" = c("No/Yes", "No/Yes", "No/Yes", "No/Yes", "No", "Yes")
 )
-my_df$"Caso" <- paste0("Case ", 1:nrow(my_df))
-my_df$"Decision" <- paste0("LALA", 1:nrow(my_df))
-my_df$"Decision"[1] <- "If it is certain that the minimum and/or maximum value do not correspond to possible values of the variable, the possibility of statistical analysis is immediately ruled out until (if possible) a verification of the dataset data is generated. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid."
-my_df$"Decision"[2] <- "When the normality requirement of the residuals is not met, the use of the One-Way ANOVA test on the dataset is immediately ruled out. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid. Some other statistical tool should be applied, such as a Mixed General Linear Model, a Generalized Linear Model, a Generalized Mixed Linear Model, or a Kruskal-Wallis test."
-my_df$"Decision"[3] <- "When the homogeneity requirement of the residuals is not met, the use of the One-Way ANOVA test on this dataset is immediately ruled out. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid. Some other statistical tool should be applied, such as a Mixed General Linear Model, a Generalized Linear Model, a Generalized Mixed Linear Model, or a Kruskal-Wallis test." 
-my_df$"Decision"[4] <- "All requirements are met. It is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. All means are statistically equal. The interpretation of the Tukey test is ruled out. The interpretation of the Tukey test and its statistical groups is subject to the rejection of the ANOVA hypothesis. Regardless of the groups detailed by Tukey or any other multiple comparison test, all means are statistically equal in this case. If the operator needs to make a recommendation, they should recommend any factor level equally. The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance."
-my_df$"Decision"[5] <- "All ANOVA requirements are met. It is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret the Tukey test. In this case, the Tukey test does not distinguish statistical groups even though ANOVA rejected the null hypothesis. ANOVA is a more powerful test than Tukey, therefore it is affirmed that there are differences at least between the factor level with the largest mean and the factor level with the smallest one; and nothing can be said about the rest of the levels. It is a rare case, but it happens. Consider changing the multiple comparison test to another one, if appropriate, with the hope of being able to detect differences between factor levels with a different comparison test than Tukey." 
+df_decision_cases$"Caso" <- paste0("Case ", 1:nrow(df_decision_cases))
+df_decision_cases$"Decision" <- paste0("LALA", 1:nrow(df_decision_cases))
+df_decision_cases$"Decision"[1] <- "If it is certain that the minimum and/or maximum value do not correspond to possible values of the variable, the possibility of statistical analysis is immediately ruled out until (if possible) a verification of the dataset data is generated. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid."
+df_decision_cases$"Decision"[2] <- "When the normality requirement of the residuals is not met, the use of the One-Way ANOVA test on the dataset is immediately ruled out. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid. Some other statistical tool should be applied, such as a Mixed General Linear Model, a Generalized Linear Model, a Generalized Mixed Linear Model, or a Kruskal-Wallis test."
+df_decision_cases$"Decision"[3] <- "When the homogeneity requirement of the residuals is not met, the use of the One-Way ANOVA test on this dataset is immediately ruled out. In this context, continuing to interpret statistical values is a serious error since the p-value obtained in ANOVA is not valid. Some other statistical tool should be applied, such as a Mixed General Linear Model, a Generalized Linear Model, a Generalized Mixed Linear Model, or a Kruskal-Wallis test." 
+df_decision_cases$"Decision"[4] <- "All requirements are met. It is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. All means are statistically equal. The interpretation of the Tukey test is ruled out. The interpretation of the Tukey test and its statistical groups is subject to the rejection of the ANOVA hypothesis. Regardless of the groups detailed by Tukey or any other multiple comparison test, all means are statistically equal in this case. If the operator needs to make a recommendation, they should recommend any factor level equally. The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance."
+df_decision_cases$"Decision"[5] <- "All ANOVA requirements are met. It is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret the Tukey test. In this case, the Tukey test does not distinguish statistical groups even though ANOVA rejected the null hypothesis. ANOVA is a more powerful test than Tukey, therefore it is affirmed that there are differences at least between the factor level with the largest mean and the factor level with the smallest one; and nothing can be said about the rest of the levels. It is a rare case, but it happens. Consider changing the multiple comparison test to another one, if appropriate, with the hope of being able to detect differences between factor levels with a different comparison test than Tukey." 
 
-my_df$"Decision"[6] <- "All ANOVA requirements are met. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret the Tukey test. In this case, the Tukey test distinguishes at least 2 statistical groups. The operator must observe the Tukey table and interpret the groups according to the letters assigned by the Tukey test, taking into account that Tukey can assign multiple letters to each factor level. The operator must make recommendations of factor levels taking into account the statistical framework and the original work framework. It is common to recommend the highest means or the lowest means according to the context of the data.
+df_decision_cases$"Decision"[6] <- "All ANOVA requirements are met. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret the Tukey test. In this case, the Tukey test distinguishes at least 2 statistical groups. The operator must observe the Tukey table and interpret the groups according to the letters assigned by the Tukey test, taking into account that Tukey can assign multiple letters to each factor level. The operator must make recommendations of factor levels taking into account the statistical framework and the original work framework. It is common to recommend the highest means or the lowest means according to the context of the data.
 In the context of Tukey, factor levels that share at least 1 letter are statistically equal. It takes some time to get used to correctly interpreting the Tukey table. There are also other contexts where the lowest or highest means are not necessarily sought, such as specifically looking for which factor levels are statistically equal to a particular level. The Tukey test can also be applied in this context." 
 
 # library(knitr)
 # library(kableExtra)
 
-# Mostrar con kable controlando anchos
-knitr::kable(my_df, format = "html", caption = "Resumen de Casos Posibles en ANOVA") %>%
-  kableExtra::kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"), 
-    full_width = FALSE,
-    font_size = 12
-  ) %>%
-  column_spec(1, width = "8%") %>%    # Caso
-  column_spec(2, width = "8%") %>%    # Control OK
-  column_spec(3, width = "10%") %>%   # Normalidad
-  column_spec(4, width = "12%") %>%   # Homogeneidad
-  column_spec(5, width = "10%") %>%   # ANOVA
-  column_spec(6, width = "12%") %>%   # Tukey
-  column_spec(7, width = "40%")       # Decisión (más ancha)
+# the_table <- fn_show_table_dynamic(object_name = "df_decision_cases", caption_text = "") %>%
+#   column_spec(1, width = "8%") %>%    # Caso
+#   column_spec(2, width = "8%") %>%    # Control OK
+#   column_spec(3, width = "10%") %>%   # Normalidad
+#   column_spec(4, width = "12%") %>%   # Homogeneidad
+#   column_spec(5, width = "10%") %>%   # ANOVA
+#   column_spec(6, width = "12%") %>%   # Tukey
+#   column_spec(7, width = "40%")       # Decisión (más ancha)
+# the_table
+
+# # 
+# # # Mostrar con kable controlando anchos
+# knitr::kable(df_decision_cases, format = "html", caption = "Resumen de Casos Posibles en ANOVA") %>%
+#   kableExtra::kable_styling(
+#     bootstrap_options = c("striped", "hover", "condensed"),
+#     full_width = FALSE,
+#     font_size = 12
+#   ) %>%
+#   column_spec(1, width = "8%") %>%    # Caso
+#   column_spec(2, width = "8%") %>%    # Control OK
+#   column_spec(3, width = "10%") %>%   # Normalidad
+#   column_spec(4, width = "12%") %>%   # Homogeneidad
+#   column_spec(5, width = "10%") %>%   # ANOVA
+#   column_spec(6, width = "12%") %>%   # Tukey
+#   column_spec(7, width = "40%")       # Decisión (más ancha)
+
+fn_show_special_table01_dynamic(object_name = "df_decision_cases", caption_text = "")
+
 ```
 

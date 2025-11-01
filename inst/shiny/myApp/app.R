@@ -21,7 +21,7 @@ library("webshot2")
 MY_PACKAGE_NAME <- "exp002RShiny"
 
 ui <- page_sidebar(
-  useShinyjs(),
+  shinyjs::useShinyjs(),
   # CSS con !important para forzar los colores (Mismo CSS robusto anterior)
   tags$head(
     tags$style(HTML("
@@ -50,7 +50,7 @@ ui <- page_sidebar(
   ),
 
   sidebar = sidebar(
-    "v1.0.9",
+    "v1.0.11",
     "Version con pestañas.",
     selectInput(
       'in_species',
@@ -118,7 +118,9 @@ ui <- page_sidebar(
           actionButton("generar02", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
           br(), br(),
           # 2. Botón Descargar (Inicio: Naranja)
-          downloadButton("descargar02", "2. Descargar Archivo HTML", class = "btn-warning")
+          downloadButton("descargar02", "2. Descargar Archivo HTML", class = "btn-warning"),
+          br(), br(),
+          actionButton("open02", "3. Abrir", class = "btn-warning"),
           # Los br() ya no son necesarios dentro de una columna separada
         ),
 
@@ -132,7 +134,12 @@ ui <- page_sidebar(
         )
       )
       ),
-      div(uiOutput("html_viewer"))
+      # div(uiOutput("html_viewer"))
+      div(
+        style = "height: 100vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+
+        htmlOutput("html_viewer")
+      )
     ),
 
     # Define las pestañas con nav_panel()
@@ -344,7 +351,18 @@ server <- function(input, output, session) {
       quarto::quarto_render(input = str_file_name_input_qmd(),
                             output_format = "typst",
                             output_file = str_output_file_name_pdf(),
-                            execute_params = list(species = input$in_species),
+                            execute_params = list(file_name = "mtcars",
+                                                  file_source = "r_source",
+                                                  var_name_rv = "mpg",
+                                                  var_name_factor = "cyl",
+                                                  alpha_value = "0.05",
+                                                  vector_ordered_levels = c("6", "4", "8"),
+                                                  vector_ordered_colors = c("#000000", "#00FF00", "#0000FF"),
+                                                  current_time = "R_outside",
+                                                  script_used = "R_outside",
+                                                  the_package = "R_outside",
+                                                  tool_used = "R_outside"),
+                            #execute_params = my_bag,
                             quiet = FALSE)
 
       setwd(dir_original)
@@ -580,182 +598,6 @@ output$btn_export_excel <- downloadHandler(
   the_time_here_format02        <- reactiveVal(NULL)
   # --- Lógica del Botón "Generar" (Naranja -> Verde) ---
 
-  observeEvent(input$generar, {
-
-    # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
-
-    progress <- Progress$new(session, min = 0, max = 1)
-
-    # Modal inicial con la barra de progreso integrada
-    showModal(modalDialog(
-      id = "processing_modal",
-      title = tags$div(
-        tags$i(class = "fa fa-cog fa-spin fa-1x"), # Spinner en el título
-        " Rscience Proccesing Data..."
-      ),
-      tagList(
-        tags$div(id = "modal_content",
-
-                 # Inicialmente un spinner grande.
-
-                 tags$p(tags$b("Proccesing state:"), tags$span(id = "ID_progress_message", "Initializing...")),
-                 tags$p(tags$i(tags$span(id = "ID_progress_detail", ""))),
-
-                 # Barra de progreso: style="height: 30px;" para hacerla más gruesa
-                 tags$div(class = "progress", style = "height: 30px;",
-                          tags$div(id = "ID_progress_bar",
-                                   class = "progress-bar progress-bar-striped active",
-                                   role = "progressbar",
-                                   style = "width: 0%;")),
-                 br(),
-                 # Contenedor del check/spinner que vamos a manipular
-                 tags$div(id = "ID_my_check",
-                          style = "text-align: center; height: 200px;",
-                          tags$i(class = "fa fa-spinner fa-spin fa-6x")) # Spinner inicial
-        )
-      ),
-      easyClose = FALSE,
-      footer = NULL
-    ))
-
-    # 2. FUNCIÓN DE ACTUALIZACIÓN PERSONALIZADA (JS + R)
-    update_modal_progress <- function(value, message, detail = "") {
-      progress$set(value = value, message = message, detail = detail)
-
-      # Lógica JavaScript para actualizar la UI del modal
-      percentage <- round(value * 100)
-
-      shinyjs::runjs(
-        paste0(
-          'document.getElementById("ID_progress_message").innerHTML = "<b>', message, '</b>";',
-          'document.getElementById("ID_progress_detail").innerHTML = "', detail, '";',
-          'document.getElementById("ID_progress_bar").style.width = "', percentage, '%";'
-        )
-      )
-    }
-
-    # Definición de la función de creación de carpeta (se mantiene)
-    create_new_temporal_output_folder_path <- function(){
-      my_temp_folder <- tempdir()
-      the_sys_time <- Sys.time()
-      timestamp_format <- format(the_sys_time, "%Y%m%d_%H%M%S")
-      the_time_here_format(timestamp_format)
-
-      new_sub_folder <- paste0("temp_", timestamp_format)
-      nueva_carpeta <- file.path(my_temp_folder, new_sub_folder)
-      return(nueva_carpeta)
-    }
-
-    # 3. MANEJO DEL FLUJO CON tryCatch (Avanzando paso a paso)
-    tryCatch({
-
-      # === PASOS INTERMEDIOS (Se mantienen iguales) ===
-      update_modal_progress(value = 0.05, message= "Inicializando", detail = "Preparando variables y entorno...")
-
-      # 1. Crear carpeta temporal (10%)
-      update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
-      my_output_folder01 <- create_new_temporal_output_folder_path()
-      str_output_folder01(my_output_folder01)
-      dir.create(my_output_folder01, recursive = TRUE)
-
-      # 2. Copiar archivos (25%)
-      update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
-      fs::dir_copy(
-        path = str_input_folder_quarto(),
-        new_path = str_output_folder01(),
-        overwrite = T
-      )
-
-      # 3. Definir rutas (40%)
-      update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
-      file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd())
-      str_pdf_file_name <- paste0(file_name_no_ext,"_", the_time_here_format(), ".pdf")
-      str_output_file_name_pdf(str_pdf_file_name)
-      my_str_pdf <- file.path(str_output_folder01(), str_output_file_name_pdf())
-      str_output_file_path_pdf(my_str_pdf)
-
-      # 4. Configurar entorno de renderizado (50%)
-      update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
-      dir_original <- getwd()
-      my_temporal_folder <- str_output_folder01()
-      setwd(my_temporal_folder)
-
-      # 5. Llamada BLOQUEANTE (50% -> 90%)
-      update_modal_progress(0.55, "Renderizando Quarto", detail = "Ejecutando el renderizado (puede tardar)...")
-
-      quarto::quarto_render(input = str_file_name_input_qmd(),
-                            output_format = "typst",
-                            output_file = str_output_file_name_pdf(),
-                            execute_params = list(species = input$in_species),
-                            quiet = FALSE)
-
-      setwd(dir_original)
-
-      # 6. Progreso tras el bloqueo (90%)
-      update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
-
-
-      # === PASO C: Finalización Exitosa (90% - 100%) ===
-
-      # C1. Terminar barra de progreso al 100%
-      update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
-
-      # C2. Actualizar estado y color del botón
-      removeClass("generar", "btn-warning")
-      addClass("generar", "btn-success")
-
-      output$mensaje_estado <- renderText({
-        "¡Carpeta y archivo creados exitosamente! El Botón 1 está en verde. Listo para la descarga."
-      })
-      message(crayon::green("Process completed!"))
-
-      # ----------------------------------------------------
-      # 🟢 C3. CAMBIAR EL MODAL A CHECK DE ÉXITO (CORRECCIÓN FINAL) 🟢
-      # ----------------------------------------------------
-
-      shinyjs::runjs(
-        'document.getElementById("ID_my_check").innerHTML =
-      "<i class=\\"fa fa-check-circle fa-6x\\" style=\\"color: #4CAF50;\\"></i>";
-
-   document.getElementById("ID_progress_message").innerHTML =
-      "<b>Reporte Generado Exitosamente</b>";
-   document.getElementById("ID_progress_detail").innerHTML =
-      "Cerrando la ventana en 3 segundos...";
-
-   document.getElementById("ID_progress_bar").classList.remove("active");
-
-   document.getElementById("ID_progress_bar").style.width = "100%";
-  '
-      )
-
-      # C4. Esperar 3 segundos para confirmación visual
-      Sys.sleep(3)
-
-    }, error = function(e) {
-      # 🛑 MANEJO DE ERRORES:
-      warning("Error al renderizar Quarto: ", e$message)
-
-      # Cierra el modal de proceso
-      removeModal()
-
-      # Muestra un modal de error
-      showModal(modalDialog(
-        title = "⚠️ Error de Renderizado",
-        paste("Ha ocurrido un error. Consulte la consola de R para más detalles. Mensaje:", e$message),
-        easyClose = TRUE,
-        footer = modalButton("Cerrar")
-      ))
-
-      return(NULL)
-    }, finally = {
-      # 4. LIMPIEZA: Cerrar el objeto de progreso de R siempre
-      progress$close()
-    })
-
-    # 5. 🟢 DESBLOQUEAR LA PANTALLA
-    removeModal()
-    message("")
-  })
 
   observeEvent(input$generar02, {
 
@@ -951,6 +793,44 @@ output$btn_export_excel <- downloadHandler(
     message("")
   })
 
+  observeEvent(input$open02, {
+    # C2. Actualizar estado y color del botón
+    message(crayon::green("OPen completed!"))
+    message("")
+
+    # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
+    removeClass("open02", "btn-warning")
+    addClass("open02", "btn-success")
+
+    # --- CAMBIO CLAVE AQUÍ ---
+    # 2. Obtener la URL del archivo
+    # Usamos isolate() para asegurarnos de que el observeEvent solo reaccione a input$open02
+    # y no a cambios en str_output_file_path_html (si es un reactive)
+
+    html_path <- isolate(str_output_file_path_html())
+
+    # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
+    if (!file.exists(html_path)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(html_path)
+    html_filename <- basename(html_path)
+
+    # 2. DEFINIR UN NOMBRE ÚNICO PARA EL RECURSO TEMPORAL
+    resource_id <- digest::digest(html_dir, algo = "md5")
+
+    # 3. REGISTRAR EL RECURSO
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 4. Construir la URL con el ID único del recurso
+    html_url <- file.path(resource_id, html_filename)
+
+    # 3. Ejecutar JavaScript para abrir la URL en una nueva pestaña
+    # window.open(URL, '_blank') es el comando estándar de JavaScript para esto.
+    shinyjs::runjs(paste0("window.open('",  html_url, "', '_blank');"))
+    # --------------------------
+  })
   # 01 - PDF
   output$text_output_folder_path02 <- renderText({
     req(str_output_folder02())
@@ -1008,13 +888,12 @@ output$btn_export_excel <- downloadHandler(
   )
 
 
-  output$html_viewer <- renderUI({
-    # 1. Asegúrate de que el path exista (o espera a que el PDF se genere)
+  output$html_viewer <- renderText({
+    # 1. Asegúrate de que el path exista
     req(str_output_file_path_html())
 
     html_path <- str_output_file_path_html()
 
-    # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
     if (!file.exists(html_path)) {
       return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
     }
@@ -1022,22 +901,23 @@ output$btn_export_excel <- downloadHandler(
     html_dir <- dirname(html_path)
     html_filename <- basename(html_path)
 
-    # 2. DEFINIR UN NOMBRE ÚNICO PARA EL RECURSO TEMPORAL
+    # 2. Definir y Registrar Recurso
     resource_id <- digest::digest(html_dir, algo = "md5")
-
-    # 3. REGISTRAR EL RECURSO
     shiny::addResourcePath(resource_id, html_dir)
 
-    # 4. Construir la URL con el ID único del recurso
-    html_url <- file.path(resource_id, html_filename)
+    # 3. Construir la URL con el ID único del recurso
+    html_url <- paste0("/", file.path(resource_id, html_filename))
 
-    # 5. Crear el iframe con dimensiones más pequeñas
-    tags$iframe(
-      # CAMBIOS AQUÍ: Reducción de height y width
-      style = 'height: 400px; width: 100%; border: none;',
-      src = html_url,
-      type = "text/html"
-    )
+    # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
+    armado_v <- paste('<div style="height: 85%; width: 100%; "><iframe style="height: 85%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # tags$iframe(
+    #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo
+    #   style = 'height: 10px; width: 100%; border: none; overflow: hidden;', # <-- Altura inicial
+    #   src = html_url,
+    #   type = "text/html",
+    #   scrolling = "no" # <-- CLAVE: Deshabilita el scroll interno
+    # )
   })
 
 

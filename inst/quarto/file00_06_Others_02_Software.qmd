@@ -7,7 +7,7 @@ By documenting the exact R version, Rscience version, the operating system confi
 
 To achieve true, byte-for-byte reproducibility, a set of explicit commands leveraging the rix library is provided. These statements enable users to install the exact version of R and Rscience used when generating this report, along with every required dependency package locked to its specific version. This process eliminates environmental variance and ensures the analysis can be faithfully recreated across different systems.
 
-## R - Session Info
+### R - Session Info
 Shows the currently loaded packages and R environment configuration for this specific analysis. This includes R version, locale settings, and attached packages that are actively being used in this report.
 
 ```{r}
@@ -17,7 +17,7 @@ sessionInfo()
 
 
 
-## R Version
+### R Version
 ```{r include=TRUE, eval=FALSE, echo = TRUE}
 R.version
 ```
@@ -32,7 +32,7 @@ kable(df_libraries, align = "ll", format = "html")
 
 
 
-## R - Installed Libraries
+### R - Installed Libraries
 Lists all packages installed in the R environment, providing a complete inventory of available tools. This comprehensive list helps recreate the computational environment for reproducibility purposes.
 
 ```{r, eval=FALSE, echo=TRUE}

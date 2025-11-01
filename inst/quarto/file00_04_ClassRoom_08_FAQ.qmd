@@ -3,7 +3,7 @@
 
 ```
 
-## FAQs
+
 En esta sección se dan un conjunto de preguntas tanto desde el punto de vista estadístico, informático o del diseño. Las preguntas y respuestas están mezcladas en su temática.
 
 ### 1) ¿Es mejor el test de Anova que el test t?

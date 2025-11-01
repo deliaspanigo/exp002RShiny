@@ -41,51 +41,12 @@ library(kableExtra)
 source("fns.R")
 ```
 
-\newpage
-```{r eval=TRUE, include=TRUE, echo =TRUE}
-library("webshot2")
+```{r}
+#| echo: false
+my_dataset <- mtcars
+fn_show_table_dynamic(object_name = "my_dataset", caption_text = "")
 
+# kable(my_dataset, format = "pipe", caption = "")
+# fn_show_table_pdf_typst(object_name = "my_dataset", caption_text = "")
 ```
-
-
-```{r file00_00_Header, child='file00_00_Header.qmd'}
-```
-
-
-::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
-```{r cod01, echo = FALSE, child='file00_01_RQuarto.qmd'}
-```
-\newpage
-
-# Init
-```{r cod02, child='file00_02_Init.qmd'}
-```
-\newpage
-
-# AutoReport
-```{r cod03, child='file00_03_AutoReport.qmd'}
-```
-\newpage
-
-# ClassRoom (ANOVA)
-```{r cod04, child='file00_04_ClassRoom.qmd'}
-```
-\newpage
-
-# R Script
-```{r cod05, child='file00_05_Script.qmd'}
-```
-\newpage
-
-# Others
-```{r cod06, child='file00_06_Others.qmd'}
-```
-
-# Rscience Code
-```{r cod99, echo = FALSE, child='file00_01_RQuarto.qmd'}
-```
-\newpage
-
-:::
-
 

@@ -72,7 +72,7 @@ if (the_package %in% installed.packages()[, "Package"]) {
 ::: columns
 
 ::: column
-# Summary software
+## Summary software
 * **Operating System:** `r os_info`  
 * **Platform info:** `r platform_info`  
 * **R Info:** `r R_version`  
@@ -84,7 +84,7 @@ if (the_package %in% installed.packages()[, "Package"]) {
 :::
   
 ::: column
-# User Inputs
+## User Inputs
 * **Rscience Tool:** `r tool_used`  
 * **Rscience Tool Script:** `r script_used`
 * **Dataset file name:** `r file_name` 

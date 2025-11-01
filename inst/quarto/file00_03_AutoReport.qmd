@@ -2,7 +2,7 @@
 
 ::: {.column width="35%"}
 
-# Report (Automated Statistical Assistant)
+## Report (Automated Statistical Assistant)
 
 * **Dataset file name:** jaja  
 * **Response Variable:** `r var_name_rv`  
@@ -37,35 +37,27 @@ my_text <-c(phrase_shapiro_selected, phrase_bartlett_selected,
 :::
 
 ::: {.column width="61%"}
-# 1) Summary Anova
+### 1) Summary Anova
 ```{r}
 #| warning: false
 #| echo: false
 
-
-
-my_df <- df_summary_anova
-library(knitr)
-library(kableExtra)
-# Mostrar con kable para mejor estética
-kable(my_df, format = "html", caption = "") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+fn_show_table_dynamic(object_name = "df_summary_anova", caption_text = "")
 
 ```
 
-# 2) Plot means and standard error from model
+### 2) Plot means and standard error from model
 ```{r}
 #| warning: false
 #| echo: false
 plot007_factor
 ```
 
-# 3) Tukey table
-```{r, eval=TRUE, include=TRUE, echo=FALSE}
-vector_obj <- "df_tukey_table"
-my_df <- mget(vector_obj)
-kable(my_df, format = "html", caption = "") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+### 3) Tukey table
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_tukey_table", caption_text = "")
+  
 ```
 
 :::
