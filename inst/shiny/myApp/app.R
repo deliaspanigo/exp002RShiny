@@ -22,6 +22,11 @@ MY_PACKAGE_NAME <- "exp002RShiny"
 
 ui <- page_sidebar(
   shinyjs::useShinyjs(),
+  # Carga los recursos CSS y JS de Font Awesome de la librería local de Shiny
+  tags$head(
+    # Esto carga la versión de Font Awesome incluida en el paquete shiny
+    tags$link(rel = "stylesheet", href = "shared/font-awesome/css/all.min.css")
+  ),
   # CSS con !important para forzar los colores (Mismo CSS robusto anterior)
   tags$head(
     tags$style(HTML("
@@ -52,114 +57,389 @@ ui <- page_sidebar(
   sidebar = sidebar(
     "v1.0.11",
     "Version con pestañas.",
-    selectInput(
-      'in_species',
-      'Penguin species',
-      choices = palmerpenguins::penguins$species |> unique()
+    uiOutput("the_toggle"),
+    conditionalPanel(
+      condition = "input.toggle == false",
+      #ns = ns,
+      uiOutput("input_side_panel")
     ),
-    # downloadButton(
-    #   'btn_export_pdf',
-    #   'Export Report',
-    #   icon = shiny::icon('file-pdf')
-    # ),
-    downloadButton(
-      'btn_export_excel',
-      'Export Report',
-      icon = shiny::icon('file-excel')
+    conditionalPanel(
+      condition = "input.toggle == true",
+      #ns = ns,
+      uiOutput("output_side_panel")
     )
+
+
   ),
-  titlePanel("Gestor de Archivos con Estado Persistente (Ambos Verdes)"),
-
-
-  navset_card_tab(
-    # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-    title = 'Look at them penguins!',
-
-
-    nav_panel(
-      title = "PDF",
-
-      # Usamos layout_columns para dividir el espacio
-      layout_columns(
-        col_widths = c(4, 4, 4), # Columna Izquierda (4 unidades), Columna Derecha (8 unidades)
-
-        # === Columna Izquierda: Botones (4/12 del ancho) ===
-        div(
-          # 1. Botón Generar (Inicio: Naranja)
-          actionButton("generar", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
-          br(), br(),
-          # 2. Botón Descargar (Inicio: Naranja)
-          downloadButton("descargar", "2. Descargar Archivo PDF", class = "btn-warning")
-          # Los br() ya no son necesarios dentro de una columna separada
-        ),
-
-        # === Columna Derecha: Output y Lista (8/12 del ancho) ===
-        div(
-          h2("Output folder path:"),
-          uiOutput("text_output_folder_path01"),
-          h2("List Files:"), # Tienes este h2 repetido, asegúrate de que sea intencional
-          verbatimTextOutput("text_list_files01"),
-          br()
-        ),
-      div(uiOutput("pdf_viewer"))
-      )
-    ),
-    nav_panel(
-      title = "HTML",
-
-      # Usamos layout_columns para dividir el espacio
-      fluidRow(
-      layout_columns(
-        col_widths = c(4, 4), # Columna Izquierda (4 unidades), Columna Derecha (8 unidades)
-
-        # === Columna Izquierda: Botones (4/12 del ancho) ===
-        div(
-          # 1. Botón Generar (Inicio: Naranja)
-          actionButton("generar02", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
-          br(), br(),
-          # 2. Botón Descargar (Inicio: Naranja)
-          downloadButton("descargar02", "2. Descargar Archivo HTML", class = "btn-warning"),
-          br(), br(),
-          actionButton("open02", "3. Abrir", class = "btn-warning"),
-          # Los br() ya no son necesarios dentro de una columna separada
-        ),
-
-        # === Columna Derecha: Output y Lista (8/12 del ancho) ===
-        div(
-          h2("Output folder path:"),
-          uiOutput("text_output_folder_path02"),
-          h2("List Files:"), # Tienes este h2 repetido, asegúrate de que sea intencional
-          verbatimTextOutput("text_list_files02"),
-          br()
-        )
-      )
-      ),
-      # div(uiOutput("html_viewer"))
-      div(
-        style = "height: 100vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
-
-        htmlOutput("html_viewer")
-      )
-    ),
-
-    # Define las pestañas con nav_panel()
-    nav_panel(
-      title = "Gráfico Principal",
-      h1('Penguins are cool!'),
-      value_box(
-        'Number of penguins',
-        value = textOutput('out_n_penguins'),
-        showcase = shiny::icon('hashtag'),
-        min_height = 100,
-        max_height = 150
-      ),
-      textOutput("mensaje_estado"),
-      plotOutput('out_plt_penguins')
-    )
+  conditionalPanel(
+    condition = "input.toggle == false",
+    #ns = ns,
+    uiOutput("main_input_general")
+  ),
+  conditionalPanel(
+    condition = "input.toggle == true",
+    #ns = ns,
+    uiOutput("main_output_general")
   )
 )
 
 server <- function(input, output, session) {
+
+  output$"main_input_general" <- renderUI({
+
+    div(
+      titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
+      navset_card_tab(
+        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+        title = 'Look at them penguins!',
+
+
+        nav_panel(
+          title = "user_selection",
+
+          # Usamos layout_columns para dividir el espacio
+          "Mostramos la seleccion..."
+        ),
+        nav_panel(
+          title = "dataset",
+
+          "Mostramos el dataset..."
+          # div(uiOutput("html_viewer"))
+
+        ),
+
+        # Define las pestañas con nav_panel()
+        nav_panel(
+          title = "Gráfico Principal",
+          h1('Penguins are cool!'),
+          value_box(
+            'Number of penguins',
+            value = textOutput('out_n_penguins'),
+            showcase = shiny::icon('hashtag'),
+            min_height = 100,
+            max_height = 150
+          ),
+          textOutput("mensaje_estado"),
+          plotOutput('out_plt_penguins')
+        )
+      )
+    )
+  })
+
+  # output$"main_output_general" <- renderUI({
+  #   div(uiOutput("main_output_01_html_report"),
+  #       uiOutput("main_output_02_html_report"))
+  #
+  # })
+
+  output$"main_output_01_html_report" <- renderUI({
+    div(
+      titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
+      fluidRow(
+        # Usar una columna para contener todos los botones
+        # 'width = 12' ocupa todo el ancho de la fila
+        column(width = 12,
+               # Los botones ahora se alinearán horizontalmente por defecto,
+               # especialmente si separamos las llamadas a 'br()'
+               actionButton(inputId = "generar02",
+                            label = NULL,
+                            icon = icon("play", class = "fa-2x"),
+                            class = "btn-warning"),
+
+               downloadButton(outputId = "descargar02",
+                              label = NULL,
+                              icon = icon("download", class = "fa-2x"),
+                              class = "btn-warning"),
+
+               actionButton(inputId = "open02",
+                            label = NULL,
+                            icon = icon("binoculars", class = "fa-2x"),
+                            class = "btn-warning")
+               # **Importante:** Quitamos todos los 'br()' que causaban los saltos de línea.
+        )
+      ),
+      div(
+        style = "height: 100vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+
+        # htmlOutput("html_viewer2"),
+        htmlOutput("html_viewer")
+      )
+
+
+            )
+
+
+  })
+
+  output$"main_output_02_html_report" <- renderUI({
+    div(
+      titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
+      navset_card_tab(
+        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+        title = 'Look at them penguins!',
+
+        nav_panel(
+          title = "folder_files",
+          "Despues aca el path y los files."
+        ),
+        nav_panel(
+          title = "PDF",
+
+          # Usamos layout_columns para dividir el espacio
+          layout_columns(
+            col_widths = c(4, 4, 4), # Columna Izquierda (4 unidades), Columna Derecha (8 unidades)
+
+            # === Columna Izquierda: Botones (4/12 del ancho) ===
+            div(
+              # 1. Botón Generar (Inicio: Naranja)
+              actionButton("generar", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
+              br(), br(),
+              # 2. Botón Descargar (Inicio: Naranja)
+              downloadButton("descargar", "2. Descargar Archivo PDF", class = "btn-warning")
+              # Los br() ya no son necesarios dentro de una columna separada
+            ),
+
+            # === Columna Derecha: Output y Lista (8/12 del ancho) ===
+            div(
+              h2("Output folder path:"),
+              uiOutput("text_output_folder_path01"),
+              h2("List Files:"), # Tienes este h2 repetido, asegúrate de que sea intencional
+              verbatimTextOutput("text_list_files01"),
+              br()
+            ),
+            div(uiOutput("pdf_viewer"))
+          )
+        ),
+
+
+        # Define las pestañas con nav_panel()
+        nav_panel(
+          title = "Gráfico Principal",
+          h1('Penguins are cool!'),
+          value_box(
+            'Number of penguins',
+            value = textOutput('out_n_penguins'),
+            showcase = shiny::icon('hashtag'),
+            min_height = 100,
+            max_height = 150
+          ),
+          textOutput("mensaje_estado"),
+          plotOutput('out_plt_penguins')
+        )
+      )
+    )
+  })
+
+  output$the_toggle <- renderUI({
+    # Toggle estilo R/Python
+    # Agregar CSS personalizado para los colores del toggle
+    div(
+      tags$head(
+        tags$style(HTML("
+      /* Estilo para el toggle */
+      .form-check-input {
+        background-color: #4c78dd !important; /* Color azul para R (por defecto) */
+        border-color: #4c78dd !important;
+        width: 3.5em !important; /* Aumentar el ancho del toggle */
+        height: 1.8em !important; /* Aumentar la altura proporcionalmente */
+      }
+
+      /* Estilo cuando está activado (Python) */
+      .form-check-input:checked {
+        background-color: #4CAF50 !important; /* Color verde para Python */
+        border-color: #4CAF50 !important;
+      }
+
+      /* Asegurar que la transición sea suave */
+      .form-check-input {
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      /* Ajustar el círculo indicador dentro del toggle */
+      .form-switch .form-check-input:after {
+        height: calc(1.8em - 4px) !important;
+        width: calc(1.8em - 4px) !important;
+      }
+
+      /* Ajustar el espacio del contenedor */
+      .form-switch {
+        padding-left: 0 !important;
+      }
+    "))
+      ),
+      div(
+        class = "d-flex align-items-center justify-content-between gap-2 mb-3",
+        span("   ", class = "fw-bold"),
+        tags$div(
+          class = "form-check form-switch",
+          tags$input(
+            id = "toggle",
+            type = "checkbox",
+            class = "form-check-input",
+            role = "switch"
+          )
+        ),
+        # span("Python", class = "fw-bold"),
+        uiOutput("toggle_state", inline = TRUE)
+      )
+    )
+  })
+
+  # Muestra "input" o "output" según el estado del toggle
+  output$toggle_state <- renderUI({
+    the_selection <- ifelse(test = input$toggle, yes = "output", no = "input")
+    span(the_selection, class = "fw-bold")
+  })
+
+  #############################################
+  output$"input_side_panel" <- renderUI({
+
+  div(
+    actionButton(
+      inputId = "btn_dataset",
+      label = tagList(
+        # Ahora este icono se renderiza usando los archivos CSS locales
+        #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        #span("Dataset")
+      ),
+      class = "btn-primary",
+      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+      title = ""
+    ),
+    actionButton(
+      inputId = "btn_var_selector",
+      label = tagList(
+        # Ahora este icono se renderiza usando los archivos CSS locales
+        icon("filter", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        #span("Dataset")
+      ),
+      class = "btn-primary",
+      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+      title = ""
+    ),
+    actionButton(
+      inputId = "btn_config",
+      label = tagList(
+        # Ahora este icono se renderiza usando los archivos CSS locales
+        icon("sliders", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        #span("Dataset")
+      ),
+      class = "btn-primary",
+      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+      title = ""
+    ),
+    actionButton(
+      inputId = "btn_play",
+      label = tagList(
+        # Ahora este icono se renderiza usando los archivos CSS locales
+        icon("play", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        #span("Dataset")
+      ),
+      class = "btn-primary",
+      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+      title = ""
+    ),
+    actionButton(
+      inputId = "btn_refresh",
+      label = tagList(
+        # Ahora este icono se renderiza usando los archivos CSS locales
+        icon("arrows-rotate", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+        #span("Dataset")
+      ),
+      class = "btn-primary",
+      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+      title = ""
+      )
+    )
+    })
+  ##############################################
+  output$"output_side_panel" <- renderUI({
+
+    div(
+      actionButton(
+        inputId = "btn_ClassRoom",
+        label = tagList(
+          # Ahora este icono se renderiza usando los archivos CSS locales
+          #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+          icon("chalkboard-user", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+          #span("Dataset")
+        ),
+        class = "btn-primary",
+        #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+        title = ""
+      ),
+      actionButton(
+        inputId = "btn_general_download",
+        label = tagList(
+          # Ahora este icono se renderiza usando los archivos CSS locales
+          icon("download", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+          #span("Dataset")
+        ),
+        class = "btn-primary",
+        #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+        title = ""
+      )
+    )
+  })
+
+  # Lo inicializamos en NULL o con el ID del botón que quieres activo por defecto.
+  # Usaremos "btn_ClassRoom" como valor inicial.
+  last_btn_clicked <- reactiveVal("btn_ClassRoom")
+
+  # ------------------------------------------------------------------
+  # 2. Observar los Clicks de los Botones
+  # ------------------------------------------------------------------
+
+  # Observar el botón ClassRoom
+  observeEvent(input$btn_ClassRoom, {
+    # req(input$btn_ClassRoom) no es estrictamente necesario, pero es bueno
+    # Usamos isolate() para acceder al valor sin crear una dependencia
+    # Solo actualiza si el valor es diferente (opcional, pero eficiente)
+    if (isolate(last_btn_clicked()) != "btn_ClassRoom") {
+      last_btn_clicked("btn_ClassRoom")
+      message("Botón activo: btn_ClassRoom")
+    }
+  })
+
+  # Observar el botón de Descarga
+  observeEvent(input$btn_general_download, {
+    # req(input$btn_general_download)
+    if (isolate(last_btn_clicked()) != "btn_general_download") {
+      last_btn_clicked("btn_general_download")
+      message("Botón activo: btn_general_download")
+    }
+  })
+
+  output$"main_output_general" <- renderUI({
+    active_btn <- last_btn_clicked()
+
+    if (active_btn == "btn_ClassRoom") {
+      uiOutput("main_output_01_html_report")
+      # return(h3("Mostrando contenido de ClassRoom (Análisis)"))
+      # Aquí es donde llamarías a tu output$html_viewer2, por ejemplo:
+      # return(uiOutput("html_viewer2"))
+
+    } else if (active_btn == "btn_general_download") {
+      uiOutput("main_output_02_html_report")
+      # return(h3("Mostrando controles de Descarga General"))
+      # Aquí mostrarías los controles de descarga
+
+    } else {
+      return(p("Seleccione una opción."))
+    }
+  })
+  ##############################################
+  output$my_action_button <- renderUI({
+
+    # selected_opt <- switch(button_state,
+    #                        "initial"   = "btn-primary",    # Azul inicial
+    #                        "confirmed" = "btn-success",    # Verde después de confirmar
+    #                        "error"     = "btn-danger")
+    btn_class <-  "btn-primary"#fn_R_switch_class_from_button_state(button_state = button_state())
+
+
+  })
 
   str_input_folder_package <- reactive({
 
@@ -448,31 +728,7 @@ output$btn_export_pdf <- downloadHandler(
   }
 )
 
-output$btn_export_excel <- downloadHandler(
-  filename = function() {
-    glue::glue("{input$in_species}_raw.xlsx")
-  },
-  content = function(file) {
-    wb <- openxlsx::createWorkbook()
-    openxlsx::addWorksheet(wb, "Data")
 
-    header_style <- openxlsx::createStyle(textDecoration = "bold")
-    openxlsx::writeData(
-      wb,
-      "Data",
-      r_df_penguins(),
-      headerStyle = header_style
-    )
-    openxlsx::setColWidths(
-      wb,
-      "Data",
-      cols = 1:ncol(r_df_penguins()),
-      widths = c(rep(20, 6), 10, 5)
-    )
-
-    openxlsx::saveWorkbook(wb, file, overwrite = TRUE)
-  }
-)
 
   output$out_plt_penguins <- renderPlot({
     palmerpenguins::penguins |>
@@ -920,7 +1176,95 @@ output$btn_export_excel <- downloadHandler(
     # )
   })
 
+  output$html_viewer2 <- renderText({
 
+    # 1. Asegúrate de que el path del archivo original exista
+    req(str_output_file_path_html())
+
+    html_path_original <- str_output_file_path_html()
+
+    if (!file.exists(html_path_original)) {
+      return(p("Error: El archivo HTML original aún no se ha generado o no se encuentra."))
+    }
+
+    # --- PARTE 1: EXTRACCIÓN Y RE-ENSAMBLAJE (Lógica de Head Inyectado) ---
+
+    # 1. Leer y parsear el archivo HTML
+    doc <- xml2::read_html(html_path_original)
+
+    # A. Extraer el HEAD Completo (Estilos y JS)
+    head_content <- doc %>% rvest::html_node("head") %>% as.character()
+    if (is.null(head_content)) {
+      return(p("Error: No se pudo extraer la sección <head> del HTML."))
+    }
+
+    # B. Extraer y Limpiar la sección "#zocalo"
+    selector_zocalo <- "#zocalo"
+    zocalo_node <- doc %>% rvest::html_node(selector_zocalo)
+
+    if (is.null(zocalo_node) || inherits(zocalo_node, "xml_missing")) {
+      # Es común que estos elementos sean opcionales, si falla, retornamos vacío
+      zocalo_html_clean <- paste0("")
+    } else {
+      full_zocalo_html <- zocalo_node %>% as.character()
+      # Limpiar etiquetas div padre (CRÍTICO: Regex probada)
+      zocalo_html_clean <- sub('^<div[^>]*>([\\s\\S]*)</div>$', '\\1', full_zocalo_html)
+    }
+
+    # C. Extraer y Limpiar la sección "#tab-classroom"
+    selector_classroom <- "#tab-classroom"
+    classroom_node <- doc %>% rvest::html_node(selector_classroom)
+
+    if (is.null(classroom_node) || inherits(classroom_node, "xml_missing")) {
+      return(p(paste("❗ Error: Selector", selector_classroom, "no encontrado.")))
+    }
+
+    full_classroom_html <- classroom_node %>% as.character()
+    # Limpiar etiquetas div padre (CRÍTICO: Regex probada)
+    classroom_html_clean <- sub('^<div[^>]*>([\\s\\S]*)</div>$', '\\1', full_classroom_html)
+
+
+    # 2. Ensamblar el nuevo documento HTML con el HEAD y los fragmentos en ORDEN
+    html_output <- paste0(
+      '<!DOCTYPE html>
+      ', head_content, '
+      <body>
+        <h1>Fragmento Combinado: Zócalo + ClassRoom</h1>
+        <hr>
+
+        <div id="zocalo-fragment">', zocalo_html_clean, '</div>
+
+        <h2>ClassRoom (ANOVA)</h2>
+        <hr>
+
+        <div id="classroom-fragment">', classroom_html_clean, '</div>
+
+      </body>
+      </html>'
+    )
+
+    # --- PARTE 2: GUARDADO Y GESTIÓN DE RECURSOS ---
+
+    # Definimos la carpeta de destino y generamos un nombre de archivo único
+    output_dir <- dirname(html_path_original)
+    temp_filename <- paste0("fragment_zocalo_classroom_", digest::digest(html_output, algo="md5"), ".html")
+    temp_filepath <- file.path(output_dir, temp_filename)
+
+    # 3. Guardar el fragmento estilizado en la carpeta de destino
+    writeLines(html_output, temp_filepath)
+
+    # 4. Definir y Registrar Recurso
+    resource_id <- digest::digest(output_dir, algo = "md5")
+    shiny::addResourcePath(resource_id, output_dir)
+
+    # 5. Construir la URL y el IFRAME
+    html_url <- paste0("/", file.path(resource_id, temp_filename))
+
+    armado_v <- paste('<div style="height: 85%; width: 100%; "><iframe style="height: 85%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # Devolvemos el iframe como texto (renderText)
+    return(armado_v)
+  })
 }
 
 shinyApp(ui, server)

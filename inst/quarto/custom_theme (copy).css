@@ -1,0 +1,44 @@
+.panel-tabset .nav-pills {
+  background-color: red !important;
+}
+
+/* 1. Estilos para la barra de navegación que contiene las pestañas */
+.panel-tabset.main-tabs .nav-pills {
+  background-color: #333d47 !important; /* Fondo de la barra de pestañas */
+  border-radius: 8px 8px 0 0;
+  padding: 5px 10px;
+  margin-bottom: 0;
+}
+
+/* 2. Estilos para los enlaces de las pestañas (estado normal/activo) */
+.panel-tabset.main-tabs .nav-link {
+  color: #ffffff !important; /* Texto de la pestaña */
+  font-weight: 500 !important;
+  border-radius: 5px !important;
+  padding: 8px 12px !important;
+  margin-right: 5px; /* Espacio entre pestañas */
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* 3. Estilos al pasar el ratón (hover) */
+.panel-tabset.main-tabs .nav-link:not(.active):hover {
+  background-color: #5c6770 !important; /* Fondo al pasar el ratón */
+  color: #ffcc00 !important; /* Color del texto al pasar el ratón */
+}
+
+/* 4. Estilos para la pestaña ACTIVA */
+.panel-tabset.main-tabs .nav-link.active {
+  background-color: #1e88e5 !important; /* Color destacado para la pestaña activa */
+  color: #ffffff !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* 5. Estilos para el contenido de la pestaña (el panel inferior) */
+.panel-tabset.main-tabs .tab-content {
+  border: 1px solid #1e88e5; /* Borde que coincide con el color de la pestaña activa */
+  border-top: none;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 0 0 8px 8px;
+}

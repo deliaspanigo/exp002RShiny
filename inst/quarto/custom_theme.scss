@@ -1,24 +1,62 @@
-/*-- scss:rules --*/
+// ----------------------------------------------------
+// VARIABLES DE DISEÑO
+// ----------------------------------------------------
+$primary-color: #007bff;          // Azul profesional
+$secondary-color: #f8f9fa;        // Fondo de pestaña normal (muy claro)
+$active-color: #ffffff;           // Color de texto activo
+$nav-bg: #343a40;                 // Fondo de la barra de navegación (oscuro)
+$content-border-color: #dee2e6;   // Borde del contenido
+$border-radius: 0.3rem;           // Radio de las esquinas
+$transition-speed: 0.3s;
 
-// Hacemos que la columna de navegación (20%) sea sticky (pegajosa)
-// El navegador mantiene los botones visibles mientras el usuario hace scroll en el contenido (80%).
-.column:first-child {
-  position: sticky;
-  top: 50px; /* Margen superior. Ajusta si tienes un navbar */
-  align-self: start;
+// ----------------------------------------------------
+// ESTILOS DEL PANEL DE PESTAÑAS PRINCIPAL (.main-tabs)
+// ----------------------------------------------------
+.panel-tabset.main-tabs {
+  margin-top: 1.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); // Sombra sutil
+  border-radius: $border-radius;
 
-  // Estilo para asegurar que los botones luzcan como pestañas apiladas
-  .nav-pills .nav-link {
-      text-align: left;
-      padding: 10px 15px;
-      margin-bottom: 5px; /* Pequeño espacio entre botones */
-      font-size: 1.1em;
-      transition: background-color 0.3s, color 0.3s;
+  // Estilos del contenedor de la barra de navegación (nav-pills)
+  .nav-pills {
+    background-color: $nav-bg;
+    padding: 0.5rem 0.75rem 0.25rem 0.75rem; // Relleno ajustado
+    border-radius: $border-radius $border-radius 0 0;
+    margin-bottom: 0;
+
+    // Estilos para los elementos de la pestaña (nav-link)
+    .nav-link {
+      // General
+      color: lighten($nav-bg, 40%) !important; // Texto gris claro
+      border: none !important;
+      border-radius: $border-radius !important;
+      padding: 0.5rem 1rem !important;
+      margin-right: 0.3rem;
+      font-weight: 500;
+      transition: background-color $transition-speed, color $transition-speed;
+
+      // Estado Hover
+      &:hover:not(.active) {
+        background-color: lighten($nav-bg, 10%) !important;
+        color: $active-color !important;
+      }
+
+      // Estado Activo
+      &.active {
+        background-color: $primary-color !important;
+        color: $active-color !important;
+        font-weight: 600 !important;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15); // Sombra para destacar
+      }
+    }
   }
 
-  // Estilo del botón activo (seleccionado)
-  .nav-pills .nav-link.active {
-      background-color: #2E86C1; /* Color azul de tu línea */
-      color: white;
+  // Estilos para el contenido de la pestaña
+  .tab-content {
+    border: 1px solid $content-border-color;
+    border-top: none;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 0 0 $border-radius $border-radius;
   }
 }

@@ -2,6 +2,7 @@
 title: "Rscience - Parameterized Report"
 format: 
   html:
+    css: custom_theme.css
     grid:
       body-width: 2000px
       margin-width: 250px
@@ -135,10 +136,10 @@ document.addEventListener("DOMContentLoaded", function() {
 ')
 ```
 
-
+::: {#zocalo}
 ```{r file00_00_Header, child='file00_00_Header.qmd'}
 ```
-
+:::
 
 ::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
 # Rscience Code
@@ -153,10 +154,11 @@ document.addEventListener("DOMContentLoaded", function() {
 ```{r cod03, child='file00_03_AutoReport.qmd'}
 ```
 
-# ClassRoom (ANOVA)
+# ClassRoom (ANOVA) 
+::: {#tab-classroom}
 ```{r cod04, child='file00_04_ClassRoom.qmd'}
 ```
-
+:::
 
 # R Script
 ```{r cod05, child='file00_05_Script.qmd'}
