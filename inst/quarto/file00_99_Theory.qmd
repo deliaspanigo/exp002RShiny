@@ -1,0 +1,23 @@
+\  
+
+The most important statistical output from Anova as R formatted objects.  
+\  
+
+::: {.panel-tabset}
+## Model
+```{r  child='file00_04_ClassRoom_01_model.qmd'}
+```
+
+## Hypothesis
+```{r  child='file00_04_ClassRoom_02_hypothesis.qmd'}
+```
+
+
+## Decision Plan
+```{r  child='file00_04_ClassRoom_06_decision_plan.qmd'}
+```
+
+## Bibliografy
+Aca hay que poner algo...
+
+:::

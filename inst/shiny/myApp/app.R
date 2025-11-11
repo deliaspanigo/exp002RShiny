@@ -20,216 +20,192 @@ library("reticulate")
 library("webshot2")
 MY_PACKAGE_NAME <- "exp002RShiny"
 
-ui <- page_sidebar(
+
+ui <- bslib::page_sidebar(
+  padding = c(15, 15, 15, 15), # top, right, bottom, left = 0, 0, 10, 10
   shinyjs::useShinyjs(),
   # Carga los recursos CSS y JS de Font Awesome de la librería local de Shiny
   tags$head(
     # Esto carga la versión de Font Awesome incluida en el paquete shiny
-    tags$link(rel = "stylesheet", href = "shared/font-awesome/css/all.min.css")
+    tags$link(rel = "stylesheet", href = "shared/font-awesome/css/all.min.min.css")
   ),
-  # CSS con !important para forzar los colores (Mismo CSS robusto anterior)
+  # CSS con !important para forzar los colores y aplicar estilos al Main Panel
   tags$head(
     tags$style(HTML("
-            /* Estilo NARANJA (btn-warning) FORZADO */
-            .btn-warning {
-                background-color: #ff8c00 !important;
-                color: white !important;
-                border-color: #cc7000 !important;
+     :root {
+            --bs-border-thickness: 3px;
+            --bs-border-color-dark: #4d2600;
+            --bs-primary-color: #ff8c00;
+            --bs-text-color: #a0522d;
+            --bs-bg-hover: #ffe4c4;
+            --bs-border-radius: 0.5rem;
+     }
+
+
+         .btn-primary {
+            /* Fondo: Tu naranja principal */
+            # background-color: #007bc2 !important; /* #ff8c00 */
+            /* Texto: Blanco */
+            color: white !important;
+            /* Borde: Negro forzado */
+            border-color: var(--rs-btn-primary-border) !important; /* #000000 */
+            /* Sombra ligera para elevación */
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            /* Radio y transición */
+            border-radius: var(--rs-border-radius);
+            transition: all var(--rs-transition-speed);
+        }
+        .btn-primary:hover {
+          color: black !important;
+          background-color: #0069a5 !important;
+          border-color: var(--rs-btn-primary-border) !important; /* Mantiene el borde negro */
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+
+
+             /* Estilo NARANJA (btn-warning) FORZADO */
+             .btn-warning {
+                 background-color: #ff8c00 !important;
+                 color: white !important;
+                 border-color: #000000 !important;
+             }
+              .btn-warning:hover {
+          background-color: #ff8c00 !important;
+          color: black !important;
+          border-color: #000000 !important;
             }
-            /* Estilo VERDE (btn-success) FORZADO */
-            .btn-success {
-                background-color: #4CAF50 !important;
-                color: white !important;
-                border-color: #388E3C !important;
+
+           /* Estilo VERDE (btn-success) FORZADO */
+           .btn-success {
+               background-color: #4CAF50 !important;
+               color: white !important;
+               border-color: #000000 !important;
+           }
+           .btn-success:hover {
+          background-color: #4CAF50 !important;
+          color: black !important;
+          border-color: #000000 !important;
+           }
+
+             /* Asegura que los estados focus/active/hover usen nuestros colores */
+             .btn-success:active, .btn-success:focus, .btn-success:hover {
+                 background-color: #4CAF50 !important;
+                 border-color: #000000 !important;
+             }
+             .btn-warning:active, .btn-warning:focus, .btn-warning:hover {
+                 background-color: #ff8c00 !important;
+                 border-color: #000000 !important;
+             }
+
+             /* Selecciona elementos cuya CLASE EXACTA sea 'sidebar' */
+           .sidebar {
+            background-color: #ffe4c4 !important; /* Ejemplo: Gris muy claro */
+            border-right: 3px solid #FFFFFF !important;
+            border-radius: 0.5rem !important;
+            padding: 15px !important;
+           }
+
+            .main {
+              /* Fondo del Panel Principal (Ejemplo: Blanco puro) */
+              background-color: #FFFFFF !important;
+
+              /* Bordes redondeados */
+              border-radius: 0.5rem !important;
+
             }
-            /* Asegura que los estados focus/active/hover usen nuestros colores */
-            .btn-success:active, .btn-success:focus, .btn-success:hover {
-                background-color: #4CAF50 !important;
-                border-color: #388E3C !important;
+
+            /* Borde negro de 3px para todas las tarjetas (navset_card_tab o card) */
+            .card {
+                border: 3px solid #000000 !important;
             }
-            .btn-warning:active, .btn-warning:focus, .btn-warning:hover {
-                background-color: #ff8c00 !important;
-                border-color: #cc7000 !important;
+
+            /* 🎯 Selector para la barra de título/pestañas */
+            .card-header.card-navs {
+                /* Aquí va tu estilo de altura (min-height: 100px !important;) */
+
+                /* 🌟 LÍNEA NEGRA DE 3PX EN LA PARTE INFERIOR 🌟 */
+                border-bottom: 3px solid #000000 !important;
             }
+
+            /* Si tienes un header adicional debajo de las pestañas (card_header),
+               y quieres una línea allí también, usa este selector: */
+            .card-header:not(.card-navs) {
+                border-bottom: 3px solid #000000 !important;
+            }
+
+
+
+/* ----------------------------------------------------------- */
+/* 1. PESTAÑA NO ACTIVA (FONDO NARANJA, BORDE INFERIOR OSCURO) */
+/* ----------------------------------------------------------- */
+.card-header .nav-link {
+    /* 🛑 CLAVE 1: FONDO NARANJA */
+    background-color: var(--bs-primary-color) !important;
+    color: var(--bs-color-text-active) !important; /* Texto claro sobre naranja */
+
+    /* Borde completo negro/oscuro */
+    border: var(--bs-border-thickness) solid var(--bs-border-color-dark) !important;
+
+    /* 🛑 CLAVE 2: MANTENER BORDE INFERIOR OSCURO 🛑 */
+    /* Esto hace que se vea la línea divisoria entre la pestaña y la barra de encabezado */
+    border-bottom: var(--bs-border-thickness) solid var(--bs-border-color-dark) !important;
+
+    /* Asegurar que las esquinas inferiores no estén redondeadas si el borde es visible */
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 !important;
+}
+
+/* ----------------------------------------------------------- */
+/* 2. PESTAÑA ACTIVA (FONDO VERDE, BORDE INFERIOR BLANCO) */
+/* ----------------------------------------------------------- */
+.card-header .nav-link.active {
+    /* 🛑 CLAVE 1: FONDO VERDE */
+    background-color: #4CAF50 !important; /* Usamos #FFFFFF o el color de fondo de la tarjeta */
+    color: var(--bs-border-color-dark) !important; /* Texto oscuro sobre blanco */
+
+    /* Borde completo negro/oscuro */
+    border: var(--bs-border-thickness) solid var(--bs-border-color-dark) !important;
+
+    /* 🛑 CLAVE 2: BORDE INFERIOR VERDE 🛑 */
+    border-bottom-color: #4CAF50 !important;
+
+    /* Si quieres que sea de 6px (como pediste antes), agrega esto: */
+    /* border-bottom-width: 6px !important; */
+
+    box-shadow: none;
+}
+/* ----------------------------------------------------------- */
+/* 🛑 BORDE NEGRO DE 3PX PARA TODOS LOS BOTONES 🛑 */
+/* ----------------------------------------------------------- */
+.btn {
+    border: 3px solid #000000 !important;
+}
+
+             /* Los estilos de layout (body, .main, .bslib-page-sidebar) han sido eliminados */
         "))
   ),
 
-  sidebar = sidebar(
-    "v1.0.11",
-    "Version con pestañas.",
-    uiOutput("the_toggle"),
-    conditionalPanel(
-      condition = "input.toggle == false",
-      #ns = ns,
-      uiOutput("input_side_panel")
-    ),
-    conditionalPanel(
-      condition = "input.toggle == true",
-      #ns = ns,
-      uiOutput("output_side_panel")
+
+  sidebar = bslib::sidebar(
+    padding = c(0, 15, 0, 15), # top, right, bottom, left = 0, 0, 10, 10
+    # Argumento 'style' eliminado. El sidebar vuelve a su comportamiento predeterminado.
+    div(
+      style = "text-align: center;", # <--- ESTO CENTRA TODO EL CONTENIDO
+      tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
+      tags$b("v1.0.13"),
+      br(),
+
+      uiOutput("the_toggle"),
+      uiOutput("the_super_side")
+
     )
-
-
   ),
-  conditionalPanel(
-    condition = "input.toggle == false",
-    #ns = ns,
-    uiOutput("main_input_general")
-  ),
-  conditionalPanel(
-    condition = "input.toggle == true",
-    #ns = ns,
-    uiOutput("main_output_general")
-  )
+uiOutput("the_super_main")
 )
 
 server <- function(input, output, session) {
 
-  output$"main_input_general" <- renderUI({
-
-    div(
-      titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
-      navset_card_tab(
-        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-        title = 'Look at them penguins!',
-
-
-        nav_panel(
-          title = "user_selection",
-
-          # Usamos layout_columns para dividir el espacio
-          "Mostramos la seleccion..."
-        ),
-        nav_panel(
-          title = "dataset",
-
-          "Mostramos el dataset..."
-          # div(uiOutput("html_viewer"))
-
-        ),
-
-        # Define las pestañas con nav_panel()
-        nav_panel(
-          title = "Gráfico Principal",
-          h1('Penguins are cool!'),
-          value_box(
-            'Number of penguins',
-            value = textOutput('out_n_penguins'),
-            showcase = shiny::icon('hashtag'),
-            min_height = 100,
-            max_height = 150
-          ),
-          textOutput("mensaje_estado"),
-          plotOutput('out_plt_penguins')
-        )
-      )
-    )
-  })
-
-  # output$"main_output_general" <- renderUI({
-  #   div(uiOutput("main_output_01_html_report"),
-  #       uiOutput("main_output_02_html_report"))
-  #
-  # })
-
-  output$"main_output_01_html_report" <- renderUI({
-    div(
-      titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
-      fluidRow(
-        # Usar una columna para contener todos los botones
-        # 'width = 12' ocupa todo el ancho de la fila
-        column(width = 12,
-               # Los botones ahora se alinearán horizontalmente por defecto,
-               # especialmente si separamos las llamadas a 'br()'
-               actionButton(inputId = "generar02",
-                            label = NULL,
-                            icon = icon("play", class = "fa-2x"),
-                            class = "btn-warning"),
-
-               downloadButton(outputId = "descargar02",
-                              label = NULL,
-                              icon = icon("download", class = "fa-2x"),
-                              class = "btn-warning"),
-
-               actionButton(inputId = "open02",
-                            label = NULL,
-                            icon = icon("binoculars", class = "fa-2x"),
-                            class = "btn-warning")
-               # **Importante:** Quitamos todos los 'br()' que causaban los saltos de línea.
-        )
-      ),
-      div(
-        style = "height: 100vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
-
-        # htmlOutput("html_viewer2"),
-        htmlOutput("html_viewer")
-      )
-
-
-            )
-
-
-  })
-
-  output$"main_output_02_html_report" <- renderUI({
-    div(
-      titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
-      navset_card_tab(
-        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-        title = 'Look at them penguins!',
-
-        nav_panel(
-          title = "folder_files",
-          "Despues aca el path y los files."
-        ),
-        nav_panel(
-          title = "PDF",
-
-          # Usamos layout_columns para dividir el espacio
-          layout_columns(
-            col_widths = c(4, 4, 4), # Columna Izquierda (4 unidades), Columna Derecha (8 unidades)
-
-            # === Columna Izquierda: Botones (4/12 del ancho) ===
-            div(
-              # 1. Botón Generar (Inicio: Naranja)
-              actionButton("generar", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
-              br(), br(),
-              # 2. Botón Descargar (Inicio: Naranja)
-              downloadButton("descargar", "2. Descargar Archivo PDF", class = "btn-warning")
-              # Los br() ya no son necesarios dentro de una columna separada
-            ),
-
-            # === Columna Derecha: Output y Lista (8/12 del ancho) ===
-            div(
-              h2("Output folder path:"),
-              uiOutput("text_output_folder_path01"),
-              h2("List Files:"), # Tienes este h2 repetido, asegúrate de que sea intencional
-              verbatimTextOutput("text_list_files01"),
-              br()
-            ),
-            div(uiOutput("pdf_viewer"))
-          )
-        ),
-
-
-        # Define las pestañas con nav_panel()
-        nav_panel(
-          title = "Gráfico Principal",
-          h1('Penguins are cool!'),
-          value_box(
-            'Number of penguins',
-            value = textOutput('out_n_penguins'),
-            showcase = shiny::icon('hashtag'),
-            min_height = 100,
-            max_height = 150
-          ),
-          textOutput("mensaje_estado"),
-          plotOutput('out_plt_penguins')
-        )
-      )
-    )
-  })
-
+  ###---------------------------------------------------------------------------
   output$the_toggle <- renderUI({
     # Toggle estilo R/Python
     # Agregar CSS personalizado para los colores del toggle
@@ -291,144 +267,510 @@ server <- function(input, output, session) {
     span(the_selection, class = "fw-bold")
   })
 
-  #############################################
-  output$"input_side_panel" <- renderUI({
-
-  div(
-    actionButton(
-      inputId = "btn_dataset",
-      label = tagList(
-        # Ahora este icono se renderiza usando los archivos CSS locales
-        #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        #span("Dataset")
-      ),
-      class = "btn-primary",
-      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-      title = ""
-    ),
-    actionButton(
-      inputId = "btn_var_selector",
-      label = tagList(
-        # Ahora este icono se renderiza usando los archivos CSS locales
-        icon("filter", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        #span("Dataset")
-      ),
-      class = "btn-primary",
-      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-      title = ""
-    ),
-    actionButton(
-      inputId = "btn_config",
-      label = tagList(
-        # Ahora este icono se renderiza usando los archivos CSS locales
-        icon("sliders", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        #span("Dataset")
-      ),
-      class = "btn-primary",
-      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-      title = ""
-    ),
-    actionButton(
-      inputId = "btn_play",
-      label = tagList(
-        # Ahora este icono se renderiza usando los archivos CSS locales
-        icon("play", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        #span("Dataset")
-      ),
-      class = "btn-primary",
-      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-      title = ""
-    ),
-    actionButton(
-      inputId = "btn_refresh",
-      label = tagList(
-        # Ahora este icono se renderiza usando los archivos CSS locales
-        icon("arrows-rotate", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-        #span("Dataset")
-      ),
-      class = "btn-primary",
-      #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-      title = ""
-      )
-    )
-    })
-  ##############################################
-  output$"output_side_panel" <- renderUI({
-
+  output$"the_super_side" <- renderUI({
     div(
-      actionButton(
-        inputId = "btn_ClassRoom",
-        label = tagList(
-          # Ahora este icono se renderiza usando los archivos CSS locales
-          #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-          icon("chalkboard-user", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-          #span("Dataset")
-        ),
-        class = "btn-primary",
-        #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-        title = ""
+      conditionalPanel(
+        condition = "input.toggle == false",
+        #ns = ns,
+        uiOutput("input_side_panel")
       ),
-      actionButton(
-        inputId = "btn_general_download",
-        label = tagList(
-          # Ahora este icono se renderiza usando los archivos CSS locales
-          icon("download", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-          #span("Dataset")
-        ),
-        class = "btn-primary",
-        #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-        title = ""
+      conditionalPanel(
+        condition = "input.toggle == true",
+        #ns = ns,
+        uiOutput("output_side_panel")
       )
     )
   })
 
-  # Lo inicializamos en NULL o con el ID del botón que quieres activo por defecto.
-  # Usaremos "btn_ClassRoom" como valor inicial.
-  last_btn_clicked <- reactiveVal("btn_ClassRoom")
+  output$"input_side_panel" <- renderUI({
 
+    div(
+      # class = "d-flex flex-column align-items-center",
+      card(
+        style = "height: 77vh; min-height: 77vh;",  # Altura de la card (100% del contenedor padre)
+
+        actionButton(
+          inputId = "btn_dataset",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        ),
+        actionButton(
+          inputId = "btn_var_selector",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            icon("filter", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        ),
+        actionButton(
+          inputId = "btn_config",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            icon("sliders", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        ),
+        actionButton(
+          inputId = "btn_play",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            icon("play", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        ),
+        actionButton(
+          inputId = "btn_refresh",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            icon("arrows-rotate", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        )
+      )
+    )
+  })
+
+  output$"output_side_panel" <- renderUI({
+
+    div(
+      # style = "overflow-y: hidden; flex: 1; display: flex; flex-direction: column; min-height: 100%;",
+      #
+      # class = "d-flex flex-column align-items-center",
+      card(
+        # style = "height: 100%;",  # Altura de la card (100% del contenedor padre)
+        style = "height: 77vh; min-height: 77vh;",  # Altura de la card (100% del contenedor padre)
+
+        actionButton(
+          inputId = "btn_classroom",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("chalkboard-user", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-success", #"btn-warning", #"btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        ),
+        # uiOutput("botonera_html"),
+        br(),
+        actionButton(
+          inputId = "btn_general_download",
+          label = tagList(
+            # Ahora este icono se renderiza usando los archivos CSS locales
+            icon("download", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            #span("Dataset")
+          ),
+          class = "btn-warning", #"btn-primary",
+          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
+          title = ""
+        )
+      )
+    )
+  })
+  ###---------------------------------------------------------------------------
+
+  output$"the_super_main" <- renderUI({
+    div(
+      # style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
+      conditionalPanel(
+        condition = "input.toggle == false",
+        #ns = ns,
+        uiOutput("main_input_general")
+      ),
+      conditionalPanel(
+        condition = "input.toggle == true",
+        #ns = ns,
+        uiOutput("main_output_general")
+      ),
+      "Rscience 1.0.11 - General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way - Script 01"
+
+    )
+  })
+
+  output$"main_input_general" <- renderUI({
+    # titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
+
+
+      str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 81vh; width: 100%; overflow: hidden;"
+
+      bslib::navset_card_tab(
+        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+        title = tags$div(
+          style = "
+        min-height: 10px;
+        padding-top: 0px;      /* ↑ Arriba */
+        padding-right: 0px;    /* → Derecha */
+        padding-bottom: 0px;   /* ↓ Abajo */
+        padding-left: 0px;     /* ← Izquierda */
+      ",
+          tags$h4("Input"),
+        ),
+        # title =
+        # div(
+          # style = "height: 90vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+
+          bslib::nav_panel(
+                  title = "user_selection",
+                  # El CSS ahora fuerza a este contenedor (tab-pane.active) a llenar el 100%
+                  # del espacio disponible (90vh - encabezado de la tarjeta).
+                  tags$div(
+                    # style = "flex-grow: 1; overflow-y: auto;",
+                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+                    p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)")
+                  )
+                ),
+                bslib::nav_panel(
+                  title = "dataset",
+                  tags$div(
+                    # style = "flex-grow: 1; overflow-y: auto;",
+                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+
+                  "Mostramos el dataset..."
+                  )
+                ),
+                bslib::nav_panel(
+                  title = "control",
+                  tags$div(
+                    # style = "flex-grow: 1; overflow-y: auto;",
+                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+
+                    "Mostramos el dataset..."
+                  )
+                ),
+                bslib::nav_panel(
+                  title = "minidataset",
+                  tags$div(
+                    # style = "flex-grow: 1; overflow-y: auto;",
+                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+
+                    "Mostramos el dataset..."
+                  )
+                )
+
+)
+
+      # )
+
+
+    # [CAMBIO APLICADO] Utilizamos tags$div para envolver y aplicar el estilo de altura y ancho.
+    # tags$div(
+    #   style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
+    #   bslib::navset_card_tab(
+    #     # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+    #
+    #     title = 'Input',
+    #
+    #     bslib::nav_panel(
+    #       title = "user_selection",
+    #       # El CSS ahora fuerza a este contenedor (tab-pane.active) a llenar el 100%
+    #       # del espacio disponible (90vh - encabezado de la tarjeta).
+    #       p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)")
+    #     ),
+    #     bslib::nav_panel(
+    #       title = "dataset",
+    #       "Mostramos el dataset..."
+    #     )
+    #   )
+    # )
+  })
+
+  output$"main_output_general" <- renderUI({
+    # Contenido de la primera opción, inicialmente oculto
+    # El tabsetPanel actúa como contenedor principal para las diferentes vistas.
+    tabsetPanel(
+      id = "panel_principal", # ID que usaremos para controlar qué pestaña está activa
+      type = "hidden",        # ¡CLAVE! Oculta las pestañas/navegación de Shiny
+
+      # Tab 1: Contenido de ClassRoom
+      tabPanel(
+        value = "tab_classroom", # El valor que usaremos en el servidor para activar esta pestaña
+        title = "ClassRoom",
+        uiOutput("main_output_01_html_report")
+      ),
+
+      # Tab 2: Contenido de Descarga
+      tabPanel(
+        value = "tab_descarga", # El valor que usaremos en el servidor para activar esta pestaña
+        title = "Descarga",
+        uiOutput("main_output_02_html_report")
+      ),
+
+      # Tab 3: Mensaje Inicial/Default
+      tabPanel(
+        value = "tab_inicial", # El valor por defecto al inicio
+        title = "Inicial",
+        p("Seleccione una opción.")
+      ),
+
+      # Puedes añadir otras pestañas aquí
+      # tabPanel(value = "otra_tab", title = "Otra", ...)
+    )
+  })
+  ###---------------------------------------------------------------------------
+  # Lo inicializamos en NULL o con el ID del botón que quieres activo por defecto.
+  # Usaremos "btn_classroom" como valor inicial.
+  # last_btn_clicked <- reactiveVal("btn_classroom")
+
+  # last_btn_clicked <- reactiveVal(NULL)
+  # last_btn_clicked mantendrá un registro del botón activo
+  last_btn_clicked <- reactiveVal(NULL)
+
+  # ------------------------------------------------------------------
+  # 1. Inicialización (Disparar la configuración visual/tab UNA VEZ)
+  # ------------------------------------------------------------------
+  observeEvent(session, {
+    # Establece el valor inicial, disparando el observador principal.
+    last_btn_clicked("btn_classroom")
+    message("✅ Inicialización forzada completada: btn_classroom establecido.")
+
+  }, once = TRUE)
+  # observeEvent(session, {
+  #   # Cambia el valor de NULL a "btn_classroom".
+  #   # Esto forzará el disparo de cualquier otro observador
+  #   # (como el de visibilidad) que dependa de last_btn_clicked().
+  #   last_btn_clicked("btn_classroom")
+  #   message("Valor inicial de last_btn_clicked establecido.")
+  # }, once = TRUE)
   # ------------------------------------------------------------------
   # 2. Observar los Clicks de los Botones
   # ------------------------------------------------------------------
 
+  # ------------------------------------------------------------------
+  # 2. Observar los Clicks de los Botones (Actualiza el reactiveVal)
+  # ------------------------------------------------------------------
+
   # Observar el botón ClassRoom
-  observeEvent(input$btn_ClassRoom, {
-    # req(input$btn_ClassRoom) no es estrictamente necesario, pero es bueno
-    # Usamos isolate() para acceder al valor sin crear una dependencia
-    # Solo actualiza si el valor es diferente (opcional, pero eficiente)
-    if (isolate(last_btn_clicked()) != "btn_ClassRoom") {
-      last_btn_clicked("btn_ClassRoom")
-      message("Botón activo: btn_ClassRoom")
+  observeEvent(input$btn_classroom, {
+    if (isolate(last_btn_clicked()) != "btn_classroom") {
+      last_btn_clicked("btn_classroom")
+      message("Botón activo: btn_classroom")
     }
   })
 
   # Observar el botón de Descarga
   observeEvent(input$btn_general_download, {
-    # req(input$btn_general_download)
     if (isolate(last_btn_clicked()) != "btn_general_download") {
       last_btn_clicked("btn_general_download")
       message("Botón activo: btn_general_download")
     }
   })
 
-  output$"main_output_general" <- renderUI({
+  # En server.R
+  # ------------------------------------------------------------------
+  # 3. Lógica de Cambio de Vista y Estilo (Reacciona al reactiveVal)
+  # ------------------------------------------------------------------
+  observeEvent(last_btn_clicked(), {
+    print(last_btn_clicked())
     active_btn <- last_btn_clicked()
+    req(active_btn) # Asegura que active_btn no sea NULL
 
-    if (active_btn == "btn_ClassRoom") {
-      uiOutput("main_output_01_html_report")
-      # return(h3("Mostrando contenido de ClassRoom (Análisis)"))
-      # Aquí es donde llamarías a tu output$html_viewer2, por ejemplo:
-      # return(uiOutput("html_viewer2"))
+    target_tab <- NULL
+
+    # Mapear el valor del botón al valor de la pestaña (value) y actualizar estilos
+    if (active_btn == "btn_classroom") {
+      target_tab <- "tab_classroom"
+
+      # Actualizar estilos de los botones (success=activo, warning=inactivo)
+      # shinyjs::removeClass(id = "btn_general_download", class = "btn-success")
+      # shinyjs::addClass(id = "btn_general_download", class = "btn-warning")
+      #
+      # shinyjs::removeClass(id = "btn_classroom", class = "btn-warning")
+      # shinyjs::addClass(id = "btn_classroom", class = "btn-success")
 
     } else if (active_btn == "btn_general_download") {
-      uiOutput("main_output_02_html_report")
-      # return(h3("Mostrando controles de Descarga General"))
-      # Aquí mostrarías los controles de descarga
+      target_tab <- "tab_descarga"
+
+      # Actualizar estilos de los botones
+      # shinyjs::removeClass(id = "btn_classroom", class = "btn-success")
+      # shinyjs::addClass(id = "btn_classroom", class = "btn-warning")
+      #
+      # shinyjs::removeClass(id = "btn_general_download", class = "btn-warning")
+      # shinyjs::addClass(id = "btn_general_download", class = "btn-success")
 
     } else {
-      return(p("Seleccione una opción."))
+      # Valor por defecto (si es desconocido)
+      target_tab <- "tab_inicial"
     }
+
+    # 🌟 Actualizar el tabsetPanel (Cambia la vista sin perder el estado)
+    updateTabsetPanel(session,
+                      inputId = "panel_principal",
+                      selected = target_tab)
+
+  }, ignoreNULL = FALSE) # Ejecuta en el cambio inicial de NULL
+
+  observeEvent(input$"panel_principal", {
+    # print(last_btn_clicked())
+    # active_btn <- last_btn_clicked()
+    # req(active_btn) # Asegura que active_btn no sea NULL
+
+    target_tab <- input$"panel_principal"
+
+    # Mapear el valor del botón al valor de la pestaña (value) y actualizar estilos
+    if (target_tab == "tab_classroom") {
+
+      # Actualizar estilos de los botones (success=activo, warning=inactivo)
+      shinyjs::removeClass(id = "btn_general_download", class = "btn-success")
+      shinyjs::addClass(id = "btn_general_download", class = "btn-warning")
+
+      shinyjs::removeClass(id = "btn_classroom", class = "btn-warning")
+      shinyjs::addClass(id = "btn_classroom", class = "btn-success")
+
+    } else if (target_tab == "tab_descarga") {
+
+
+      # Actualizar estilos de los botones
+      shinyjs::removeClass(id = "btn_classroom", class = "btn-success")
+      shinyjs::addClass(id = "btn_classroom", class = "btn-warning")
+
+      shinyjs::removeClass(id = "btn_general_download", class = "btn-warning")
+      shinyjs::addClass(id = "btn_general_download", class = "btn-success")
+
+    } else {
+      # Valor por defecto (si es desconocido)
+      target_tab <- "tab_inicial"
+    }
+
+    # 🌟 Actualizar el tabsetPanel (Cambia la vista sin perder el estado)
+    # updateTabsetPanel(session,
+    #                   inputId = "panel_principal",
+    #                   selected = target_tab)
+
+  }, ignoreNULL = TRUE) # Ejecuta en el cambio inicial de NULL
+  ###---------------------------------------------------------------------------
+  ###---------------------------------------------------------------------------
+
+  output$"botonera_html" <- renderUI({
+    div(
+      class = "d-flex flex-column align-items-center",
+
+
+    fluidRow(
+      # Usar una columna para contener todos los botones
+      # 'width = 12' ocupa todo el ancho de la fila
+      column(width = 12,
+             # Los botones ahora se alinearán horizontalmente por defecto,
+             # especialmente si separamos las llamadas a 'br()'
+             actionButton(inputId = "generar02",
+                          label = NULL,
+                          icon = icon("play", class = "fa-2x"),
+                          class = "btn-warning btn-sm"),
+
+             downloadButton(outputId = "descargar02",
+                            label = NULL,
+                            icon = icon("download", class = "fa-2x"),
+                            class = "btn-warning btn-sm"),
+
+             actionButton(inputId = "open02",
+                          label = NULL,
+                          icon = icon("binoculars", class = "fa-2x"),
+                          class = "btn-warning btn-sm")
+             # **Importante:** Quitamos todos los 'br()' que causaban los saltos de línea.
+      )
+    )
+    )
   })
+
+  output$"main_output_01_html_report" <- renderUI({
+    bslib::card(
+      id = "output-main-card",
+
+      # [CAMBIO] Usamos bslib::card_header() para forzar el título.
+      bslib::card_header(
+        style = "height: 60px; overflow: hidden;",
+        fluidRow(
+        column(2, tags$h4("Output")),
+        column(8),
+        column(2, uiOutput("botonera_html"))
+        )
+        ),
+
+      card_body(
+      class = "p-0",
+        tags$div(
+            # style = "flex-grow: 1; overflow-y: auto;",
+            style = "flex-grow: 1; overflow-y: auto; height: 84vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+
+            # Contenido que deseas mostrar dentro de la tarjeta
+            htmlOutput("html_viewer")
+          )
+        )
+    )
+
+
+
+
+
+  })
+
+  output$"main_output_02_html_report" <- renderUI({
+    div(
+      shiny::titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
+      bslib::navset_card_tab(
+        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+        title = 'Look at them penguins!',
+
+        bslib::nav_panel(
+          title = "folder_files",
+          "Despues aca el path y los files."
+        ),
+        bslib::nav_panel(
+          title = "PDF",
+
+          # Usamos layout_columns para dividir el espacio
+          layout_columns(
+            col_widths = c(4, 4, 4), # Columna Izquierda (4 unidades), Columna Derecha (8 unidades)
+
+            # === Columna Izquierda: Botones (4/12 del ancho) ===
+            div(
+              # 1. Botón Generar (Inicio: Naranja)
+              actionButton("generar", "1. Generar Carpeta y Archivo Temporal", class = "btn-warning"),
+              br(), br(),
+              # 2. Botón Descargar (Inicio: Naranja)
+              downloadButton("descargar", "2. Descargar Archivo PDF", class = "btn-warning")
+              # Los br() ya no son necesarios dentro de una columna separada
+            ),
+
+            # === Columna Derecha: Output y Lista (8/12 del ancho) ===
+            div(
+              h2("Output folder path:"),
+              uiOutput("text_output_folder_path01"),
+              h2("List Files:"), # Tienes este h2 repetido, asegúrate de que sea intencional
+              verbatimTextOutput("text_list_files01"),
+              br()
+            ),
+            div(uiOutput("pdf_viewer"))
+          )
+        )
+      )
+    )
+  })
+
+
+
+
+
+
   ##############################################
   output$my_action_button <- renderUI({
 
@@ -728,39 +1070,6 @@ output$btn_export_pdf <- downloadHandler(
   }
 )
 
-
-
-  output$out_plt_penguins <- renderPlot({
-    palmerpenguins::penguins |>
-      dplyr::filter(!is.na(sex)) |>
-      ggplot(
-        aes(
-          x = body_mass_g,
-          y = flipper_length_mm,
-          fill = (species == input$in_species)
-        )
-      ) +
-      geom_point(
-        size = 4,
-        shape = 21,
-        col = 'white',
-        show.legend = FALSE
-      ) +
-      geom_point(
-        data = r_df_penguins(),
-        size = 4,
-        shape = 21,
-        col = 'white',
-        show.legend = FALSE
-      ) +
-      scale_fill_manual(
-        values = c("TRUE" = 'dodgerblue4', "FALSE" = 'grey80')
-      ) +
-      theme_minimal(base_size = 12, base_family = 'Source Sans Pro') +
-      labs(x = 'Weight (g)', y = 'Flipper length (mm)')
-  })
-
-  ####################################################
 
 
 
@@ -1165,7 +1474,7 @@ output$btn_export_pdf <- downloadHandler(
     html_url <- paste0("/", file.path(resource_id, html_filename))
 
     # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
-    armado_v <- paste('<div style="height: 85%; width: 100%; "><iframe style="height: 85%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+    armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
 
     # tags$iframe(
     #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo

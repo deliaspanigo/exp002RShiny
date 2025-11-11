@@ -4,13 +4,13 @@ The most important statistical output from Anova as R formatted objects.
 \  
 
 ::: {.panel-tabset}
-## Model
-```{r code04_01, child='file00_04_ClassRoom_01_model.qmd'}
-```
+<!-- ## Model -->
+<!-- ```{r code04_01, child='file00_04_ClassRoom_01_model.qmd'} -->
+<!-- ``` -->
 
-## Hypothesis
-```{r code04_02, child='file00_04_ClassRoom_02_hypothesis.qmd'}
-```
+<!-- ## Hypothesis -->
+<!-- ```{r code04_02, child='file00_04_ClassRoom_02_hypothesis.qmd'} -->
+<!-- ``` -->
 
 ## User election
 ### Selected variable and rol
@@ -118,13 +118,11 @@ tukey02_full_pairs
 ```{r code04_05, child='file00_04_ClassRoom_05_residuals_raw_plots.qmd'}
 ```
 
-## Decision Plan
-```{r code04_06, child='file00_04_ClassRoom_06_decision_plan.qmd'}
-```
+<!-- ## Decision Plan -->
+<!-- ```{r code04_06, child='file00_04_ClassRoom_06_decision_plan.qmd'} -->
+<!-- ``` -->
 
-## Data Analysis (Step by step)
-```{r code04_07, child='file00_04_ClassRoom_07_StepByStep.qmd'}
-```
+
 
 ## FAQs
 ```{r code04_08, child='file00_04_ClassRoom_08_FAQ.qmd'}

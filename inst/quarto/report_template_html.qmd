@@ -62,7 +62,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const desiredOrder = [
           "Init",
           "AutoReport", 
+          "Theory",
           "ClassRoom (ANOVA)",
+          "Data Analysis (Step by step)",
           "Rscience Code",
           "R Script",
           "Others"
@@ -154,11 +156,19 @@ document.addEventListener("DOMContentLoaded", function() {
 ```{r cod03, child='file00_03_AutoReport.qmd'}
 ```
 
+# Theory
+```{r cod999, child='file00_99_Theory.qmd'}
+```
+
 # ClassRoom (ANOVA) 
 ::: {#tab-classroom}
 ```{r cod04, child='file00_04_ClassRoom.qmd'}
 ```
 :::
+
+# Data Analysis (Step by step)
+```{r code04_07, child='file00_04_ClassRoom_07_StepByStep.qmd'}
+```
 
 # R Script
 ```{r cod05, child='file00_05_Script.qmd'}

@@ -55,7 +55,7 @@ rscience_link <- tags$a(
 
 # Construir los enlaces completos
 github_link <- tags$a(
-  href = "*https://github.com/deliaspanigo/exp002RShiny",
+  href = "*https://github.com/",
   target = "_blank",
   style = "margin-right: 30px; text-decoration: none; color: #333;",
   github_icon#, " GitHub"
