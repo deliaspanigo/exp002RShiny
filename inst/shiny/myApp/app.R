@@ -19,6 +19,7 @@ library("plotly")
 library("reticulate")
 library("webshot2")
 library("readxl")
+library("DT")
 MY_PACKAGE_NAME <- "exp002RShiny"
 # 1. Define la ruta de la carpeta que contiene los archivos de funciones
 #    Asegúrate de cambiar "ruta/a/tu/carpeta" por la ruta real.
@@ -216,7 +217,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: center;", # <--- ESTO CENTRA TODO EL CONTENIDO
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.14"),
+      tags$b("v1.0.16"),
       br(),
 
       uiOutput("the_toggle"),
@@ -224,10 +225,28 @@ ui <- bslib::page_sidebar(
 
     )
   ),
-uiOutput("the_super_main")
+  uiOutput("the_super_main")
 )
 
 server <- function(input, output, session) {
+
+  set_reactive_values_from_list <- function(rv, data_list) {
+
+    # 1. Verificar que ambos son objetos válidos
+    if (!is.list(data_list)) {
+      stop("El argumento 'data_list' debe ser una lista R estándar.")
+    }
+
+    # 2. Iterar sobre los nombres de la lista de datos
+    for (name in names(data_list)) {
+      # 3. Asignar el valor de la lista al elemento correspondiente en reactiveValues
+      #    Esto automáticamente crea/actualiza el elemento en rv
+      rv[[name]] <- data_list[[name]]
+    }
+
+    # Nota: Aunque rv se modifica por referencia, devolverlo es una buena práctica.
+    invisible(rv)
+  }
 
   ###---------------------------------------------------------------------------
   output$the_toggle <- renderUI({
@@ -380,8 +399,9 @@ server <- function(input, output, session) {
 
   the_list01_Dataset_internal <- MASTER_module_import_server(id = "MASTER_import", show_dev = FALSE)
 
-
-  the_list01_Dataset_stone <- reactiveValues("Source: " = NA, "File: " = NA, "Shape: "= NA)
+  the_list01_Dataset_R <- list("source" = NA, "file" = NA, "str_shape"= NA, "my_dataset" = NA)
+  the_list01_Dataset_stone <- reactiveValues()
+  set_reactive_values_from_list(rv = the_list01_Dataset_stone, data_list = the_list01_Dataset_R)
 
   output$"super_dataset_selection" <- renderUI({
     MASTER_module_import_ui(id = "MASTER_import")
@@ -455,7 +475,7 @@ server <- function(input, output, session) {
         # Contenedor para el módulo de importación - ahora ocupa todo el espacio disponible
         div(
           style = "height: 100%; overflow-y: auto; padding: 15px;",
-         uiOutput("super_dataset_selection")
+          uiOutput("super_dataset_selection")
           # Rscience.import::MASTER_module_import_ui(id = ns("MASTER_import"))
         ),
 
@@ -508,10 +528,10 @@ server <- function(input, output, session) {
     the_ncol <- ncol(the_list01_Dataset_internal()$"my_dataset")
 
     # 3) Put on stone
-    the_list01_Dataset_stone$"Source: " <- the_list01_Dataset_internal()[["data_source"]]
-    the_list01_Dataset_stone$"File: "   <- the_list01_Dataset_internal()[["original_file_name"]]
-    the_list01_Dataset_stone$"Shape: "  <- paste0(the_nrow, " Rows", " x ", the_ncol, " Cols")
-
+    the_list01_Dataset_stone$"source" <- the_list01_Dataset_internal()[["data_source"]]
+    the_list01_Dataset_stone$"file"   <- the_list01_Dataset_internal()[["original_file_name"]]
+    the_list01_Dataset_stone$"str_shape"  <- paste0(the_nrow, " Rows", " x ", the_ncol, " Cols")
+    the_list01_Dataset_stone$"my_dataset" <- the_list01_Dataset_internal()$"my_dataset"
     # 4) Remove Modal
     removeModal()
   })
@@ -543,17 +563,18 @@ server <- function(input, output, session) {
     )
   })
 
-  the_list02_VarSelection_stone <- reactiveValues("var_name_factor" = NA,
-                                                  "var_name_rv" = NA,
-                                                  "alpha_value" = NA,
-                                                  "vector_var_names" = NA,
-                                                  "minidataset" = NA,
-                                                  "ncol" = NA,
-                                                  "nrow" = NA,
-                                                  "str_shape" = NA)
+  the_list02_VarSelection_R <- list("var_name_factor" = NA,
+                                    "var_name_rv" = NA,
+                                    "alpha_value" = NA,
+                                    "vector_var_names" = NA,
+                                    "minidataset" = NA,
+                                    "ncol" = NA,
+                                    "nrow" = NA,
+                                    "str_shape" = NA)
 
 
-
+  the_list02_VarSelection_stone <- reactiveValues()
+  set_reactive_values_from_list(rv = the_list02_VarSelection_stone, data_list = the_list02_VarSelection_R)
 
   observeEvent(input$"btn_var_selector", {
 
@@ -755,10 +776,15 @@ server <- function(input, output, session) {
     )
   })
 
-  the_list03_SpecialSettigns_stone <- reactiveValues("df_order" = NA,
-                                                  "vector_ordered_levels" = NA,
-                                                  "vector_ordered_colors" = NA,
-                                                  "minidataset" = NA)
+  the_list03_SpecialSettigns_R <- list("df_order" = NA,
+                                       "vector_ordered_levels" = NA,
+                                       "vector_ordered_colors" = NA,
+                                       "minidataset" = NA,
+                                       "nrow" = NA,
+                                       "ncol" = NA)
+
+  the_list03_SpecialSettigns_stone <- reactiveValues()
+  set_reactive_values_from_list(rv = the_list03_SpecialSettigns_stone, data_list = the_list03_SpecialSettigns_R)
 
   the_list03_SpecialSettigns_internal <- reactive({
     # req(the_list01_Dataset_stone)
@@ -1021,7 +1047,9 @@ server <- function(input, output, session) {
     vector_ordered_colors <- the_list03_SpecialSettigns_internal()$"vector_ordered_colors"
     minidaset_without_change <- the_list02_VarSelection_stone$"minidataset"
     var_name_factor <- the_list02_VarSelection_stone$"var_name_factor"
-    minidaset_with_change <- factor(
+
+    minidaset_with_change <- minidaset_without_change
+    minidaset_with_change[,var_name_factor] <- factor(
       x = minidaset_without_change[,var_name_factor],       # La variable original de factor
       levels = vector_ordered_levels  # El orden de los niveles que calculamos en el Paso 2
     )
@@ -1030,10 +1058,183 @@ server <- function(input, output, session) {
     the_list03_SpecialSettigns_stone$"vector_ordered_levels" <- the_list03_SpecialSettigns_internal()$"vector_ordered_levels"
     the_list03_SpecialSettigns_stone$"vector_ordered_colors" <- the_list03_SpecialSettigns_internal()$"vector_ordered_colors"
     the_list03_SpecialSettigns_stone$"minidataset" <- minidaset_with_change
+    the_list03_SpecialSettigns_stone$"nrow" <- nrow(minidaset_with_change)
+    the_list03_SpecialSettigns_stone$"ncol" <- ncol(minidaset_with_change)
 
     # 4) Remove Modal
     removeModal()
 
+  })
+
+  ###---------------------------------------------------------------------------
+
+
+  output$"df_control01" <- DT::renderDataTable({
+    # El código de configuración y cálculo
+    req(the_list03_SpecialSettigns_stone$"minidataset")
+    nrow_dataset <- nrow(the_list01_Dataset_internal()$"my_dataset")
+    ncol_dataset <- ncol(the_list01_Dataset_internal()$"my_dataset")
+    nrow_minidataset <- the_list03_SpecialSettigns_stone$"nrow"
+    ncol_minidataset <- the_list03_SpecialSettigns_stone$"ncol"
+
+    df_output <- data.frame(
+      "source" = c("dataset", "minidataset"),
+      "ncol" = c(ncol_dataset, ncol_minidataset),
+      "nrow" = c(nrow_dataset, nrow_minidataset)
+    )
+
+    # 4. Seleccionar y ordenar las columnas para el display final
+    final_display_df <- df_output %>%
+      dplyr::select(
+        "Source" = source,
+        "Number of cols" = ncol,
+        "Number of rows" = nrow
+      )
+
+    # 5. Renderizar la tabla con DT
+    DT::datatable(
+      final_display_df,
+      # Usamos autoWidth para que ocupe el espacio mínimo
+      options = list(
+        dom = 't',
+        paging = FALSE,
+        ordering = FALSE,
+        autoWidth = TRUE, # Ayuda a que la tabla no ocupe todo el ancho
+
+        # ********* CLAVE DEL CENTRADO *********
+        columnDefs = list(list(className = 'dt-center', targets = '_all'))
+        # **************************************
+      ),
+      rownames = FALSE
+    )
+  })
+
+  output$"df_control02" <- DT::renderDataTable({
+    # El código de configuración y cálculo
+    req(the_list03_SpecialSettigns_stone$"minidataset")
+    # ... (Cálculos y preparación de final_display_df) ...
+
+    minidataset <- the_list03_SpecialSettigns_stone$"minidataset"
+    var_name_factor <- the_list02_VarSelection_stone$"var_name_factor"
+    var_name_rv <- the_list02_VarSelection_stone$"var_name_rv"
+
+    # 2. Conversión y resumen
+    minidataset[,var_name_factor] <- as.factor(minidataset[,var_name_factor])
+
+    tabla_resumen <- minidataset %>%
+      group_by(across(all_of(var_name_factor))) %>%
+      summarise(
+        n = n(),
+        min = min(across(all_of(var_name_rv))),
+        max = max(across(all_of(var_name_rv)))
+      )
+
+    settings_df <- the_list03_SpecialSettigns_stone$"df_order"
+
+    # 2. Renombrar columnas para la visualización
+    settings_df <- settings_df %>%
+      dplyr::select(
+        Level = level,
+        Order = order,
+        ColorCode = color
+      )
+
+    # 3. Crear una columna HTML para mostrar el color
+    settings_df$ColorSwatch <- paste0(
+      '<div style="width: 100%; height: 20px; background-color:',
+      settings_df$ColorCode,
+      '; border: 1px solid #000; border-radius: 3px;"></div>'
+    )
+
+    settings_df <- cbind.data.frame(settings_df, tabla_resumen)
+
+    # 4. Seleccionar y ordenar las columnas para el display final
+    final_display_df <- settings_df %>%
+      dplyr::select(
+        "Order" = Order,
+        "Level" = Level,
+        "n",
+        "Min" = min,
+        "Max" = max,
+        "Color" = ColorSwatch,
+        "Hex Cod" = ColorCode
+      )
+
+    # 5. Renderizar la tabla con DT
+    DT::datatable(
+      final_display_df,
+      # ¡Asegúrate de marcar la columna 'Color' con I() o usa escape = FALSE si la tabla es simple!
+      # El escape es correcto aquí: las columnas listadas se escapan (texto), Color no se escapa (HTML).
+      escape = c("Order", "Level", "n", "Min", "Max", "Hex Cod"),
+      options = list(
+        # CLAVE: Indica a DataTables que intente ajustar el ancho de las columnas
+        autoWidth = TRUE,
+        dom = 't',
+        paging = FALSE,
+        ordering = FALSE,
+        searching = FALSE,
+        # AÑADIR/MANTENER ESTO PARA CENTRAR TODAS LAS COLUMNAS
+        columnDefs = list(list(className = 'dt-center', targets = '_all'))
+      ),
+      rownames = FALSE
+    )
+
+  }) # <-- ELIMINAMOS LA SECCIÓN DE OPCIONES EXTERNA
+
+  output$"control03_plotly" <- plotly::renderPlotly({
+
+    # Asegurarse de que los datos requeridos existen
+    req(the_list03_SpecialSettigns_stone$"minidataset")
+    minidataset <- the_list03_SpecialSettigns_stone$"minidataset"
+    var_name_factor <- the_list02_VarSelection_stone$"var_name_factor"
+    var_name_rv <- the_list02_VarSelection_stone$"var_name_rv"
+    settings_df <- the_list03_SpecialSettigns_stone$"df_order"
+
+    # --- CÓDIGO CLAVE DE LA SOLUCIÓN ---
+    # 1. Crear el vector de números de fila secuenciales (1, 2, 3, ...)
+    row_sequence <- 1:nrow(minidataset)
+
+    # 2. Formatear el texto para el cursor (Ej: "Row: 1", "Row: 2", ...)
+    hover_text <- paste0("Row: ", row_sequence)
+    # ------------------------------------
+
+    # Crear un nuevo plot
+    plot001_factor <- plotly::plot_ly()
+
+    # Scatter plot
+    plot001_factor <- plotly::add_trace(p = plot001_factor,
+                                        type = "scatter",
+                                        mode = "markers",
+                                        x = minidataset[,var_name_factor],
+                                        y = minidataset[,var_name_rv],
+                                        color = minidataset[,var_name_factor],
+                                        colors = settings_df$color,
+
+                                        # *********************************
+                                        # 1. ASIGNAR EL TEXTO DEL CURSOR:
+                                        # Usamos el nuevo vector secuencial y formateado
+                                        text = hover_text,
+
+                                        # 2. CONFIGURAR EL CONTENIDO DEL CURSOR:
+                                        # Mantenemos 'text+x+y+name' para incluir el nuevo texto
+                                        hoverinfo = 'text+x+y+name',
+                                        # *********************************
+
+                                        marker = list(size = 15, opacity = 0.7))
+
+    # Título y settings
+    plot001_factor <- plotly::layout(p = plot001_factor,
+                                     title = "Scatterplot",
+                                     font = list(size = 20),
+                                     margin = list(t = 100))
+
+    # Sin zerolines
+    plot001_factor <- plotly::layout(p = plot001_factor,
+                                     xaxis = list(zeroline = FALSE, title = var_name_factor),
+                                     yaxis = list(zeroline = FALSE, title = var_name_rv))
+
+    # El bloque renderPlotly debe devolver el objeto Plotly al final
+    plot001_factor
   })
   ###---------------------------------------------------------------------------
   output$"output_side_panel" <- renderUI({
@@ -1095,7 +1296,8 @@ server <- function(input, output, session) {
   })
 
   output$"df_my_dataset" <- renderTable({
-    the_list01_Dataset_internal()$"my_dataset"
+    the_list01_Dataset_stone$"my_dataset"
+    # the_list01_Dataset_internal()$"my_dataset"
   })
 
   output$"df_my_minidataset" <- renderTable({
@@ -1106,91 +1308,112 @@ server <- function(input, output, session) {
     # titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
 
 
-      # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
-      str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: hidden;"
+    # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
+    str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: hidden;"
 
-      bslib::navset_card_tab(
-        # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-        title = tags$div(
-          style = "
+    bslib::navset_card_tab(
+      # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+      title = tags$div(
+        style = "
         min-height: 10px;
         padding-top: 0px;      /* ↑ Arriba */
         padding-right: 0px;    /* → Derecha */
         padding-bottom: 0px;   /* ↓ Abajo */
         padding-left: 0px;     /* ← Izquierda */
       ",
-          tags$h4("Input"),
-        ),
-        # title =
-        # div(
-          # style = "height: 90vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+        tags$h4("Input"),
+      ),
+      # title =
+      # div(
+      # style = "height: 90vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
 
-          bslib::nav_panel(
-                  title = "user_selection",
-                  h4("User Selection"),
-                  tags$div(
-                    # style = "flex-grow: 1; overflow-y: auto;",
-                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
-                    p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)"),
-                    # fn_infoUI_zocalo_dataset(data_obj = the_list01_Dataset_internal()),
-                    # fn_infoUI_zocalo_01_dataset(data_obj = the_list01_Dataset_show()),
-                    fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone)),
-
-
-                    fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone)),
-
-                    # reactiveValuesToList(la_lista01)
-                    # DT::DTOutput("settings_table_display02")
-                    tags$div(
-                      # style = "flex-grow: 1; overflow-y: auto;",
-                      style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-
-                    fn_infoUI_zocalo_03_container(dt_output_id = "settings_table_display02")
-                    )
-                  )
+      bslib::nav_panel(
+        title = "user_selection",
+        h4("User Selection"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)"),
+          # fn_infoUI_zocalo_dataset(data_obj = the_list01_Dataset_internal()),
+          # fn_infoUI_zocalo_01_dataset(data_obj = the_list01_Dataset_show()),
+          fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone)),
 
 
-                ),
-                bslib::nav_panel(
-                  title = "dataset",
-                  h4("Dataset"),
-                  tags$div(
-                    # style = "flex-grow: 1; overflow-y: auto;",
-                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
-                    tags$div(
-                      # style = "flex-grow: 1; overflow-y: auto;",
-                      style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-                      tableOutput("df_my_dataset")
-                    )
-                  )
-                ),
-                bslib::nav_panel(
-                  title = "minidataset",
-                  h4("minidataset"),
-                  tags$div(
-                    # style = "flex-grow: 1; overflow-y: auto;",
-                    style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
-                    tags$div(
-                      # style = "flex-grow: 1; overflow-y: auto;",
-                      style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-                      tableOutput("df_my_minidataset")
-                    )
-                  )
-                ),
-              bslib::nav_panel(
-                title = "control",
-                h4("Control"),
-                tags$div(
-                  # style = "flex-grow: 1; overflow-y: auto;",
-                  style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone)),
 
-                  "Mostramos el dataset..."
-                )
-              ),
+          # reactiveValuesToList(la_lista01)
+          # DT::DTOutput("settings_table_display02")
+          tags$div(
+            # style = "flex-grow: 1; overflow-y: auto;",
+            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
 
-)
+            fn_infoUI_zocalo_03_container(dt_output_id = "settings_table_display02")
+          )
+        )
 
-      # )
+
+      ),
+      bslib::nav_panel(
+        title = "dataset",
+        h4("Dataset"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          tags$div(
+            # style = "flex-grow: 1; overflow-y: auto;",
+            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
+            tableOutput("df_my_dataset")
+          )
+        )
+      ),
+      bslib::nav_panel(
+        title = "minidataset",
+        h4("minidataset"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          tags$div(
+            # style = "flex-grow: 1; overflow-y: auto;",
+            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
+            tableOutput("df_my_minidataset")
+          )
+        )
+      ),
+      bslib::nav_panel(
+        title = "control",
+        h4("Control"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+
+          "- Original vs. Filtered Row Count.", br(),
+          "- Rows Removed Due to Missing Data (NA) in selected columns.", br(),
+          "- Min/Max by Factor Level for the Response Variable (RV)", br(),
+
+          tags$hr(style = "border-top: 3px solid #000000;"),
+          tags$div(
+            # Aplicamos Flexbox para control vertical
+            style = "display: flex; flex-direction: column; height: 60vh; overflow-y: auto; padding: 10px;",
+
+            # Elementos que deben fluir
+            DT::DTOutput("df_control01"),
+
+            tags$hr(style = "border-top: 3px solid #000000;"),
+
+            DT::DTOutput("df_control02"),
+
+            tags$hr(style = "border-top: 3px solid #000000;"),
+
+            # Aseguramos que el Plotly tenga un alto que respete el contenedor
+            # plotlyOutput por defecto puede ser muy alto o tener un alto fijo.
+            plotly::plotlyOutput("control03_plotly", height = "600px") # Dale un alto inicial manejable
+          )
+        )
+      ),
+
+    )
+
+    # )
 
 
     # [CAMBIO APLICADO] Utilizamos tags$div para envolver y aplicar el estilo de altura y ancho.
@@ -1397,12 +1620,12 @@ server <- function(input, output, session) {
                           icon = icon("play", class = "fa-2x"),
                           class = "btn-warning btn-sm"),
 
-             downloadButton(outputId = "descargar02",
+             downloadButton(outputId = "btn_download_html",
                             label = NULL,
                             icon = icon("download", class = "fa-2x"),
                             class = "btn-warning btn-sm"),
 
-             actionButton(inputId = "open02",
+             actionButton(inputId = "btn_open_html",
                           label = NULL,
                           icon = icon("binoculars", class = "fa-2x"),
                           class = "btn-warning btn-sm")
@@ -1420,22 +1643,22 @@ server <- function(input, output, session) {
       bslib::card_header(
         style = "height: 60px; overflow: hidden;",
         fluidRow(
-        column(2, tags$h4("Output")),
-        column(8),
-        column(2, uiOutput("botonera_html"))
+          column(2, tags$h4("Output")),
+          column(8),
+          column(2, uiOutput("botonera_html"))
         )
-        ),
+      ),
 
       card_body(
-      class = "p-0",
+        class = "p-0",
         tags$div(
-            # style = "flex-grow: 1; overflow-y: auto;",
-            style = "flex-grow: 1; overflow-y: auto; height: 84vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = "flex-grow: 1; overflow-y: auto; height: 84vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
 
-            # Contenido que deseas mostrar dentro de la tarjeta
-            htmlOutput("html_viewer")
-          )
+          # Contenido que deseas mostrar dentro de la tarjeta
+          htmlOutput("html_viewer")
         )
+      )
     )
 
 
@@ -1618,8 +1841,8 @@ server <- function(input, output, session) {
                  br(),
                  # Contenedor del check/spinner que vamos a manipular
                  tags$div(id = "ID_my_check",
-                         style = "text-align: center; height: 200px;",
-                         tags$i(class = "fa fa-spinner fa-spin fa-6x")) # Spinner inicial
+                          style = "text-align: center; height: 200px;",
+                          tags$i(class = "fa fa-spinner fa-spin fa-6x")) # Spinner inicial
         )
       ),
       easyClose = FALSE,
@@ -1778,19 +2001,19 @@ server <- function(input, output, session) {
   })
 
 
-output$btn_export_pdf <- downloadHandler(
-  filename = str_output_file_name_pdf(),
-  content = function(file) {
-    # quarto::quarto_render(
-    #   input = str_file_path_input_qmd(),
-    #   execute_params = list(species = input$in_species)
-    # )
-    fs::file_copy(
-      str_output_file_path_pdf(),
-      file
-    )
-  }
-)
+  output$btn_export_pdf <- downloadHandler(
+    filename = str_output_file_name_pdf(),
+    content = function(file) {
+      # quarto::quarto_render(
+      #   input = str_file_path_input_qmd(),
+      #   execute_params = list(species = input$in_species)
+      # )
+      fs::file_copy(
+        str_output_file_path_pdf(),
+        file
+      )
+    }
+  )
 
 
 
@@ -1894,30 +2117,13 @@ output$btn_export_pdf <- downloadHandler(
   observeEvent(input$"btn_play_front", {
 
     ANCESTRAL_PLAY(TRUE)
-    })
+  })
 
   observeEvent(ANCESTRAL_PLAY(), {
     req(ANCESTRAL_PLAY())
     # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
 
-    ##############
 
-    # Define el nuevo estado (TRUE para checked, FALSE para unchecked)
-    nuevo_estado <- TRUE # O FALSE
-
-    # Construir el código JavaScript
-    js_code <- paste0(
-      # 1. Cambia visualmente el estado del checkbox
-      "var checkbox = document.getElementById('toggle');",
-      "checkbox.checked = ", tolower(nuevo_estado), ";",
-
-      # 2. ¡CLAVE! Notifica a Shiny (R) del nuevo valor
-      "Shiny.setInputValue('toggle', checkbox.checked, {priority: 'event'});"
-    )
-
-    # 3. Ejecutar el código JavaScript
-    shinyjs::runjs(js_code)
-    ###############################
 
     progress <- Progress$new(session, min = 0, max = 1)
 
@@ -2086,27 +2292,24 @@ output$btn_export_pdf <- downloadHandler(
       message(crayon::green("Process completed!"))
       message("")
 
-      # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
-      # Usa 'later' para ejecutar el código JavaScript después de 300 milisegundos.
-      # Esto le da tiempo al navegador para renderizar todos los elementos pendientes.
-      # later::later(function() {
+      ###############################################
 
+      # Define el nuevo estado (TRUE para checked, FALSE para unchecked)
+      nuevo_estado <- TRUE # O FALSE
 
+      # Construir el código JavaScript
+      js_code <- paste0(
+        # 1. Cambia visualmente el estado del checkbox
+        "var checkbox = document.getElementById('toggle');",
+        "checkbox.checked = ", tolower(nuevo_estado), ";",
 
-      # }, delay = 0.3) # 0.3 segundos es un buen valor inicial
+        # 2. ¡CLAVE! Notifica a Shiny (R) del nuevo valor
+        "Shiny.setInputValue('toggle', checkbox.checked, {priority: 'event'});"
+      )
 
-      # session$onFlush(once = TRUE, function() {
-      #
-      #   # Estos comandos se ejecutarán solo después de que Shiny
-      #   # haya enviado la señal para renderizar todos los elementos.
-      #
-      #   shinyjs::removeClass(id = "btn_play_html", class = "btn-warning")
-      #   shinyjs::addClass(id = "btn_play_html", class = "btn-success")
-      #
-      #   removeClass("btn_play_front", "btn-primary")
-      #   addClass("btn_play_front", "btn-success")
-      #
-      # })
+      # 3. Ejecutar el código JavaScript
+      shinyjs::runjs(js_code)
+      ###############################
 
 
       output$mensaje_estado02 <- renderText({
@@ -2211,14 +2414,14 @@ output$btn_export_pdf <- downloadHandler(
     shinyjs::runjs(js_code)
   })
 
-  observeEvent(input$open02, {
+  observeEvent(input$btn_open_html, {
     # C2. Actualizar estado y color del botón
     message(crayon::green("OPen completed!"))
     message("")
 
     # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
-    removeClass("open02", "btn-warning")
-    addClass("open02", "btn-success")
+    removeClass("btn_open_html", "btn-warning")
+    addClass("btn_open_html", "btn-success")
 
     # --- CAMBIO CLAVE AQUÍ ---
     # 2. Obtener la URL del archivo
@@ -2267,7 +2470,7 @@ output$btn_export_pdf <- downloadHandler(
 
 
   # --- Lógica del Botón "Descargar" ---
-  output$descargar02 <- downloadHandler(
+  output$btn_download_html<- downloadHandler(
 
     filename = function() {
       la_ruta <- str_output_file_name_html()
@@ -2282,15 +2485,15 @@ output$btn_export_pdf <- downloadHandler(
 
     content = function(file) {
       archivo_a_descargar <- str_output_file_path_html()
-
+      print(archivo_a_descargar)
       if (!is.null(archivo_a_descargar) && file.exists(archivo_a_descargar)) {
 
         # 1. CAMBIO DE COLOR B2: Naranja -> Verde (Persistente)
         runjs("
                     // Quitamos la clase temporal 'disabled' si la puso el navegador
-                    $('#descargar02').removeClass('disabled');
-                    $('#descargar02').removeClass('btn-warning');
-                    $('#descargar02').addClass('btn-success');
+                    $('#btn_download_html').removeClass('disabled');
+                    $('#btn_download_html').removeClass('btn-warning');
+                    $('#btn_download_html').addClass('btn-success');
 
                     // IMPORTANTE: NO SE RESTABLECE EL BOTÓN 1 A NARANJA AQUÍ.
                     // AMBOS BOTONES PERMANECERÁN VERDES.
@@ -2426,6 +2629,39 @@ output$btn_export_pdf <- downloadHandler(
 
     # Devolvemos el iframe como texto (renderText)
     return(armado_v)
+  })
+
+
+  ####################################
+  # General reset
+  observeEvent(input$"btn_refresh", {
+
+    set_reactive_values_from_list(rv = the_list01_Dataset_stone, data_list = the_list01_Dataset_R)
+    set_reactive_values_from_list(rv = the_list02_VarSelection_stone, data_list = the_list02_VarSelection_R)
+    set_reactive_values_from_list(rv = the_list03_SpecialSettigns_stone, data_list = the_list03_SpecialSettigns_R)
+
+    shinyjs::removeClass(id = "btn_dataset", class = "btn-success")
+    shinyjs::addClass(id = "btn_dataset",  class = "btn-primary")
+
+    shinyjs::removeClass(id = "btn_var_selector", class = "btn-success")
+    shinyjs::addClass(id = "btn_var_selector",  class = "btn-primary")
+
+    shinyjs::removeClass(id = "btn_config", class = "btn-success")
+    shinyjs::addClass(id = "btn_config",  class = "btn-primary")
+
+    shinyjs::removeClass(id = "btn_play_front", class = "btn-success")
+    shinyjs::addClass(id = "btn_play_front",  class = "btn-primary")
+
+    shinyjs::removeClass(id = "btn_play_html", class = "btn-warning")
+    shinyjs::addClass(id = "btn_play_html",  class = "btn-warning")
+
+    shinyjs::removeClass(id = "btn_download_html", class = "btn-warning")
+    shinyjs::addClass(id = "btn_download_html",  class = "btn-warning")
+
+    shinyjs::removeClass(id = "btn_open_html", class = "btn-warning")
+    shinyjs::addClass(id = "btn_open_html",  class = "btn-warning")
+
+
   })
 }
 
