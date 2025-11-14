@@ -1,7 +1,7 @@
 Package: exp002RShiny
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 1.0.12
+Version: 1.0.14
 Authors@R: c(
     person(
       "David", "Elias Panigo",
@@ -22,6 +22,7 @@ Config/testthat/edition: 3
 Imports: 
     agricolae,
     bslib,
+    colourpicker,
     digest,
     dplyr,
     DT,
@@ -35,10 +36,12 @@ Imports:
     palmerpenguins,
     plotly,
     quarto,
+    readxl,
     reticulate,
     rmarkdown,
     rstudioapi,
     shiny,
     shinyjs,
+    stringr,
     usethis,
     webshot2

@@ -1,24 +1,16 @@
 
 <!-- IMAGEN DEBAJO DEL TOC LATERAL -->
 
-<div style="position: fixed; right: 30px; top: 550px; width: 200px; text-align: center; z-index: 999;">
-  Standard analysis, reporting and R for Science.
-![Imagen lateral](images/Rscience_logo_01.png){width="90%"}
-<br>
-  <small>
-- Reproducibility.  
-- Transparency.  
-- Open Access.  
-  </small>
-  </div>
-
-  <!-- <style> -->
-  <!-- /* Oculta el contenido principal por defecto */ -->
-  <!-- #quarto-document-content { -->
-  <!--     visibility: hidden; /* Mantiene el espacio, pero lo hace invisible */ -->
-  <!--     opacity: 0;         /* Para una transición suave */  -->
-  <!--     } -->
-<!-- </style> -->
+<!-- <div style="position: fixed; right: 30px; top: 550px; width: 200px; text-align: center; z-index: 999;"> -->
+<!--   Standard analysis, reporting and R for Science. -->
+<!-- ![Imagen lateral](images/Rscience_logo_01.png){width="90%"} -->
+<!-- <br> -->
+<!--   <small> -->
+<!-- - Reproducibility.   -->
+<!-- - Transparency.   -->
+<!-- - Open Access.   -->
+<!--   </small> -->
+<!--   </div> -->
 
 
 

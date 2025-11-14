@@ -1,50 +1,8 @@
-```{r inside101, eval=TRUE, include=FALSE, echo=FALSE}
-file_name <- params$"file_name"
-file_source <- params$"file_source" 
-var_name_rv <- params$"var_name_rv"
-var_name_factor <- params$"var_name_factor"
-alpha_value <- params$"alpha_value"
 
-################################
-# 1. Configuración de locale a inglés (temporalmente)
-current_time <- params$"current_time"
-if(current_time == "R_outside") {
-  current_time <- Sys.time()
-  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
-}
-
-script_used <-  params$"script_used"
-if(script_used == "R_outside"){
-  script_used <- "Script XXX-001"
-  script_used <- paste0('<span style="background-color: orange;">', script_used, '</span>')
-} 
-
-the_package <- params$"the_package"
-if(the_package == "R_outside"){
-  #the_package <- "agricolae"
-  #the_package <- paste0('<span style="background-color: orange;">', the_package, '</span>')
-} 
-
-tool_used <- params$"tool_used"
-if(tool_used == "R_outside"){
-  tool_used <- "XXX-General Linnear Model, Fixed Effect, Anova 1 Way."
-  tool_used <- paste0('<span style="background-color: orange;">', tool_used, '</span>')
-} else tool_used <- tool_used_styled <- paste0(
-  '<span style="background-color: green; font-weight: bold; font-size: 1.2em; color: white; padding: 2px;">', 
-  tool_used, 
-  '</span>'
-)
-
-
-```
 
 ```{r cod101, eval=TRUE, include=FALSE, echo=FALSE}
 
-# 3. Resto de la Información de Tiempo (no necesita cambios de locale)
-local_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S %Z") 
-utc_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
-system_time_full <- local_time_full 
-tz_info <- Sys.timezone()
+
 
 # 4. Información del Sistema y Herramienta
 session_info <- sessionInfo()
@@ -57,15 +15,6 @@ R_version <- paste0(session_info$"R.version"$"version.string",
 
 # 5. Versión de la librería (stats)
 
-if (the_package %in% installed.packages()[, "Package"]) {
-  package_version_info <- paste0(the_package, " ", as.character(packageVersion(the_package)))
-} else {
-  extra_pack <- "agricolae"
-  package_version_info <- paste0("XXX--- ",extra_pack, " ", as.character(packageVersion(extra_pack)))
-  package_version_info <- paste0('<span style="background-color: red;">', 
-                                 package_version_info, '</span>')
-  
-}
 
 
 ```
@@ -87,6 +36,7 @@ if (the_package %in% installed.packages()[, "Package"]) {
 ## User Inputs
 * **Rscience Tool:** `r tool_used`  
 * **Rscience Tool Script:** `r script_used`
+* **Data source:** `r file_source` 
 * **Dataset file name:** `r file_name` 
 * **Response Variable:** `r var_name_rv`  
 * **Factor:** `r var_name_factor`  

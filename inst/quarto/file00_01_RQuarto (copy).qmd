@@ -19,9 +19,19 @@ knitr:
         comment: ""
 params:
     activate_params: "TRUE"
-    file_source: "from_params" 
-    file_name: "from_params" 
-    
+    file_name: "mtcars"
+    file_source: "r_source" 
+    var_name_rv: "mpg"
+    var_name_factor: "cyl"
+    alpha_value: "0.05"
+    vector_ordered_levels:
+      - "6"
+      - "4"
+      - "8"
+    vector_ordered_colors: 
+      - "#000000"
+      - "#00FF00"
+      - "#0000FF"
 ---
 
 ```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
@@ -29,32 +39,28 @@ params:
   library("htmlwidgets")
   library("knitr")
 activate_params   <- as.logical(as.character(params$"activate_params"))
-color_activate_params <- "white"
 ```
 
-```{r eval=activate_params, echo=FALSE, message=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 
 if(activate_params){
-    color_activate_params <- "orange"
-    file_source <- params$"file_source"
-    if(file_source == "from_params") file_source <- "r_source"
-    file_name <- params$"file_name"
-    if(file_name == "from_params") file_name <- "mtcars"
-    var_name_rv <- "mpg"
-    var_name_factor <- "cyl"
-    alpha_value <- 0.05
-    vector_ordered_levels <- c("6", "4", "8")
-    vector_ordered_colors <- c("#000000", "#00FF00", "#0000FF")
-    
-    check_r_source        <- file_source == "r_source"
-    check_rscience_source <- file_source == "rscience_source"
-    check_excel_source    <- file_source == "excel_source"
-    check_csv_source      <- file_source == "csv_source"
-
-    if(check_r_source) my_dataset <- get(file_name)
-
+file_name   <- params$"file_name"
+file_source <- params$"file_source"
+var_name_rv <- params$"var_name_rv"
+var_name_factor <- params$"var_name_factor"
+alpha_value <- as.numeric(as.character(params$"alpha_value"))
+vector_ordered_levels <- params$"vector_ordered_levels"
+vector_ordered_colors <- params$"vector_ordered_colors"
 }
+#vector_ordered_colors <- params$"vector_ordered_colors"
 
+# Basics lvl 01
+check_r_source        <- file_source == "r_source"
+check_rscience_source <- file_source == "rscience_source"
+check_excel_source    <- file_source == "excel_source"
+check_csv_source      <- file_source == "csv_source"
+
+if(check_r_source) my_dataset <- get(file_name)
 ```
 
 ```{r eval=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
@@ -67,28 +73,24 @@ if(activate_params){
 ```
 
 ```{r eval=FALSE, echo=TRUE}
-# El external
 # # # # # Section 02 - Import dataset ----------------------------------------
-  #+++---my_dataset <- AAA_import_dataset_external_AAA
+  #+++---my_dataset <- _+A+_import_dataset_internal_+A+_
   head(x = my_dataset, n = 5)
 ```
-
-
-```{r eval=TRUE, echo=FALSE}
-# El internal
-# # # # # Section 02 - Import dataset ----------------------------------------
-  #+++---my_dataset <- AAA_import_dataset_internal_AAA
-  head(x = my_dataset, n = 5)
-```
-
 
 ```{r eval=TRUE, echo=TRUE}
+# # # # # Section 02 - Import dataset ----------------------------------------
+  #+++---my_dataset <- _+A+_import_dataset_external_+A+_
+  head(x = my_dataset, n = 5)
+```
+
+```{r}
 # # # # # Section 03 - Settings ----------------------------------------------
-  #+++---var_name_rv     <- "BBB_var_name_rv_BBB"
-  #+++---var_name_factor <- "BBB_var_name_factor_BBB"
-  #+++---alpha_value     <-  BBB_alpha_value_BBB
-  #+++---vector_ordered_levels <- CCC_vector_ordered_levels_CCC
-  #+++---vector_ordered_colors <- CCC_vector_ordered_colors_CCC
+  #+++---var_name_rv     <- "_+B+_var_name_rv_+B+_"
+  #+++---var_name_factor <- "_+B+_var_name_factor_+B+_"
+  #+++---alpha_value     <- _+B+_alpha_value_+B+_
+  #+++---vector_ordered_levels <- _+C+_vector_ordered_levels_+C+_
+  #+++---vector_ordered_colors <- _+C+_vector_ordered_colors_+C+_
 ```
 
 ```{r}
