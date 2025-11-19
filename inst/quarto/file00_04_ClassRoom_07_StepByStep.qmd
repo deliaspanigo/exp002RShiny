@@ -3,64 +3,146 @@
 ### Decision-Making Process in ANOVA
 The ANOVA test is specifically performed to make decisions.  
 The decision-making process has a set of sequential steps, in a particular order.  
-- Step 01: Control over the response variable.  
-- Step 02: Verification of the normality requirement of the residuals.  
-- Step 03: Verification of the homogeneity of variances requirement.  
-- Step 04: Interpretation of the ANOVA test.  
-- Step 05: Interpretation of the Tukey test.  
+Step 01: Verirficación de la normalidad.  
+Step 02: Verificación de la homogeneidad  
+Step 03: Verificacion global de requisitos  
+Step 04: Validacion de anova  
+Step 05: Interpretacion de Anova  
+Step 06: Validacion del uso de Tukey  
+Step 07: Interpretacion de Tukey  
+Step 08: Analisis de Coherencia Anova y Tukey  
 
 
-#### Step 01: Control over the response variable.  
-De la estadística descritiva buscamos los valores mínimo y máximos de la variable respuesta par cada nivel del factor.  
-Esto es acción que permite detectar posibles errores de tipeo realizados en nuestro dataset. El control solo puede ser llevado a cabo en aquellos contextos en los cuales se tiene noción de lo que podría ser un valor imposible para la variable. 
-Si se trabaja sin un marco de límite para la variable respuesta, deberá asumirse que los valores mínimos y máximos son válidos y se continúa con el siguiente paso.
-
-```{r}
-#| echo: false
-fn_show_table_dynamic(object_name = "df_vr_position_levels", caption_text = "")
-
-
-```
-
-
-#### Step 02: Verification of the normality requirement of the residuals.  
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 01: Verirficación de la normalidad.
+::: {.columns}
+::: {.column width="48%"}
 ```{r}
 #| warning: false
 #| echo: false
-nombres_aver <- c("test_residuals_normality")
-aver <- mget(nombres_aver)
-aver 
-
-knitr::asis_output(phrase_shapiro_selected)
+fn_show_table_dynamic(object_name = "df_normality", caption_text = "")
 ```
-
-
-#### Step 03: Verification of the homogeneity of variances requirement.  
+:::
+::: {.column width="4%"}
+:::
+::: {.column width="48%"}
 ```{r}
 #| warning: false
 #| echo: false
-nombres_aver <- c("test_residuals_homogeneity")
-aver <- mget(nombres_aver)
-aver 
-knitr::asis_output(phrase_bartlett_selected)
+knitr::asis_output(phrase02_normality_selected)
 ```
+:::
+:::
+</div>
 
-#### Step 04: Interpretation of the ANOVA test.  
+<!-- <hr style="border: 1px solid #dee2e6; margin: 1rem 0;">  -->
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 02: Verificación de la homogeneidad
+::: {.columns}
+::: {.column width="48%"}
 ```{r}
+#| warning: false
 #| echo: false
-fn_show_table_dynamic(object_name = "df_table_anova_mod", caption_text = "")
+fn_show_table_dynamic(object_name = "df_homogeneity", caption_text = "")
+```
+:::
+::: {.column width="4%"}
+:::
+::: {.column width="48%"}
+```{r}
+#| warning: false
+#| echo: false
+knitr::asis_output(phrase02_homogeneity_selected)
+```
+:::
+:::
+</div>
 
-knitr::asis_output(phrase_requeriments_selected)
-knitr::asis_output(phrase_anova_selected)
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 03: Verificacion global de requisitos 
+```{r}
+#| warning: false
+#| echo: false
+
+
+knitr::asis_output(phrase02A_requeriments_selected)
+```
+</div>
+
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 04: Validacion de anova
+```{r}
+#| warning: false
+#| echo: false
+knitr::asis_output(phrase02B_requeriments_selected)
+knitr::asis_output(phrase02C_requeriments_selected)
+```
+</div>
+
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 05: Interpretacion de Anova
+::: {.columns}
+::: {.column width="53%"}
+```{r}
+#| warning: false
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_anova_classroom", caption_text = "")
+```
+:::
+::: {.column width="4%"}
+:::
+::: {.column width="43%"}
+```{r}
+#| warning: false
+#| echo: false
+knitr::asis_output(phrase02_anova_selected)
+```
+:::
+:::
+</div>
+
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 06: Validacion del uso de Tukey
+```{r}
+#| warning: false
+#| echo: false
+
+knitr::asis_output(phrase02A_tukey_selected)
+knitr::asis_output(phrase02B_tukey_selected)
 
 ```
+</div>
 
-#### Step 05: Interpretation of the Tukey test.  
+
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 07: Interpretacion de Tukey
+::: {.columns}
+::: {.column width="100%"}
 ```{r}
+#| warning: false
 #| echo: false
-fn_show_table_dynamic(object_name = "df_tukey_table", caption_text = "")
+knitr::asis_output(phrase02C_tukey_selected)
+fn_show_table_dynamic(object_name = "df_tukey_table_classroom", caption_text = "")
+plot007_factor
+```
+:::
+:::
+</div>
 
 
+<div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
+#### Step 08: Analisis de Coherencia Anova y Tukey
+```{r}
+#| warning: false
+#| echo: false
+
+
+knitr::asis_output(phrase01_anova_tukey_selected)
 ```
 
 
@@ -68,7 +150,5 @@ fn_show_table_dynamic(object_name = "df_tukey_table", caption_text = "")
 knitr::asis_output("The means of each factor level are detailed with the standard error derived from the model.  
                    The statistical groups from the Tukey test are detailed for each factor level.")
 ```
-```{r , eval=TRUE, include=TRUE}
-plot007_factor
-```
+</div>
 

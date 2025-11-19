@@ -217,7 +217,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: center;", # <--- ESTO CENTRA TODO EL CONTENIDO
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.17"),
+      tags$b("v1.0.18"),
       br(),
 
       uiOutput("the_toggle"),
@@ -2652,6 +2652,7 @@ server <- function(input, output, session) {
     shinyjs::removeClass(id = "btn_play_front", class = "btn-success")
     shinyjs::addClass(id = "btn_play_front",  class = "btn-primary")
 
+    ANCESTRAL_PLAY(FALSE)
     shinyjs::removeClass(id = "btn_play_html", class = "btn-success")
     shinyjs::addClass(id = "btn_play_html",  class = "btn-warning")
 

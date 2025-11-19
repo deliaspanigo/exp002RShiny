@@ -1,0 +1,136 @@
+---
+title: "Análisis de ANOVA con mtcars"
+author: "Taller de Estadística"
+format: revealjs
+transition: slide
+theme: default
+---
+
+# Análisis de ANOVA
+## Dataset mtcars
+
+### Variables a analizar:
+- **Variable independiente:** `cyl` (número de cilindros)
+- **Variable dependiente:** `mpg` (millas por galón)
+
+---
+
+# Exploración Inicial de los Datos
+
+```{r}
+#| echo: true
+# Cargar los datos
+data(mtcars)
+head(mtcars)
+```
+
+---
+
+# Resumen Estadístico
+
+```{r}
+#| echo: true
+# Convertir cyl a factor
+mtcars$cyl <- as.factor(mtcars$cyl)
+
+# Resumen por grupo
+summary(mtcars$mpg)
+tapply(mtcars$mpg, mtcars$cyl, summary)
+```
+
+---
+
+# Visualización: Boxplots por Grupo
+
+```{r}
+#| echo: true
+boxplot(mpg ~ cyl, data = mtcars,
+        main = "Millas por Galón según Cilindros",
+        xlab = "Número de Cilindros",
+        ylab = "MPG",
+        col = c("lightblue", "lightgreen", "lightcoral"))
+```
+
+---
+
+# Supuestos del ANOVA
+
+## 1. Normalidad de los residuos
+
+```{r}
+#| echo: true
+modelo <- aov(mpg ~ cyl, data = mtcars)
+shapiro.test(residuals(modelo))
+```
+
+---
+
+## 2. Homogeneidad de varianzas
+
+```{r}
+#| echo: true
+# Test de Levene
+car::leveneTest(mpg ~ cyl, data = mtcars)
+```
+
+---
+
+# Ejecución del ANOVA
+
+```{r}
+#| echo: true
+# Modelo ANOVA
+anova_result <- aov(mpg ~ cyl, data = mtcars)
+summary(anova_result)
+```
+
+---
+
+# Prueba Post-Hoc
+## Comparaciones múltiples
+
+```{r}
+#| echo: true
+# Test de Tukey HSD
+tukey_result <- TukeyHSD(anova_result)
+tukey_result
+```
+
+---
+
+# Visualización: Resultados del Tukey
+
+```{r}
+#| echo: true
+plot(tukey_result, las = 1)
+```
+
+---
+
+# Interpretación de Resultados
+
+## Conclusiones principales:
+
+- **¿Existen diferencias significativas?** Sí/No (basado en p-valor)
+- **Entre qué grupos hay diferencias:** 
+  - 4 vs 6 cilindros
+  - 4 vs 8 cilindros  
+  - 6 vs 8 cilindros
+- **Los vehículos con menos cilindros tienen mayor eficiencia de combustible**
+
+---
+
+# Resumen Final
+
+```{r}
+#| echo: true
+# Medias por grupo
+medias <- tapply(mtcars$mpg, mtcars$cyl, mean)
+medias
+
+# Diferencia entre extremos
+diff(range(medias))
+```
+
+## **Recomendación:** 
+El número de cilindros afecta significativamente el consumo de combustible.

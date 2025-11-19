@@ -41,7 +41,7 @@ fn_show_table_dynamic(object_name = "df_show_n", caption_text = "")
 #| echo: false
 knitr::asis_output("This is the table format detailed in the bibliography.")
 
-fn_show_table_dynamic(object_name = "df_table_anova_mod", caption_text = "")
+fn_show_table_dynamic(object_name = "df_table_anova_classroom", caption_text = "")
 ```
 
 
@@ -65,7 +65,7 @@ fn_show_table_dynamic(object_name = "df_table_anova", caption_text = "")
 #| echo: false
 knitr::asis_output("This is the table format detailed in the bibliography.")
 
-fn_show_table_dynamic(object_name = "df_tukey_table", caption_text = "")
+fn_show_table_dynamic(object_name = "df_tukey_table_classroom", caption_text = "")
 ```
 
 ### 2) Special plot for Tukey test

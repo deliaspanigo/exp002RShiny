@@ -97,4 +97,33 @@ body {
     border-radius: 0 0 var(--rs-border-radius) var(--rs-border-radius);
 }
 
+
+/* ------------------------------------------------------------------ */
+/* 5. ESTILOS PARA BLOQUES DE SALIDA DE CÓDIGO (R OUTPUT) 📊 */
+/* ------------------------------------------------------------------ */
+
+/* Aplica estilos al contenedor principal de la salida (incluye textos, tablas, etc.) */
+.cell-output,
+.sourceCode .output {
+    /* Fondo del bloque de salida */
+    background-color: var(--rs-output-bg) !important;
+    /* Color del texto dentro de la salida */
+    color: var(--rs-output-text) !important;
+    /* Aplica bordes y radios definidos */
+    border: var(--rs-border-thickness) solid var(--rs-color-content-border);
+    border-radius: var(--rs-border-radius);
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Opcional: Estilo específico para los mensajes de texto de la salida */
+.cell-output pre {
+    /* Asegura que el texto se vea bien */
+    color: var(--rs-output-text) !important;
+    /* Elimina el fondo que podría heredar del código */
+    background-color: transparent !important;
+    border: none;
+}
 /* [El resto del código para código R y output se mantiene igual] */
+
+

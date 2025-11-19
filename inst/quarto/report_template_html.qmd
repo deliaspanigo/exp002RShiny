@@ -121,12 +121,12 @@ document.addEventListener("DOMContentLoaded", function() {
         // Orden deseado
         const desiredOrder = [
           "Init",
-          "AutoReport", 
           "Theory",
-          "ClassRoom (ANOVA)",
+          "ClassRoom",
+          "AutoReport", 
           "Data Analysis (Step by step)",
+          "ASA",
           "Rscience Code",
-          "R Script",
           "Others"
         ];
         
@@ -206,8 +206,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 ::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
 # Rscience Code
-```{r cod01, child='file00_01_RQuarto.qmd'}
-```
+{{< include file00_01_RQuarto.qmd >}}
+
+<!-- ```{r cod01, child='file00_01_RQuarto.qmd'} -->
+<!-- ``` -->
 
 # Init
 ```{r cod02, child='file00_02_Init.qmd'}
@@ -221,19 +223,23 @@ document.addEventListener("DOMContentLoaded", function() {
 ```{r cod999, child='file00_99_Theory.qmd'}
 ```
 
-# ClassRoom (ANOVA) 
+# ClassRoom
 ::: {#tab-classroom}
 ```{r cod04, child='file00_04_ClassRoom.qmd'}
 ```
 :::
 
 # Data Analysis (Step by step)
-```{r code04_07, child='file00_04_ClassRoom_07_StepByStep.qmd'}
-```
+{{< include file00_04_ClassRoom_07_StepByStep.qmd >}}
 
-# R Script
-```{r cod05, child='file00_05_Script.qmd'}
-```
+# ASA
+{{< include file00_05_ASA.qmd >}}
+
+<!-- ```{r code04_07, child='file00_04_ClassRoom_07_StepByStep.qmd'} -->
+<!-- ``` -->
+
+
+
 
 # Others
 ```{r cod06, child='file00_06_Others.qmd'}
