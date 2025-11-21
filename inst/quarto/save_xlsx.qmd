@@ -1,0 +1,49 @@
+```{r }
+
+# 1. Cargar la librería (asegúrate de que esté instalada)
+library(writexl)
+
+# 2. Crear los tres dataframes de ejemplo (Tus df_summary_anova, etc.)
+df_anova_model <- data.frame(
+  Source = c("A", "Error"),
+  DF = c(1, 18),
+  SS = c(100.5, 95.3)
+)
+
+df_posthoc_tests <- data.frame(
+  Comparison = c("Group 1 vs 2", "Group 2 vs 3"),
+  Mean_Diff = c(5.2, 1.1),
+  P_Value = c(0.001, 0.45)
+)
+
+df_summary_stats <- data.frame(
+  Group = c("G1", "G2", "G3"),
+  Mean = c(15.2, 20.4, 21.5),
+  SD = c(2.1, 1.8, 2.5)
+)
+
+# 3. Crear una lista con los dataframes
+# NOTA CLAVE: El nombre que le asignes a cada elemento de la lista 
+# será el nombre de la pestaña en el archivo Excel.
+list_of_dataframes <- list(
+  "ANOVA_Modelo" = df_anova_model,
+  "Pruebas_PostHoc" = df_posthoc_tests,
+  "Estadisticas_Descriptivas" = df_summary_stats
+)
+
+# 4. Definir el nombre del archivo
+file_name_xlsx <- paste0("report_02_anova_1_way.xlsx")
+subfolder_output <- "output_folder"
+dir.create(subfolder_output, recursive = TRUE)
+ 
+file_path_xlsx <- file.path(subfolder_output, file_name_xlsx)
+
+# 5. Guardar la lista de dataframes en el archivo Excel
+# Cada elemento de la lista se convierte en una hoja de cálculo.
+writexl::write_xlsx(
+  x = list_of_dataframes, 
+  path = file_path_xlsx
+)
+
+cat(paste0("Se han guardado 3 dataframes en el archivo '", file_name, "' con tres pestañas diferentes."))
+```

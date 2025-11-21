@@ -211,6 +211,32 @@ document.addEventListener("DOMContentLoaded", function() {
 <!-- ```{r cod01, child='file00_01_RQuarto.qmd'} -->
 <!-- ``` -->
 
+
+```{r child='save_xlsx.qmd'}
+```
+
+
+```{r }
+   quarto::quarto_render(input = "save_word.qmd",
+                            output_format = "docx",
+                            output_file = "report_03_anova_1_way.docx", 
+                            quiet = FALSE)
+  file.rename(from = "report_03_anova_1_way.docx", 
+            to = "output_folder/report_03_anova_1_way.docx")
+
+```
+
+
+```{r }
+   quarto::quarto_render(input = "save_word.qmd",
+                            output_format = "pdf",
+                            output_file = "report_04_anova_1_way.pdf", 
+                            quiet = FALSE)
+  file.rename(from = "report_04_anova_1_way.pdf", 
+            to = "output_folder/report_04_anova_1_way.pdf")
+
+```
+
 # Init
 ```{r cod02, child='file00_02_Init.qmd'}
 ```

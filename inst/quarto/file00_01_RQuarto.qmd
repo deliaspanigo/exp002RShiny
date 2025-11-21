@@ -571,4 +571,16 @@ Only if there is homogeneity from raw error variances then is a good idea take d
 {{< include file00_01_RQuarto_14_to_16_ASA.qmd >}}
 
 
+```{r eval=TRUE, echo=TRUE}
+
+# 1. Identificar objetos esenciales para CADA reporte
+objetos_reporte_word <- c("df_summary_anova")
+objetos_reporte_excel <- c("df_summary_anova")
+
+# 2. Guardar por lote específico
+save(list = objetos_reporte_word, file = "output_folder/reporte_word_objetos.RData")
+save(list = objetos_reporte_excel, file = "output_folder/reporte_excel_objetos.RData")
+
+
+``` 
 

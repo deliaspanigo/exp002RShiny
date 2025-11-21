@@ -3,18 +3,18 @@
 ### Decision-Making Process in ANOVA
 The ANOVA test is specifically performed to make decisions.  
 The decision-making process has a set of sequential steps, in a particular order.  
-Step 01: Verirficación de la normalidad.  
-Step 02: Verificación de la homogeneidad  
-Step 03: Verificacion global de requisitos  
-Step 04: Validacion de anova  
-Step 05: Interpretacion de Anova  
-Step 06: Validacion del uso de Tukey  
-Step 07: Interpretacion de Tukey  
-Step 08: Analisis de Coherencia Anova y Tukey  
-
+**Step 01:** Normality Verification  
+**Step 02:** Homogeneity Verification  
+**Step 03:** Global Requirements Check  
+**Step 04:** ANOVA Validation  
+**Step 05:** ANOVA Interpretation  
+**Step 06:** Tukey Test Validation  
+**Step 07:** Tukey Test Interpretation  
+**Step 08:** ANOVA-Tukey Consistency Analysis  
+**Step 09:** Final Conclusion
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 01: Verirficación de la normalidad.
+**Step 01:** Normality Verification  
 ::: {.columns}
 ::: {.column width="48%"}
 ```{r}
@@ -38,7 +38,7 @@ knitr::asis_output(phrase02_normality_selected)
 <!-- <hr style="border: 1px solid #dee2e6; margin: 1rem 0;">  -->
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 02: Verificación de la homogeneidad
+**Step 02:** Homogeneity Verification  
 ::: {.columns}
 ::: {.column width="48%"}
 ```{r}
@@ -61,7 +61,7 @@ knitr::asis_output(phrase02_homogeneity_selected)
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 03: Verificacion global de requisitos 
+**Step 03:** Global Requirements Check  
 ```{r}
 #| warning: false
 #| echo: false
@@ -73,7 +73,7 @@ knitr::asis_output(phrase02A_requeriments_selected)
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 04: Validacion de anova
+**Step 04:** ANOVA Validation  
 ```{r}
 #| warning: false
 #| echo: false
@@ -84,7 +84,7 @@ knitr::asis_output(phrase02C_requeriments_selected)
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 05: Interpretacion de Anova
+**Step 05:** ANOVA Interpretation  
 ::: {.columns}
 ::: {.column width="53%"}
 ```{r}
@@ -107,7 +107,7 @@ knitr::asis_output(phrase02_anova_selected)
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 06: Validacion del uso de Tukey
+**Step 06:** Tukey Test Validation  
 ```{r}
 #| warning: false
 #| echo: false
@@ -120,7 +120,7 @@ knitr::asis_output(phrase02B_tukey_selected)
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 07: Interpretacion de Tukey
+**Step 07:** Tukey Test Interpretation  
 ::: {.columns}
 ::: {.column width="100%"}
 ```{r}
@@ -136,7 +136,7 @@ plot007_factor
 
 
 <div style="background-color: #e8f4fd; padding: 1.5rem; margin-bottom: 1rem; border-left: 4px solid #007bff; border-radius: 4px;">
-#### Step 08: Analisis de Coherencia Anova y Tukey
+**Step 08:** ANOVA-Tukey Consistency Analysis  
 ```{r}
 #| warning: false
 #| echo: false

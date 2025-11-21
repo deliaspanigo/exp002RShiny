@@ -20,6 +20,8 @@ library("reticulate")
 library("webshot2")
 library("readxl")
 library("DT")
+library("writexl")
+
 MY_PACKAGE_NAME <- "exp002RShiny"
 # 1. Define la ruta de la carpeta que contiene los archivos de funciones
 #    Asegúrate de cambiar "ruta/a/tu/carpeta" por la ruta real.
@@ -46,6 +48,143 @@ if (length(archivos_r) > 0) {
   message("No se encontraron archivos .R en la carpeta especificada.")
 }
 print(getwd())
+
+##############################
+mod_download_ui <- function(id, title) {
+  # Create a namespace using the 'id' to ensure element IDs are unique
+  ns <- NS(id)
+
+  fluidRow(
+    # Column for the title/description
+    column(4, strong(title)),
+
+    # Column for the action buttons
+    column(
+      8,
+
+      # Download Button
+      downloadButton(
+        outputId = ns("btn_download"),
+        label = NULL,
+        icon = icon("download", class = "fa-2x"),
+        class = "btn-warning btn-sm"
+      ),
+
+      # Open Button (Binoculars)
+      actionButton(
+        inputId = ns("btn_open"),
+        label = NULL,
+        icon = icon("binoculars", class = "fa-2x"),
+        class = "btn-warning btn-sm"
+      )
+    )
+  )
+}
+
+mod_download_server <- function(id, r_file_path) {
+  # Note: The 'shinyjs' and 'digest' packages are required for this module.
+
+  moduleServer(id, function(input, output, session) {
+
+    # Get the namespace function for use inside the server
+    ns <- session$ns
+
+    # ----------------------------------------
+    # Logic for the Open Button (btn_open)
+    # ----------------------------------------
+    observeEvent(input$btn_open, {
+
+      message(crayon::green("Open button clicked!"))
+
+      # 1. CHANGE BUTTON COLOR B1: Orange -> Green (Persistent)
+      shinyjs::removeClass("btn_open", "btn-warning")
+      shinyjs::addClass("btn_open", "btn-success")
+
+      # 2. Get the file path
+      html_path <- r_file_path()
+
+      # *** CRITICAL CHECK: Ensure the file exists ***
+      if (is.null(html_path) || !file.exists(html_path)) {
+        showNotification("Error: The file has not been generated or cannot be found.", type = "error")
+        shinyjs::removeClass("btn_open", "btn-success")
+        shinyjs::addClass("btn_open", "btn-warning")
+        return(NULL)
+      }
+
+      html_dir <- dirname(html_path)
+      html_filename <- basename(html_path)
+
+      # 3. Obtener la extensión del archivo REAL (no la URL)
+      library("tools")
+      the_file_ext <- tools::file_ext(html_path)  # ← USAR html_path, NO html_url
+
+      # 4. Manejar diferentes tipos de archivo
+      if(the_file_ext == "html" | the_file_ext == "pdf") {  # ← Corregí "hmtl" a "html"
+
+        # Para HTML/PDF: usar URL temporal
+        resource_id <- digest::digest(html_dir, algo = "md5")
+        shiny::addResourcePath(resource_id, html_dir)
+        html_url <- file.path(resource_id, html_filename)
+        shinyjs::runjs(paste0("window.open('", html_url, "', '_blank');"))
+
+      } else if(the_file_ext == "docx" | the_file_ext == "xlsx") {
+
+        # Para Word/Excel: usar ruta local del sistema
+        browseURL(html_path)  # ← USAR html_path, NO html_url
+
+      } else {
+
+        showNotification(paste("Tipo de archivo no soportado:", the_file_ext), type = "warning")
+        # Revertir color del botón
+        shinyjs::removeClass("btn_open", "btn-success")
+        shinyjs::addClass("btn_open", "btn-warning")
+
+      }
+
+    })
+
+    # ----------------------------------------
+    # Logic for the Download Button (btn_download)
+    # ----------------------------------------
+    output$btn_download <- downloadHandler(
+
+      # 1. Define the filename when downloading
+      filename = function() {
+        full_path <- r_file_path()
+        if (!is.null(full_path) && file.exists(full_path)) {
+          return(basename(full_path))
+        } else {
+          return("empty_file.html")
+        }
+      },
+
+      # 2. Logic to copy the content to the download file
+      content = function(file) {
+        file_to_download <- r_file_path()
+
+        if (!is.null(file_to_download) && file.exists(file_to_download)) {
+
+          # Change download button color to green
+          # Note: We use session$ns() here because downloadHandler is not automatically namespaced
+          # like other reactive outputs, so we need the full jQuery selector.
+          shinyjs::runjs(paste0("
+            $('#", ns("btn_download"), "').removeClass('disabled');
+            $('#", ns("btn_download"), "').removeClass('btn-warning');
+            $('#", ns("btn_download"), "').addClass('btn-success');
+          "))
+
+          # Copy the generated file to the temporary 'file' managed by Shiny
+          file.copy(file_to_download, file)
+
+        } else {
+          warning("Temporary file for download not found.")
+          writeLines("Error: File not generated.", file)
+        }
+      }
+    )
+  })
+}
+
 ui <- bslib::page_sidebar(
   padding = c(15, 15, 15, 15), # top, right, bottom, left = 0, 0, 10, 10
   shinyjs::useShinyjs(),
@@ -213,14 +352,18 @@ ui <- bslib::page_sidebar(
 
   sidebar = bslib::sidebar(
     padding = c(0, 15, 0, 15), # top, right, bottom, left = 0, 0, 10, 10
-    # Argumento 'style' eliminado. El sidebar vuelve a su comportamiento predeterminado.
     div(
-      style = "text-align: center;", # <--- ESTO CENTRA TODO EL CONTENIDO
+      style = "text-align: left;", # <--- ESTO CENTRA TODO EL CONTENIDO
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.18"),
+      tags$b("v1.0.19"),
       br(),
 
-      uiOutput("the_toggle"),
+
+      uiOutput("the_toggle_03_classroom"),
+      conditionalPanel(
+        condition = "input.toggle03_classroom == true",
+        uiOutput("the_toggle_01_input")
+      ),
       uiOutput("the_super_side")
 
     )
@@ -249,7 +392,7 @@ server <- function(input, output, session) {
   }
 
   ###---------------------------------------------------------------------------
-  output$the_toggle <- renderUI({
+  output$the_toggle_01_input <- renderUI({
     # Toggle estilo R/Python
     # Agregar CSS personalizado para los colores del toggle
     div(
@@ -292,52 +435,146 @@ server <- function(input, output, session) {
         tags$div(
           class = "form-check form-switch",
           tags$input(
-            id = "toggle",
+            id = "toggle01_input",
             type = "checkbox",
             class = "form-check-input",
             role = "switch"
           )
         ),
         # span("Python", class = "fw-bold"),
-        uiOutput("toggle_state", inline = TRUE)
+        uiOutput("toggle01_input_state", inline = TRUE)
       )
     )
   })
 
+  output$the_toggle_03_classroom <- renderUI({
+    # Toggle estilo R/Python
+    # Agregar CSS personalizado para los colores del toggle
+    div(
+      tags$head(
+        tags$style(HTML("
+      /* Estilo para el toggle */
+      .form-check-input {
+        background-color: #4c78dd !important; /* Color azul para R (por defecto) */
+        border-color: #4c78dd !important;
+        width: 3.5em !important; /* Aumentar el ancho del toggle */
+        height: 1.8em !important; /* Aumentar la altura proporcionalmente */
+      }
+
+      /* Estilo cuando está activado (Python) */
+      .form-check-input:checked {
+        background-color: #4CAF50 !important; /* Color verde para Python */
+        border-color: #4CAF50 !important;
+      }
+
+      /* Asegurar que la transición sea suave */
+      .form-check-input {
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      /* Ajustar el círculo indicador dentro del toggle */
+      .form-switch .form-check-input:after {
+        height: calc(1.8em - 4px) !important;
+        width: calc(1.8em - 4px) !important;
+      }
+
+      /* Ajustar el espacio del contenedor */
+      .form-switch {
+        padding-left: 0 !important;
+      }
+    "))
+      ),
+      div(
+        class = "d-flex align-items-center justify-content-between gap-2 mb-3",
+        span("   ", class = "fw-bold"),
+        tags$div(
+          class = "form-check form-switch",
+          tags$input(
+            id = "toggle03_classroom",
+            type = "checkbox",
+            class = "form-check-input",
+            role = "switch",
+            checked = NA
+          )
+        ),
+        # span("Python", class = "fw-bold"),
+        uiOutput("toggle03_classroom_state", inline = TRUE)
+      )
+    )
+  })
   # Muestra "input" o "output" según el estado del toggle
-  output$toggle_state <- renderUI({
-    the_selection <- ifelse(test = input$toggle, yes = "output", no = "input")
-    span(the_selection, class = "fw-bold")
+  output$toggle01_input_state <- renderUI({
+    # 1. Determina el texto a mostrar
+    the_selection <- ifelse(test = input$toggle01_input, yes = "Output", no = "Input")
+
+    # 2. Crea el span con el nuevo estilo 'font-size'
+    span(
+      the_selection,
+      class = "fw-bold",
+      style = paste(
+        "display: inline-block;",
+        "min-width: 140px;",
+        "text-align: left;",
+        "font-size: 20px;"  # 👈 Añade esta línea para definir el tamaño de la letra
+      )
+    )
+  })
+
+  output$toggle03_classroom_state <- renderUI({
+    # 1. Determina el texto a mostrar
+    the_selection <- ifelse(
+      test = input$toggle03_classroom,
+      yes = "Data Analysis",
+      no = "Classroom"
+    )
+
+    # 2. Aumenta el 'min-width' para acomodar "Data Analysis"
+    span(
+      the_selection,
+      class = "fw-bold",
+      # Cambié 90px por 125px para que quepa el texto más largo
+      style = paste(
+        "display: inline-block;",
+        "min-width: 140px;",
+        "text-align: left;",
+        "font-size: 20px;"  # 👈 Añade esta línea para definir el tamaño de la letra
+      )
+    )
   })
 
   output$"the_super_side" <- renderUI({
     div(
       conditionalPanel(
-        condition = "input.toggle == false",
-        #ns = ns,
-        uiOutput("input_side_panel")
-      ),
-      conditionalPanel(
-        condition = "input.toggle == true",
-        #ns = ns,
-        uiOutput("output_side_panel")
+        condition = "input.toggle03_classroom == true",
+          conditionalPanel(
+            condition = "input.toggle01_input == false",
+            #ns = ns,
+            uiOutput("input_side_panel")
+          ),
+          conditionalPanel(
+            condition = "input.toggle01_input == true",
+            #ns = ns,
+            uiOutput("output_side_panel")
+          )
       )
     )
   })
 
   output$"input_side_panel" <- renderUI({
 
+    str_style_btn <- "font-size: 65px; display: block; margin-bottom: 8px;"
+
     div(
       # class = "d-flex flex-column align-items-center",
       card(
-        style = "height: 77vh; min-height: 77vh;",  # Altura de la card (100% del contenedor padre)
+        style = "height: 72vh; min-height: 72vh;",  # Altura de la card (100% del contenedor padre)
 
         actionButton(
           inputId = "btn_dataset",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
             #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-            icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("database", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-primary",
@@ -348,7 +585,7 @@ server <- function(input, output, session) {
           inputId = "btn_var_selector",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("filter", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("filter", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-primary",
@@ -359,7 +596,7 @@ server <- function(input, output, session) {
           inputId = "btn_config",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("sliders", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("sliders", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-primary",
@@ -370,7 +607,7 @@ server <- function(input, output, session) {
           inputId = "btn_play_front",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("play", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("play", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-primary",
@@ -381,7 +618,7 @@ server <- function(input, output, session) {
           inputId = "btn_refresh",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("arrows-rotate", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("arrows-rotate", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-primary",
@@ -1239,20 +1476,22 @@ server <- function(input, output, session) {
   ###---------------------------------------------------------------------------
   output$"output_side_panel" <- renderUI({
 
+    str_style_btn <- "font-size: 65px; display: block; margin-bottom: 8px;"
+
     div(
       # style = "overflow-y: hidden; flex: 1; display: flex; flex-direction: column; min-height: 100%;",
       #
       # class = "d-flex flex-column align-items-center",
       card(
         # style = "height: 100%;",  # Altura de la card (100% del contenedor padre)
-        style = "height: 77vh; min-height: 77vh;",  # Altura de la card (100% del contenedor padre)
+        style = "height: 72vh; min-height: 72vh;",  # Altura de la card (100% del contenedor padre)
 
         actionButton(
           inputId = "btn_classroom",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
             #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-            icon("chalkboard-user", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("chalkboard-user", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-success", #"btn-warning", #"btn-primary",
@@ -1265,7 +1504,7 @@ server <- function(input, output, session) {
           inputId = "btn_general_download",
           label = tagList(
             # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("download", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
+            icon("download", style = str_style_btn),
             #span("Dataset")
           ),
           class = "btn-warning", #"btn-primary",
@@ -1281,16 +1520,33 @@ server <- function(input, output, session) {
     div(
       # style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
       conditionalPanel(
-        condition = "input.toggle == false",
-        #ns = ns,
-        uiOutput("main_input_general")
-      ),
+        condition = "input.toggle03_classroom == true",
+          conditionalPanel(
+            condition = "input.toggle01_input == false",
+            #ns = ns,
+            uiOutput("main_input_general")
+          ),
+          conditionalPanel(
+            condition = "input.toggle01_input == true",
+            #ns = ns,
+            uiOutput("main_output_general")
+          )
+        ),
       conditionalPanel(
-        condition = "input.toggle == true",
-        #ns = ns,
-        uiOutput("main_output_general")
+        condition = "input.toggle03_classroom == false",
+        uiOutput("main_classroom_general")
       ),
-      "Rscience 1.0.11 - General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way - Script 01"
+      tags$p(
+        "Rscience 1.0.19 - General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way - Script 01",
+        style = paste(
+          "color: #1E88E5;",                  # 🟦 Color de la letra (azul vibrante)
+          "font-family: 'Arial Black', sans-serif;",  # ✒️ Tipo de letra
+          "font-size: 18px;",                 # 📏 Tamaño de la letra
+          "font-weight: bold;",               #  মোটা En negrita (alternativa a 'class = "fw-bold"')
+          "background-color: #FFFDE7;",       # 💡 Color de resaltado/fondo (amarillo pálido)
+          "padding: 5px;"                     # Espacio alrededor del texto dentro del fondo
+        )
+      )
 
     )
   })
@@ -1309,7 +1565,7 @@ server <- function(input, output, session) {
 
 
     # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
-    str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: hidden;"
+    str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 72vh; width: 100%; overflow: hidden;"
 
     bslib::navset_card_tab(
       # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
@@ -1469,6 +1725,106 @@ server <- function(input, output, session) {
       # Puedes añadir otras pestañas aquí
       # tabPanel(value = "otra_tab", title = "Otra", ...)
     )
+  })
+
+  output$"main_classroom_general" <- renderUI({
+    # titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
+
+
+    # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
+    str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 72vh; width: 100%; overflow: hidden;"
+
+    bslib::navset_card_tab(
+      # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+      title = tags$div(
+        style = "
+        min-height: 10px;
+        padding-top: 0px;      /* ↑ Arriba */
+        padding-right: 0px;    /* → Derecha */
+        padding-bottom: 0px;   /* ↓ Abajo */
+        padding-left: 0px;     /* ← Izquierda */
+      ",
+        tags$h4("ClassRoom"),
+      ),
+      # title =
+      # div(
+      # style = "height: 90vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+
+      bslib::nav_panel(
+        title = "theory",
+        fluidRow(
+          column(2, h4("Theory")),
+          column(9),
+          column(1,
+                 actionButton(inputId = "open01",
+                              label = NULL,
+                              icon = icon("binoculars", class = "fa-2x"),
+                              class = "btn-warning btn-sm"))
+        ),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          # p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)"),
+          # fn_infoUI_zocalo_dataset(data_obj = the_list01_Dataset_internal()),
+          # fn_infoUI_zocalo_01_dataset(data_obj = the_list01_Dataset_show()),
+          htmlOutput("html_01_anova_intro")
+        )
+
+
+      ),
+      bslib::nav_panel(
+        title = "Tukey",
+        h4("Tukey"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          htmlOutput("html_02_tukey")
+        )
+      ),
+      bslib::nav_panel(
+        title = "Decision Making",
+        h4("Decision Making"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          htmlOutput("html_03_decision_making")
+        )
+      ),
+      bslib::nav_panel(
+        title = "ASA",
+        h4("ASA"),
+        tags$div(
+          # style = "flex-grow: 1; overflow-y: auto;",
+          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          htmlOutput("html_04_ASA")
+        )
+      ),
+
+    )
+
+    # )
+
+
+    # [CAMBIO APLICADO] Utilizamos tags$div para envolver y aplicar el estilo de altura y ancho.
+    # tags$div(
+    #   style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
+    #   bslib::navset_card_tab(
+    #     # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
+    #
+    #     title = 'Input',
+    #
+    #     bslib::nav_panel(
+    #       title = "user_selection",
+    #       # El CSS ahora fuerza a este contenedor (tab-pane.active) a llenar el 100%
+    #       # del espacio disponible (90vh - encabezado de la tarjeta).
+    #       p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)")
+    #     ),
+    #     bslib::nav_panel(
+    #       title = "dataset",
+    #       "Mostramos el dataset..."
+    #     )
+    #   )
+    # )
   })
   ###---------------------------------------------------------------------------
   # Lo inicializamos en NULL o con el ID del botón que quieres activo por defecto.
@@ -1653,7 +2009,7 @@ server <- function(input, output, session) {
         class = "p-0",
         tags$div(
           # style = "flex-grow: 1; overflow-y: auto;",
-          style = "flex-grow: 1; overflow-y: auto; height: 84vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
+          style = "flex-grow: 1; overflow-y: auto; height: 82vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
 
           # Contenido que deseas mostrar dentro de la tarjeta
           htmlOutput("html_viewer")
@@ -1677,6 +2033,15 @@ server <- function(input, output, session) {
         bslib::nav_panel(
           title = "folder_files",
           "Despues aca el path y los files."
+        ),
+        bslib::nav_panel(
+          title = "nueva_descarga",
+          # uiOutput("special01"),
+          mod_download_ui("report_html", "File 01 - html full report"),
+          mod_download_ui("report_xlsx", "File 02 - Excel medium report"),
+          mod_download_ui("report_docx", "File 03 - Word medium report"),
+          mod_download_ui("report_pdf",  "File 04 - PDF medium report")
+
         ),
         bslib::nav_panel(
           title = "PDF",
@@ -2102,10 +2467,23 @@ server <- function(input, output, session) {
     str_path_qmd
   })
 
+  #################################################################################
+  str_file_name_output_xlsx <- reactive({"report_02_anova_1_way.xlsx"})
+  str_output_file_path_xlsx <- reactiveVal(NULL)
+
+  str_file_name_output_docx <- reactive({"report_03_anova_1_way.docx"})
+  str_output_file_path_docx <- reactiveVal(NULL)
+
+  str_file_name_output_pdf <- reactive({"report_04_anova_1_way.pdf"})
+  str_output_file_path_pdf <- reactiveVal(NULL)
+
   str_output_folder02 <- reactiveVal(NULL)
-  str_output_file_name_html    <- reactiveVal(NULL)
-  str_output_file_path_html    <- reactiveVal(NULL)
-  the_time_here_format02        <- reactiveVal(NULL)
+  str_subfolder_output <- "output_folder"
+  #################################################################################
+
+  str_output_file_name_html <- reactiveVal(NULL)
+  str_output_file_path_html <- reactiveVal(NULL)
+  the_time_here_format02    <- reactiveVal(NULL)
   # --- Lógica del Botón "Generar" (Naranja -> Verde) ---
 
 
@@ -2119,6 +2497,13 @@ server <- function(input, output, session) {
     ANCESTRAL_PLAY(TRUE)
   })
 
+
+  # - Da clic en play
+  # - Toma la hora del sistema
+  # - Crea la carpeta temporal nueva
+  # - Copia los archivos locales a la carpeta temporal
+
+  # -
   observeEvent(ANCESTRAL_PLAY(), {
     req(ANCESTRAL_PLAY())
     # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
@@ -2199,7 +2584,8 @@ server <- function(input, output, session) {
       # 1. Crear carpeta temporal (10%)
       update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
       my_output_folder02 <- create_new_temporal_output_folder_path()
-      str_output_folder02(my_output_folder02)
+      str_output_folder_path <- file.path(my_output_folder02)  #file.path(my_output_folder02, str_subfolder_output)
+      str_output_folder02(str_output_folder_path)
       dir.create(my_output_folder02, recursive = TRUE)
 
       # 2. Copiar archivos (25%)
@@ -2217,6 +2603,15 @@ server <- function(input, output, session) {
       str_output_file_name_html(str_html_file_name)
       my_str_html <- file.path(str_output_folder02(), str_output_file_name_html())
       str_output_file_path_html(my_str_html)
+
+      my_str_xlsx <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_xlsx())
+      str_output_file_path_xlsx(my_str_xlsx)
+
+      my_str_docx <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_docx())
+      str_output_file_path_docx(my_str_docx)
+
+      my_str_pdf <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_pdf())
+      str_output_file_path_pdf(my_str_pdf)
 
       # 4. Configurar entorno de renderizado (50%)
       update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
@@ -2300,11 +2695,11 @@ server <- function(input, output, session) {
       # Construir el código JavaScript
       js_code <- paste0(
         # 1. Cambia visualmente el estado del checkbox
-        "var checkbox = document.getElementById('toggle');",
+        "var checkbox = document.getElementById('toggle01_input');",
         "checkbox.checked = ", tolower(nuevo_estado), ";",
 
         # 2. ¡CLAVE! Notifica a Shiny (R) del nuevo valor
-        "Shiny.setInputValue('toggle', checkbox.checked, {priority: 'event'});"
+        "Shiny.setInputValue('toggle01_input', checkbox.checked, {priority: 'event'});"
       )
 
       # 3. Ejecutar el código JavaScript
@@ -2452,6 +2847,48 @@ server <- function(input, output, session) {
     shinyjs::runjs(paste0("window.open('",  html_url, "', '_blank');"))
     # --------------------------
   })
+
+  observeEvent(input$open01, {
+    # C2. Actualizar estado y color del botón
+    message(crayon::green("OPen completed!"))
+    message("")
+
+    # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
+    removeClass("open01", "btn-warning")
+    addClass("open01", "btn-success")
+
+    path_folder_inst <- str_input_folder_package()
+    sub_folder <- "classroom"
+    selected_file <- "classroom_01_anova_intro.html"
+
+    full_path_file <- file.path(path_folder_inst, sub_folder, selected_file)
+
+    html_path <- isolate(full_path_file)
+
+    # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
+    if (!file.exists(html_path)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(html_path)
+    html_filename <- basename(html_path)
+
+    # 2. DEFINIR UN NOMBRE ÚNICO PARA EL RECURSO TEMPORAL
+    resource_id <- digest::digest(html_dir, algo = "md5")
+
+    # 3. REGISTRAR EL RECURSO
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 4. Construir la URL con el ID único del recurso
+    html_url <- file.path(resource_id, html_filename)
+
+    # 3. Ejecutar JavaScript para abrir la URL en una nueva pestaña
+    # window.open(URL, '_blank') es el comando estándar de JavaScript para esto.
+    shinyjs::runjs(paste0("window.open('",  html_url, "', '_blank');"))
+    # --------------------------
+  })
+
+
   # 01 - PDF
   output$text_output_folder_path02 <- renderText({
     req(str_output_folder02())
@@ -2664,6 +3101,276 @@ server <- function(input, output, session) {
 
 
   })
+
+
+
+  output$html_01_anova_intro <- renderText({
+    # 1. Asegúrate de que el path exista
+    path_folder_inst <- str_input_folder_package()
+    sub_folder <- "classroom"
+    selected_file <- "classroom_01_anova_intro.html"
+
+    full_path_file <- file.path(path_folder_inst, sub_folder, selected_file)
+
+    # req(str_output_file_path_html())
+
+    # html_path <- str_output_file_path_html()
+
+    if (!file.exists(full_path_file)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(full_path_file)
+    html_filename <- basename(full_path_file)
+
+    # 2. Definir y Registrar Recurso
+    resource_id <- digest::digest(html_dir, algo = "md5")
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 3. Construir la URL con el ID único del recurso
+    html_url <- paste0("/", file.path(resource_id, html_filename))
+
+    # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
+    armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # tags$iframe(
+    #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo
+    #   style = 'height: 10px; width: 100%; border: none; overflow: hidden;', # <-- Altura inicial
+    #   src = html_url,
+    #   type = "text/html",
+    #   scrolling = "no" # <-- CLAVE: Deshabilita el scroll interno
+    # )
+  })
+
+
+  output$html_02_tukey <- renderText({
+    # 1. Asegúrate de que el path exista
+    path_folder_inst <- str_input_folder_package()
+    sub_folder <- "classroom"
+    selected_file <- "classroom_02_tukey.html"
+
+    full_path_file <- file.path(path_folder_inst, sub_folder, selected_file)
+
+    # req(str_output_file_path_html())
+
+    # html_path <- str_output_file_path_html()
+
+    if (!file.exists(full_path_file)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(full_path_file)
+    html_filename <- basename(full_path_file)
+
+    # 2. Definir y Registrar Recurso
+    resource_id <- digest::digest(html_dir, algo = "md5")
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 3. Construir la URL con el ID único del recurso
+    html_url <- paste0("/", file.path(resource_id, html_filename))
+
+    # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
+    armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # tags$iframe(
+    #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo
+    #   style = 'height: 10px; width: 100%; border: none; overflow: hidden;', # <-- Altura inicial
+    #   src = html_url,
+    #   type = "text/html",
+    #   scrolling = "no" # <-- CLAVE: Deshabilita el scroll interno
+    # )
+  })
+
+  output$html_03_decision_making <- renderText({
+    # 1. Asegúrate de que el path exista
+    path_folder_inst <- str_input_folder_package()
+    sub_folder <- "classroom"
+    selected_file <- "classroom_02_tukey.html"
+
+    full_path_file <- file.path(path_folder_inst, sub_folder, selected_file)
+
+    # req(str_output_file_path_html())
+
+    # html_path <- str_output_file_path_html()
+
+    if (!file.exists(full_path_file)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(full_path_file)
+    html_filename <- basename(full_path_file)
+
+    # 2. Definir y Registrar Recurso
+    resource_id <- digest::digest(html_dir, algo = "md5")
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 3. Construir la URL con el ID único del recurso
+    html_url <- paste0("/", file.path(resource_id, html_filename))
+
+    # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
+    armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # tags$iframe(
+    #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo
+    #   style = 'height: 10px; width: 100%; border: none; overflow: hidden;', # <-- Altura inicial
+    #   src = html_url,
+    #   type = "text/html",
+    #   scrolling = "no" # <-- CLAVE: Deshabilita el scroll interno
+    # )
+  })
+
+  output$html_04_ASA <- renderText({
+    # 1. Asegúrate de que el path exista
+    path_folder_inst <- str_input_folder_package()
+    sub_folder <- "classroom"
+    selected_file <- "classroom_04_ASA.html"
+
+    full_path_file <- file.path(path_folder_inst, sub_folder, selected_file)
+
+    # req(str_output_file_path_html())
+
+    # html_path <- str_output_file_path_html()
+
+    if (!file.exists(full_path_file)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(full_path_file)
+    html_filename <- basename(full_path_file)
+
+    # 2. Definir y Registrar Recurso
+    resource_id <- digest::digest(html_dir, algo = "md5")
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 3. Construir la URL con el ID único del recurso
+    html_url <- paste0("/", file.path(resource_id, html_filename))
+
+    # 4. Crear el iframe con ID, scrolling="no", y altura mínima inicial (10px)
+    armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
+
+    # tags$iframe(
+    #   id = "my_report_iframe", # <-- ID para que JS pueda encontrarlo
+    #   style = 'height: 10px; width: 100%; border: none; overflow: hidden;', # <-- Altura inicial
+    #   src = html_url,
+    #   type = "text/html",
+    #   scrolling = "no" # <-- CLAVE: Deshabilita el scroll interno
+    # )
+  })
+
+  ##############################################################################
+
+  # File 01 - html full
+  output$special01 <- renderUI({
+    fluidRow(
+      column(4, "HTML FULL"),
+      column(2, downloadButton(outputId = "btn_download_01_html_full",
+                   label = NULL,
+                   icon = icon("download", class = "fa-2x"),
+                   class = "btn-warning btn-sm"),
+    actionButton(inputId = "btn_open_01_html_full",
+                 label = NULL,
+                 icon = icon("binoculars", class = "fa-2x"),
+                 class = "btn-warning btn-sm")
+
+    )
+    )
+  })
+
+  observeEvent(input$btn_open_01_html_full, {
+    # C2. Actualizar estado y color del botón
+    message(crayon::green("OPen completed!"))
+    message("")
+
+    # 1. CAMBIO DE COLOR B1: Naranja -> Verde (Persistente)
+    removeClass("btn_open_01_html_full", "btn-warning")
+    addClass("btn_open_01_html_full", "btn-success")
+
+    # --- CAMBIO CLAVE AQUÍ ---
+    # 2. Obtener la URL del archivo
+    # Usamos isolate() para asegurarnos de que el observeEvent solo reaccione a input$open02
+    # y no a cambios en str_output_file_path_html (si es un reactive)
+
+    html_path <- isolate(str_output_file_path_html())
+
+    # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
+    if (!file.exists(html_path)) {
+      return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
+    }
+
+    html_dir <- dirname(html_path)
+    html_filename <- basename(html_path)
+
+    # 2. DEFINIR UN NOMBRE ÚNICO PARA EL RECURSO TEMPORAL
+    resource_id <- digest::digest(html_dir, algo = "md5")
+
+    # 3. REGISTRAR EL RECURSO
+    shiny::addResourcePath(resource_id, html_dir)
+
+    # 4. Construir la URL con el ID único del recurso
+    html_url <- file.path(resource_id, html_filename)
+
+    # 3. Ejecutar JavaScript para abrir la URL en una nueva pestaña
+    # window.open(URL, '_blank') es el comando estándar de JavaScript para esto.
+    shinyjs::runjs(paste0("window.open('",  html_url, "', '_blank');"))
+    # --------------------------
+  })
+
+  output$btn_download_01_html_full <- downloadHandler(
+
+    filename = function() {
+      la_ruta <- str_output_file_name_html()
+
+      if (!is.null(la_ruta)) {
+        basename(la_ruta)
+      } else {
+        "archivo_vacio.html"
+      }
+    },
+
+
+    content = function(file) {
+      archivo_a_descargar <- str_output_file_path_html()
+      print(archivo_a_descargar)
+      if (!is.null(archivo_a_descargar) && file.exists(archivo_a_descargar)) {
+
+        # 1. CAMBIO DE COLOR B2: Naranja -> Verde (Persistente)
+        runjs("
+                    // Quitamos la clase temporal 'disabled' si la puso el navegador
+                    $('#btn_download_01_html_full').removeClass('disabled');
+                    $('#btn_download_01_html_full').removeClass('btn-warning');
+                    $('#btn_download_01_html_full').addClass('btn-success');
+
+                    // IMPORTANTE: NO SE RESTABLECE EL BOTÓN 1 A NARANJA AQUÍ.
+                    // AMBOS BOTONES PERMANECERÁN VERDES.
+                ")
+
+        fs::file_copy(archivo_a_descargar, file)
+
+      } else {
+        warning("No se encontró el archivo temporal para descargar.")
+        writeLines("Error: Archivo no generado.", file)
+      }
+    }
+  )
+
+  mod_download_server("report_html", reactive(str_output_file_path_html()))
+  mod_download_server("report_xlsx", reactive(str_output_file_path_xlsx()))
+  mod_download_server("report_docx", reactive(str_output_file_path_docx()))
+  mod_download_server("report_pdf", reactive(str_output_file_path_pdf()))
+
+
+  observe({
+    req(str_output_file_path_xlsx())
+    print("El folder...")
+    print(str_output_folder02())
+    print(dir.exists(print(str_output_folder02())))
+    print("\n")
+    print(str_output_file_path_xlsx())
+    print(file.exists(str_output_file_path_xlsx()))
+  })
+
+##################################################################
+
 }
 
 shinyApp(ui, server)
