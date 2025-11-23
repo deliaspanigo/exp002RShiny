@@ -23,6 +23,11 @@ library("DT")
 library("writexl")
 
 MY_PACKAGE_NAME <- "exp002RShiny"
+my_color_blue   <- "#0d6efd"  # Blue - Bootstrap primary
+my_color_green  <- "#198754"  # Green - Bootstrap success
+my_color_orange <- "#fd7e14"  # Orange - Bootstrap warning
+my_color_red    <- "#dc3545"  # Red - Bootstrap danger
+
 # 1. Define la ruta de la carpeta que contiene los archivos de funciones
 #    Asegúrate de cambiar "ruta/a/tu/carpeta" por la ruta real.
 ruta_carpeta <- "../../../R"
@@ -59,8 +64,7 @@ mod_download_ui <- function(id, title) {
     column(4, strong(title)),
 
     # Column for the action buttons
-    column(
-      8,
+    column(8,
 
       # Download Button
       downloadButton(
@@ -184,16 +188,17 @@ mod_download_server <- function(id, r_file_path) {
     )
   })
 }
+##############################
 
 ui <- bslib::page_sidebar(
-  padding = c(15, 15, 15, 15), # top, right, bottom, left = 0, 0, 10, 10
+  padding = c(15, 15, 15, 15), # top, right, bottom, left
   shinyjs::useShinyjs(),
-  # Carga los recursos CSS y JS de Font Awesome de la librería local de Shiny
+  # Header
   tags$head(
-    # Esto carga la versión de Font Awesome incluida en el paquete shiny
+    # Font Awesome from our local shiny package
     tags$link(rel = "stylesheet", href = "shared/font-awesome/css/all.min.min.css")
   ),
-  # CSS con !important para forzar los colores y aplicar estilos al Main Panel
+  # Header - CSS
   tags$head(
     tags$style(HTML("
      :root {
@@ -343,6 +348,7 @@ ui <- bslib::page_sidebar(
 /* ----------------------------------------------------------- */
 .btn {
     border: 3px solid #000000 !important;
+    border-radius: 0.5rem !important;
 }
 
              /* Los estilos de layout (body, .main, .bslib-page-sidebar) han sido eliminados */
@@ -351,24 +357,53 @@ ui <- bslib::page_sidebar(
 
 
   sidebar = bslib::sidebar(
-    padding = c(0, 15, 0, 15), # top, right, bottom, left = 0, 0, 10, 10
+    padding = c(0, 15, 0, 15), # top, right, bottom, left
     div(
-      style = "text-align: left;", # <--- ESTO CENTRA TODO EL CONTENIDO
+      style = "text-align: left;",
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.19"),
+      tags$b("v1.0.20"),
       br(),
 
-
-      uiOutput("the_toggle_03_classroom"),
-      conditionalPanel(
-        condition = "input.toggle03_classroom == true",
-        uiOutput("the_toggle_01_input")
-      ),
+      # SideBar Panel--------------------------------------------------------
       uiOutput("the_super_side")
-
+      #-------------------------------------------------------------------------
     )
   ),
-  uiOutput("the_super_main")
+  # Main Panel -----------------------------------------------------------------
+  # 1. Contenedor Principal (Define la Altura Total)
+  div(
+    # Estilos Flexbox: Vertical, altura fija para que los % funcionen
+    # style = "display: flex; flex-direction: column; height: calc(100vh - 60px); width: 100%; border: 2px solid #ccc; box-sizing: border-box;",
+    style = "display: flex; flex-direction: column; height: calc(100vh - 40px); width: 100%;",
+
+    # 2. Primer Objeto: 90% de Altura
+    div(
+      # flex: 0 0 90% -> No crece, NO SE ENCOGE, 90% de altura base
+      # style = "flex: 0 0 90%; width: 100%; border: 1px dashed blue; background-color: #e6f0ff; box-sizing: border-box; padding: 10px; overflow-y: auto;",
+      style = "flex: 0 0 95%; width: 100%; overflow-y: auto;",
+      uiOutput("the_super_main")#,
+      # tags$p("Contenedor Superior (90% reservado)", style = "color: blue; margin-top: 10px;")
+    ),
+
+    # # 3. Segundo Objeto: 10% de Altura
+    div(
+      # flex: 0 0 10% -> No crece, NO SE ENCOGE, 10% de altura base
+      # style = "flex: 0 0 5%;
+      #      width: 100%;
+      #      border: 1px dashed red;
+      #      background-color: #ffe6e6;
+      #      box-sizing: border-box;
+      #      padding: 10px;
+      #      overflow: hidden;", # <-- ¡Esta es la adición CRUCIAL!
+      style = "flex: 0 0 5%;
+           width: 100%;
+           overflow: hidden;",
+      uiOutput("final_info")#,
+      #tags$p("Contenedor Inferior (10% reservado)", style = "color: red; margin-top: 5px;")
+    )
+  )
+
+  #-----------------------------------------------------------------------------
 )
 
 server <- function(input, output, session) {
@@ -391,39 +426,38 @@ server <- function(input, output, session) {
     invisible(rv)
   }
 
-  ###---------------------------------------------------------------------------
-  output$the_toggle_01_input <- renderUI({
-    # Toggle estilo R/Python
-    # Agregar CSS personalizado para los colores del toggle
+  ### Toogle 01 - ClassRoom ----------------------------------------------------
+  output$the_toggle_01_classroom <- renderUI({
+
     div(
       tags$head(
         tags$style(HTML("
-      /* Estilo para el toggle */
+      /* Toggle style */
       .form-check-input {
-        background-color: #4c78dd !important; /* Color azul para R (por defecto) */
+        background-color: #4c78dd !important; /* Blue color for default */
         border-color: #4c78dd !important;
-        width: 3.5em !important; /* Aumentar el ancho del toggle */
-        height: 1.8em !important; /* Aumentar la altura proporcionalmente */
+        width: 3.5em !important; /* Increase toggle width */
+        height: 1.8em !important; /* Increase height proportionally */
       }
 
-      /* Estilo cuando está activado (Python) */
+      /* Style when activated (TRUE) */
       .form-check-input:checked {
-        background-color: #4CAF50 !important; /* Color verde para Python */
+        background-color: #4CAF50 !important; /* Green color for true */
         border-color: #4CAF50 !important;
       }
 
-      /* Asegurar que la transición sea suave */
+      /* Ensure smooth transition */
       .form-check-input {
         transition: background-color 0.3s, border-color 0.3s;
       }
 
-      /* Ajustar el círculo indicador dentro del toggle */
+      /* Adjust the indicator circle inside the toggle */
       .form-switch .form-check-input:after {
         height: calc(1.8em - 4px) !important;
         width: calc(1.8em - 4px) !important;
       }
 
-      /* Ajustar el espacio del contenedor */
+      /* Adjust container spacing */
       .form-switch {
         padding-left: 0 !important;
       }
@@ -435,104 +469,108 @@ server <- function(input, output, session) {
         tags$div(
           class = "form-check form-switch",
           tags$input(
-            id = "toggle01_input",
-            type = "checkbox",
-            class = "form-check-input",
-            role = "switch"
-          )
-        ),
-        # span("Python", class = "fw-bold"),
-        uiOutput("toggle01_input_state", inline = TRUE)
-      )
-    )
-  })
-
-  output$the_toggle_03_classroom <- renderUI({
-    # Toggle estilo R/Python
-    # Agregar CSS personalizado para los colores del toggle
-    div(
-      tags$head(
-        tags$style(HTML("
-      /* Estilo para el toggle */
-      .form-check-input {
-        background-color: #4c78dd !important; /* Color azul para R (por defecto) */
-        border-color: #4c78dd !important;
-        width: 3.5em !important; /* Aumentar el ancho del toggle */
-        height: 1.8em !important; /* Aumentar la altura proporcionalmente */
-      }
-
-      /* Estilo cuando está activado (Python) */
-      .form-check-input:checked {
-        background-color: #4CAF50 !important; /* Color verde para Python */
-        border-color: #4CAF50 !important;
-      }
-
-      /* Asegurar que la transición sea suave */
-      .form-check-input {
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-
-      /* Ajustar el círculo indicador dentro del toggle */
-      .form-switch .form-check-input:after {
-        height: calc(1.8em - 4px) !important;
-        width: calc(1.8em - 4px) !important;
-      }
-
-      /* Ajustar el espacio del contenedor */
-      .form-switch {
-        padding-left: 0 !important;
-      }
-    "))
-      ),
-      div(
-        class = "d-flex align-items-center justify-content-between gap-2 mb-3",
-        span("   ", class = "fw-bold"),
-        tags$div(
-          class = "form-check form-switch",
-          tags$input(
-            id = "toggle03_classroom",
+            id = "toggle01_classroom",
             type = "checkbox",
             class = "form-check-input",
             role = "switch",
             checked = NA
           )
         ),
-        # span("Python", class = "fw-bold"),
-        uiOutput("toggle03_classroom_state", inline = TRUE)
-      )
-    )
-  })
-  # Muestra "input" o "output" según el estado del toggle
-  output$toggle01_input_state <- renderUI({
-    # 1. Determina el texto a mostrar
-    the_selection <- ifelse(test = input$toggle01_input, yes = "Output", no = "Input")
-
-    # 2. Crea el span con el nuevo estilo 'font-size'
-    span(
-      the_selection,
-      class = "fw-bold",
-      style = paste(
-        "display: inline-block;",
-        "min-width: 140px;",
-        "text-align: left;",
-        "font-size: 20px;"  # 👈 Añade esta línea para definir el tamaño de la letra
+        uiOutput("toggle01_classroom_state", inline = TRUE)
       )
     )
   })
 
-  output$toggle03_classroom_state <- renderUI({
-    # 1. Determina el texto a mostrar
+
+  output$toggle01_classroom_state <- renderUI({
+    # 1.Text to show
     the_selection <- ifelse(
-      test = input$toggle03_classroom,
-      yes = "Data Analysis",
-      no = "Classroom"
+      test = input$toggle01_classroom,
+       yes = "Data Analysis",  # Active  - Green
+        no = "ClassRoom"        # Deafult - Blue
     )
 
-    # 2. Aumenta el 'min-width' para acomodar "Data Analysis"
+    # 2. Span with style
     span(
       the_selection,
       class = "fw-bold",
-      # Cambié 90px por 125px para que quepa el texto más largo
+      style = paste(
+        "display: inline-block;",
+        "min-width: 140px;",
+        "text-align: left;",
+        "font-size: 20px;"
+      )
+    )
+  })
+
+
+  ### Toogle 02 - Input --------------------------------------------------------
+
+  output$the_toggle_02_input <- renderUI({
+
+    div(
+      tags$head(
+        tags$style(HTML("
+      /* Toggle style */
+      .form-check-input {
+        background-color: #4c78dd !important; /* Blue color for default (false) */
+        border-color: #4c78dd !important;
+        width: 3.5em !important; /* Increase toggle width */
+        height: 1.8em !important; /* Increase height proportionally */
+      }
+
+      /* Style when activated (true) */
+      .form-check-input:checked {
+        background-color: #4CAF50 !important; /* Green color for true */
+        border-color: #4CAF50 !important;
+      }
+
+      /* Ensure smooth transition */
+      .form-check-input {
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      /* Adjust the indicator circle inside the toggle */
+      .form-switch .form-check-input:after {
+        height: calc(1.8em - 4px) !important;
+        width: calc(1.8em - 4px) !important;
+      }
+
+      /* Adjust container spacing */
+      .form-switch {
+        padding-left: 0 !important;
+      }
+    "))
+      ),
+      div(
+        class = "d-flex align-items-center justify-content-between gap-2 mb-3",
+        span("   ", class = "fw-bold"),
+        tags$div(
+          class = "form-check form-switch",
+          tags$input(
+            id = "toggle02_input",
+            type = "checkbox",
+            class = "form-check-input",
+            role = "switch"
+          )
+        ),
+        # span("Python", class = "fw-bold"),
+        uiOutput("toggle02_input_state", inline = TRUE)
+      )
+    )
+  })
+
+  output$toggle02_input_state <- renderUI({
+    # 1. Text to show
+    the_selection <- ifelse(
+      test = input$toggle02_input,
+       yes = "Output",
+        no = "Input")
+
+    # 2. Span with style
+    span(
+      the_selection,
+      class = "fw-bold",
       style = paste(
         "display: inline-block;",
         "min-width: 140px;",
@@ -542,133 +580,228 @@ server <- function(input, output, session) {
     )
   })
 
+
+  ### Toogle 03 - ShowRoom------------------------------------------------------
+
+  output$the_toggle_03_showroom <- renderUI({
+    div(
+      tags$head(
+        tags$style(HTML("
+      /* Toggle style */
+      .form-check-input {
+        background-color: #4c78dd !important; /* Blue color for default (false) */
+        border-color: #4c78dd !important;
+        width: 3.5em !important; /* Increase toggle width */
+        height: 1.8em !important; /* Increase height proportionally */
+      }
+
+      /* Style when activated (true) */
+      .form-check-input:checked {
+        background-color: #4CAF50 !important; /* Green color for true */
+        border-color: #4CAF50 !important;
+      }
+
+      /* Ensure smooth transition */
+      .form-check-input {
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      /* Adjust the indicator circle inside the toggle */
+      .form-switch .form-check-input:after {
+        height: calc(1.8em - 4px) !important;
+        width: calc(1.8em - 4px) !important;
+      }
+
+      /* Adjust container spacing */
+      .form-switch {
+        padding-left: 0 !important;
+      }
+    "))
+      ),
+      div(
+        class = "d-flex align-items-center justify-content-between gap-2 mb-3",
+        span("   ", class = "fw-bold"),
+        tags$div(
+          class = "form-check form-switch",
+          tags$input(
+            id = "toggle03_showroom",
+            type = "checkbox",
+            class = "form-check-input",
+            role = "switch"
+          )
+        ),
+        # span("Python", class = "fw-bold"),
+        uiOutput("toggle03_showroom_state", inline = TRUE)
+      )
+    )
+  })
+
+  output$toggle03_showroom_state <- renderUI({
+    # 1. Text to show
+    the_selection <- ifelse(
+      test = input$toggle03_showroom,
+       yes = "Download",
+        no = "ShowRoom"
+    )
+
+    # 2. Span with style
+    span(
+      the_selection,
+      class = "fw-bold",
+      style = paste(
+        "display: inline-block;",
+        "min-width: 140px;",
+        "text-align: left;",
+        "font-size: 20px;"
+      )
+    )
+  })
+
+
+  ### Super SideBar ------------------------------------------------------------
   output$"the_super_side" <- renderUI({
     div(
+      style = "display: flex; flex-direction: column; align-items: center; justify-content: center;",
+      uiOutput("the_toggle_01_classroom"),
       conditionalPanel(
-        condition = "input.toggle03_classroom == true",
-          conditionalPanel(
-            condition = "input.toggle01_input == false",
-            #ns = ns,
-            uiOutput("input_side_panel")
-          ),
-          conditionalPanel(
-            condition = "input.toggle01_input == true",
-            #ns = ns,
-            uiOutput("output_side_panel")
-          )
+        condition = "input.toggle01_classroom == true",
+        uiOutput("the_toggle_02_input"),
+        conditionalPanel(
+          condition = "input.toggle02_input == false",
+          uiOutput("menu_input")
+        ),
+        conditionalPanel(
+          condition = "input.toggle02_input == true",
+          uiOutput("the_toggle_03_showroom")
+        )
+
+
       )
     )
   })
 
-  output$"input_side_panel" <- renderUI({
 
-    str_style_btn <- "font-size: 65px; display: block; margin-bottom: 8px;"
+  ### Menu Input ---------------------------------------------------------------
+  output$"menu_input" <- renderUI({
+
+    # Button style
+    str_style_btn <- "width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;"
+
+    # Icon Style
+    str_style_icon <- "font-size: 50px; display: block; margin: 0 auto;"
 
     div(
-      # class = "d-flex flex-column align-items-center",
-      card(
-        style = "height: 72vh; min-height: 72vh;",  # Altura de la card (100% del contenedor padre)
+      actionButton(
+        inputId = "btn_dataset",
+        label = tagList(icon("database", style = str_style_icon)),
+        class = "btn-primary",
+        style = str_style_btn,
+        title = "Dataset"
+      ),
 
-        actionButton(
-          inputId = "btn_dataset",
-          label = tagList(
-            # Ahora este icono se renderiza usando los archivos CSS locales
-            #icon("database", style = "font-size: 75px; display: block; margin-bottom: 8px;"),
-            icon("database", style = str_style_btn),
-            #span("Dataset")
-          ),
-          class = "btn-primary",
-          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-          title = ""
-        ),
-        actionButton(
-          inputId = "btn_var_selector",
-          label = tagList(
-            # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("filter", style = str_style_btn),
-            #span("Dataset")
-          ),
-          class = "btn-primary",
-          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-          title = ""
-        ),
-        actionButton(
-          inputId = "btn_config",
-          label = tagList(
-            # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("sliders", style = str_style_btn),
-            #span("Dataset")
-          ),
-          class = "btn-primary",
-          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-          title = ""
-        ),
-        actionButton(
-          inputId = "btn_play_front",
-          label = tagList(
-            # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("play", style = str_style_btn),
-            #span("Dataset")
-          ),
-          class = "btn-primary",
-          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-          title = ""
-        ),
-        actionButton(
-          inputId = "btn_refresh",
-          label = tagList(
-            # Ahora este icono se renderiza usando los archivos CSS locales
-            icon("arrows-rotate", style = str_style_btn),
-            #span("Dataset")
-          ),
-          class = "btn-primary",
-          #style = "height: 100px; width: 140px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 14px;",
-          title = ""
-        )
+      actionButton(
+        inputId = "btn_var_selector",
+        label = tagList(icon("filter", style = str_style_icon)),
+        class = "btn-primary",
+        style = str_style_btn,
+        title = "Variable Selector"
+      ),
+
+      actionButton(
+        inputId = "btn_settings",
+        label = tagList(icon("sliders", style = str_style_icon)),
+        class = "btn-primary",
+        style = str_style_btn,
+        title = "Settings"
+      ),
+
+      actionButton(
+        inputId = "btn_play_front",
+        label = tagList(icon("play", style = str_style_icon)),
+        class = "btn-primary",
+        style = str_style_btn,
+        title = "Play!"
+      ),
+      br(),
+      br(),
+      br(),
+      br(),
+      br(),
+      actionButton(
+        inputId = "btn_refresh",
+        label = tagList(icon("arrows-rotate", style = str_style_icon)),
+        class = "btn-primary",
+        style = str_style_btn,
+        title = "Refresh"
       )
     )
   })
 
-  # step01_Dataset         <- reactiveVal("open")
-  # step02_VarSelection    <- reactiveVal("waiting")
-  # step03_SpecialSettings <- reactiveVal("waiting")
-  # step04_Play            <- reactiveVal("waiting")
 
-  the_list01_Dataset_internal <- MASTER_module_import_server(id = "MASTER_import", show_dev = FALSE)
+    # Standard module for dataset loading (MASTER_module_import - SERVER) ------
+    the_list01_Dataset_internal <- MASTER_module_import_server(id = "MASTER_import", show_dev = FALSE)
 
-  the_list01_Dataset_R <- list("source" = NA, "file" = NA, "str_shape"= NA, "my_dataset" = NA)
-  the_list01_Dataset_stone <- reactiveValues()
-  set_reactive_values_from_list(rv = the_list01_Dataset_stone, data_list = the_list01_Dataset_R)
+    # Standard module for dataset loading (MASTER_module_import - UI) ----------
+    output$"super_dataset_selection" <- renderUI({
 
-  output$"super_dataset_selection" <- renderUI({
-    MASTER_module_import_ui(id = "MASTER_import")
-    # card(
-    #   style = "height: 70vh; min-height: 70vh;",
-    #   full_screen = TRUE,
-    #   card_header(
-    #     # class = "d-flex align-items-center",
-    #     style = "background-color: #ff9a3c; color: white; border-bottom: 1px solid #e67e22; padding-left: 10px;",
-    #     tags$i(class = "fa fa-database me-2"),
-    #     tags$b("Data Import")
-    #   ),
-    #   card_body(
-    #     style = "padding: 15px; background-color: #fff3e6;",
-    #     uiOutput("box01_data_source")
-    #   )
-    # )
-  })
+      # Standard module for dataset loading (MASTER_module_import - UI)
+      MASTER_module_import_ui(id = "MASTER_import")
+
+    })
+
+    # Stone 01 - Dataset - Default Values --------------------------------------
+    the_list01_Dataset_R <- list("source" = NA,
+                                 "file" = NA,
+                                 "str_shape"= NA,
+                                 "my_dataset" = NA,
+                                 "info_status" = "waiting",
+                                 "info_check_go_forward" = FALSE,
+                                 "info_color" = my_color_blue)
+
+    the_list01_Dataset_stone <- reactiveValues()
+    set_reactive_values_from_list(rv = the_list01_Dataset_stone,
+                                  data_list = the_list01_Dataset_R)
+
+
+    # Stone 02 - Var Selection - Default Values --------------------------------
+    the_list02_VarSelection_R <- list("var_name_factor" = NA,
+                                      "var_name_rv" = NA,
+                                      "alpha_value" = NA,
+                                      "vector_var_names" = NA,
+                                      "minidataset" = NA,
+                                      "ncol" = NA,
+                                      "nrow" = NA,
+                                      "str_shape" = NA,
+                                      "info_status" = "waiting",
+                                      "info_color" = my_color_blue)
+
+    the_list02_VarSelection_stone <- reactiveValues()
+    set_reactive_values_from_list(rv = the_list02_VarSelection_stone,
+                                  data_list = the_list02_VarSelection_R)
+
+    # Stone 03 - SpecialSettings - Default Values ------------------------------
+    the_list03_SpecialSettigns_R <- list("df_order" = NA,
+                                         "vector_ordered_levels" = NA,
+                                         "vector_ordered_colors" = NA,
+                                         "minidataset" = NA,
+                                         "nrow" = NA,
+                                         "ncol" = NA,
+                                         "info_status" = "waiting",
+                                         "info_color" = my_color_blue,
+                                         "shiny_obj_name" = NA)
+
+    the_list03_SpecialSettigns_stone <- reactiveValues()
+    set_reactive_values_from_list(rv = the_list03_SpecialSettigns_stone,
+                                  data_list = the_list03_SpecialSettigns_R)
+
 
   observeEvent(input$btn_dataset, {
 
 
-
-    # 2. Mostramos el modal con el contenido del módulo ya inicializado
-    # Usando tamaño "xl" (extra large)
     showModal(
       modalDialog(
-        # title = "Seleccionar Base de Datos",
-        size = "xl", # Mantenemos "xl" como base
-        easyClose = TRUE,
+        size = "xl",
+        easyClose = FALSE,
 
         # Aplicamos estilos personalizados para hacer el modal más grande y posicionarlo más arriba
         tags$div(
@@ -740,14 +873,12 @@ server <- function(input, output, session) {
   })
   observeEvent(input$confirm_action01, {
 
-    # req(the_list01_Dataset_internal())
+
     if (is.null(the_list01_Dataset_internal()$"my_dataset")) {
-      # print(the_list01_Dataset_internal())
       showNotification(
         "Please, select a dataset.",
         type = "warning"
       )
-
       return()
     }
 
@@ -756,19 +887,25 @@ server <- function(input, output, session) {
     # 1) Show notification
     fn_show_notification_ok(the_message = "Dataset imported successfully.")
 
+
     # 2) Change color on botton
     shinyjs::removeClass(id = "btn_dataset", class = "btn-primary")
     shinyjs::addClass(id = "btn_dataset",  class = "btn-success")
 
-    ########
+    # 3) Basics
     the_nrow <- nrow(the_list01_Dataset_internal()$"my_dataset")
     the_ncol <- ncol(the_list01_Dataset_internal()$"my_dataset")
+    the_str_shape <- paste0(the_nrow, " Rows", " x ", the_ncol, " Cols")
 
     # 3) Put on stone
     the_list01_Dataset_stone$"source" <- the_list01_Dataset_internal()[["data_source"]]
     the_list01_Dataset_stone$"file"   <- the_list01_Dataset_internal()[["original_file_name"]]
-    the_list01_Dataset_stone$"str_shape"  <- paste0(the_nrow, " Rows", " x ", the_ncol, " Cols")
+    the_list01_Dataset_stone$"str_shape"  <- the_str_shape
     the_list01_Dataset_stone$"my_dataset" <- the_list01_Dataset_internal()$"my_dataset"
+    the_list01_Dataset_stone$"info_status" <- "done"
+    the_list01_Dataset_stone$"info_check_go_forward" <- TRUE
+    the_list01_Dataset_stone$"info_color" <- my_color_green
+
     # 4) Remove Modal
     removeModal()
   })
@@ -800,18 +937,6 @@ server <- function(input, output, session) {
     )
   })
 
-  the_list02_VarSelection_R <- list("var_name_factor" = NA,
-                                    "var_name_rv" = NA,
-                                    "alpha_value" = NA,
-                                    "vector_var_names" = NA,
-                                    "minidataset" = NA,
-                                    "ncol" = NA,
-                                    "nrow" = NA,
-                                    "str_shape" = NA)
-
-
-  the_list02_VarSelection_stone <- reactiveValues()
-  set_reactive_values_from_list(rv = the_list02_VarSelection_stone, data_list = the_list02_VarSelection_R)
 
   observeEvent(input$"btn_var_selector", {
 
@@ -940,7 +1065,9 @@ server <- function(input, output, session) {
     the_list02_VarSelection_stone$"ncol" <- ncol(minidataset)
     the_list02_VarSelection_stone$"nrow" <- nrow(minidataset)
     the_list02_VarSelection_stone$"str_shape" <- paste0(nrow(minidataset), " Rows x ", ncol(minidataset), " Cols")
-
+    the_list02_VarSelection_stone$"info_status" <- "done"
+    the_list02_VarSelection_stone$"info_check_go_forward" <- TRUE
+    the_list02_VarSelection_stone$"info_color" <- my_color_green
     # 4) Remove Modal
     removeModal()
 
@@ -1013,15 +1140,6 @@ server <- function(input, output, session) {
     )
   })
 
-  the_list03_SpecialSettigns_R <- list("df_order" = NA,
-                                       "vector_ordered_levels" = NA,
-                                       "vector_ordered_colors" = NA,
-                                       "minidataset" = NA,
-                                       "nrow" = NA,
-                                       "ncol" = NA)
-
-  the_list03_SpecialSettigns_stone <- reactiveValues()
-  set_reactive_values_from_list(rv = the_list03_SpecialSettigns_stone, data_list = the_list03_SpecialSettigns_R)
 
   the_list03_SpecialSettigns_internal <- reactive({
     # req(the_list01_Dataset_stone)
@@ -1157,7 +1275,7 @@ server <- function(input, output, session) {
       rownames = FALSE # Oculta los números de fila
     )
   })
-  observeEvent(input$"btn_config", {
+  observeEvent(input$"btn_settings", {
 
 
 
@@ -1276,8 +1394,8 @@ server <- function(input, output, session) {
     fn_show_notification_ok(the_message = "Variable selection selected successfully.")
 
     # 2) Change color on botton
-    shinyjs::removeClass(id = "btn_config", class = "btn-primary")
-    shinyjs::addClass(id = "btn_config",  class = "btn-success")
+    shinyjs::removeClass(id = "btn_settings", class = "btn-primary")
+    shinyjs::addClass(id = "btn_settings",  class = "btn-success")
 
     # 3) Put on stone
     vector_ordered_levels <- the_list03_SpecialSettigns_internal()$"vector_ordered_levels"
@@ -1297,6 +1415,10 @@ server <- function(input, output, session) {
     the_list03_SpecialSettigns_stone$"minidataset" <- minidaset_with_change
     the_list03_SpecialSettigns_stone$"nrow" <- nrow(minidaset_with_change)
     the_list03_SpecialSettigns_stone$"ncol" <- ncol(minidaset_with_change)
+    the_list03_SpecialSettigns_stone$"info_status" <- "done"
+    the_list03_SpecialSettigns_stone$"info_check_go_forward" <- TRUE
+    the_list03_SpecialSettigns_stone$"info_color" <- my_color_green
+    the_list03_SpecialSettigns_stone$"shiny_obj_name" <- "control03_plotly"#"settings_table_display02"
 
     # 4) Remove Modal
     removeModal()
@@ -1426,7 +1548,32 @@ server <- function(input, output, session) {
     var_name_factor <- the_list02_VarSelection_stone$"var_name_factor"
     var_name_rv <- the_list02_VarSelection_stone$"var_name_rv"
     settings_df <- the_list03_SpecialSettigns_stone$"df_order"
+    vector_ordered_levels <- the_list03_SpecialSettigns_stone$"vector_ordered_levels"
+    vector_ordered_colors <- the_list03_SpecialSettigns_stone$"vector_ordered_colors"
 
+    #################################
+    df_rv_position_levels <- data.frame(
+      "order_level"  = 1:nlevels(minidataset[,var_name_factor]),
+      "level" = levels(minidataset[,var_name_factor]),
+      "n"            = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], length),
+      "variable"     = rep(var_name_rv, nlevels(minidataset[,var_name_factor])),
+      "min"          = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], min),
+      "mean"         = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], mean),
+      "Q1"           = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], quantile, 0.25),
+      "median"       = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], median),
+      "Q3"           = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], quantile, 0.75),
+      "max"          = tapply(minidataset[,var_name_rv], minidataset[,var_name_factor], max),
+      "color" = vector_ordered_colors,
+      stringsAsFactors = FALSE
+    )
+    df_rv_position_levels[,"level"] <- factor(
+      x = df_rv_position_levels[,"level"],       # La variable original de factor
+      levels = df_rv_position_levels[,"level"]  # El orden de los niveles que calculamos en el Paso 2
+    )
+    rownames(df_rv_position_levels) <- NULL
+
+    df_table_factor_plot004 <- df_rv_position_levels
+    ########################################################
     # --- CÓDIGO CLAVE DE LA SOLUCIÓN ---
     # 1. Crear el vector de números de fila secuenciales (1, 2, 3, ...)
     row_sequence <- 1:nrow(minidataset)
@@ -1435,43 +1582,81 @@ server <- function(input, output, session) {
     hover_text <- paste0("Row: ", row_sequence)
     # ------------------------------------
 
-    # Crear un nuevo plot
-    plot001_factor <- plotly::plot_ly()
+    # # # New plotly...
+    plot004_factor <- plotly::plot_ly()
 
-    # Scatter plot
-    plot001_factor <- plotly::add_trace(p = plot001_factor,
-                                        type = "scatter",
-                                        mode = "markers",
-                                        x = minidataset[,var_name_factor],
-                                        y = minidataset[,var_name_rv],
-                                        color = minidataset[,var_name_factor],
-                                        colors = settings_df$color,
+    # # # Boxplot and info...
+    plot004_factor <- plotly::add_trace(p = plot004_factor,
+                                        type = "box",
+                                        x = df_table_factor_plot004$level ,
+                                        color = df_table_factor_plot004$level,
+                                        colors = df_table_factor_plot004$color,
+                                        lowerfence = df_table_factor_plot004$min,
+                                        q1 = df_table_factor_plot004$Q1,
+                                        median = df_table_factor_plot004$median,
+                                        q3 = df_table_factor_plot004$Q3,
+                                        upperfence = df_table_factor_plot004$max,
+                                        boxmean = TRUE,
+                                        boxpoints = FALSE,
+                                        line = list(color = "black", width = 3)
+    )
 
-                                        # *********************************
-                                        # 1. ASIGNAR EL TEXTO DEL CURSOR:
-                                        # Usamos el nuevo vector secuencial y formateado
-                                        text = hover_text,
+    # # # Title and settings...
+    # plot004_factor <- plotly::layout(p = plot004_factor,
+    #                                  title = "Plot 004 - Boxplot and means",
+    #                                  font = list(size = 20),
+    #                                  margin = list(t = 100))
 
-                                        # 2. CONFIGURAR EL CONTENIDO DEL CURSOR:
-                                        # Mantenemos 'text+x+y+name' para incluir el nuevo texto
-                                        hoverinfo = 'text+x+y+name',
-                                        # *********************************
 
-                                        marker = list(size = 15, opacity = 0.7))
+    # # # Without zerolines...
+    plot004_factor <- plotly::layout(p = plot004_factor,
+                                    xaxis = list(zeroline = FALSE,
+                                                 title = var_name_factor),
+                                    yaxis = list(zeroline = FALSE,
+                                                 title = var_name_rv),
+                                     font = list(size = 20))
 
-    # Título y settings
-    plot001_factor <- plotly::layout(p = plot001_factor,
-                                     title = "Scatterplot",
-                                     font = list(size = 20),
-                                     margin = list(t = 100))
+    # # # Output plot004_anova...
+    plot004_factor
 
-    # Sin zerolines
-    plot001_factor <- plotly::layout(p = plot001_factor,
-                                     xaxis = list(zeroline = FALSE, title = var_name_factor),
-                                     yaxis = list(zeroline = FALSE, title = var_name_rv))
-
-    # El bloque renderPlotly debe devolver el objeto Plotly al final
-    plot001_factor
+    # # Crear un nuevo plot
+    # plot001_factor <- plotly::plot_ly()
+    #
+    # # Scatter plot
+    # plot001_factor <- plotly::add_trace(p = plot001_factor,
+    #                                     type = "scatter",
+    #                                     mode = "markers",
+    #                                     x = minidataset[,var_name_factor],
+    #                                     y = minidataset[,var_name_rv],
+    #                                     color = minidataset[,var_name_factor],
+    #                                     colors = settings_df$color,
+    #
+    #                                     # *********************************
+    #                                     # 1. ASIGNAR EL TEXTO DEL CURSOR:
+    #                                     # Usamos el nuevo vector secuencial y formateado
+    #                                     text = hover_text,
+    #
+    #                                     # 2. CONFIGURAR EL CONTENIDO DEL CURSOR:
+    #                                     # Mantenemos 'text+x+y+name' para incluir el nuevo texto
+    #                                     hoverinfo = 'text+x+y+name',
+    #                                     # *********************************
+    #
+    #                                     marker = list(size = 15, opacity = 0.7))
+    #
+    # # Título y settings
+    # # plot001_factor <- plotly::layout(p = plot001_factor,
+    # #                                  title = "Scatterplot",
+    # #                                  font = list(size = 20),
+    # #                                  margin = list(t = 100))
+    #
+    # # Sin zerolines
+    # plot001_factor <- plotly::layout(p = plot001_factor,
+    #                                  xaxis = list(zeroline = FALSE, title = var_name_factor),
+    #                                  yaxis = list(zeroline = FALSE, title = var_name_rv),
+    #                                  font = list(size = 20))
+    #
+    # # El bloque renderPlotly debe devolver el objeto Plotly al final
+    # plot001_factor
   })
   ###---------------------------------------------------------------------------
   output$"output_side_panel" <- renderUI({
@@ -1517,37 +1702,52 @@ server <- function(input, output, session) {
   ###---------------------------------------------------------------------------
 
   output$"the_super_main" <- renderUI({
-    div(
+       div(
+         style = "width: 100%; height: 100%;",
       # style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
       conditionalPanel(
-        condition = "input.toggle03_classroom == true",
+        condition = "input.toggle01_classroom == false", # ClassRoom
+        uiOutput("main_classroom_general")
+      ),
+      conditionalPanel(
+        condition = "input.toggle01_classroom == true", # Data Analysis...
           conditionalPanel(
-            condition = "input.toggle01_input == false",
+            condition = "input.toggle02_input == false", # Input
             #ns = ns,
             uiOutput("main_input_general")
           ),
           conditionalPanel(
-            condition = "input.toggle01_input == true",
-            #ns = ns,
-            uiOutput("main_output_general")
+            condition = "input.toggle02_input == true", # Output...
+              conditionalPanel(
+                condition = "input.toggle03_showroom == false", # Show
+                #ns = ns,
+                # uiOutput("main_output_general")
+                uiOutput("main_output_01_html_report")
+              ),
+              conditionalPanel(
+                condition = "input.toggle03_showroom == true", # Download
+                #ns = ns,
+                uiOutput("main_output_02_html_report")
+
+              )
+
           )
-        ),
-      conditionalPanel(
-        condition = "input.toggle03_classroom == false",
-        uiOutput("main_classroom_general")
-      ),
-      tags$p(
-        "Rscience 1.0.19 - General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way - Script 01",
-        style = paste(
-          "color: #1E88E5;",                  # 🟦 Color de la letra (azul vibrante)
-          "font-family: 'Arial Black', sans-serif;",  # ✒️ Tipo de letra
-          "font-size: 18px;",                 # 📏 Tamaño de la letra
-          "font-weight: bold;",               #  মোটা En negrita (alternativa a 'class = "fw-bold"')
-          "background-color: #FFFDE7;",       # 💡 Color de resaltado/fondo (amarillo pálido)
-          "padding: 5px;"                     # Espacio alrededor del texto dentro del fondo
         )
       )
 
+  })
+
+  output$"final_info" <- renderUI({
+    tags$p(
+      "Rscience 1.0.19 - General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way - Script 01",
+      style = paste(
+        "color: #1E88E5;",                  # 🟦 Color de la letra (azul vibrante)
+        "font-family: 'Arial Black', sans-serif;",  # ✒️ Tipo de letra
+        "font-size: 18px;",                 # 📏 Tamaño de la letra
+        "font-weight: bold;",               #  মোটা En negrita (alternativa a 'class = "fw-bold"')
+        "background-color: #FFFDE7;",       # 💡 Color de resaltado/fondo (amarillo pálido)
+        "padding: 5px;"                     # Espacio alrededor del texto dentro del fondo
+      )
     )
   })
 
@@ -1560,13 +1760,18 @@ server <- function(input, output, session) {
     the_list02_VarSelection_stone$"minidataset"
   })
 
+  if(FALSE){
   output$"main_input_general" <- renderUI({
     # titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
 
 
     # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
-    str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 72vh; width: 100%; overflow: hidden;"
+    # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 80vh; width: 100%; overflow: hidden;"
+    # str_style_NAV_PANEL <- "flex: 0 0 100%; width: 100%;"
+    # str_style_NAV_PANEL <- "flex: 0 0 100%; min-height: 100; overflow: hidden;"
 
+    div(
+      style = "height: 100%; width: 100%; min-height: 0;", # 'min-height: 0' ayuda en contextos Flexbox
     bslib::navset_card_tab(
       # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
       title = tags$div(
@@ -1585,28 +1790,19 @@ server <- function(input, output, session) {
 
       bslib::nav_panel(
         title = "user_selection",
-        h4("User Selection"),
-        tags$div(
-          # style = "flex-grow: 1; overflow-y: auto;",
-          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
-          p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)"),
-          # fn_infoUI_zocalo_dataset(data_obj = the_list01_Dataset_internal()),
-          # fn_infoUI_zocalo_01_dataset(data_obj = the_list01_Dataset_show()),
-          fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone)),
+                 tags$div(
+                   div(
+                     fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone))
+                   ),
 
+                   div(
+                     fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone))
+                   ),
 
-          fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone)),
-
-          # reactiveValuesToList(la_lista01)
-          # DT::DTOutput("settings_table_display02")
-          tags$div(
-            # style = "flex-grow: 1; overflow-y: auto;",
-            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-
-            fn_infoUI_zocalo_03_container(dt_output_id = "settings_table_display02")
-          )
-        )
-
+                   div(
+                     fn_infoUI_zocalo_03_container(data_obj = reactiveValuesToList(the_list03_SpecialSettigns_stone))
+                   )
+                 )
 
       ),
       bslib::nav_panel(
@@ -1614,10 +1810,9 @@ server <- function(input, output, session) {
         h4("Dataset"),
         tags$div(
           # style = "flex-grow: 1; overflow-y: auto;",
-          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
           tags$div(
             # style = "flex-grow: 1; overflow-y: auto;",
-            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
+            # style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
             tableOutput("df_my_dataset")
           )
         )
@@ -1627,10 +1822,9 @@ server <- function(input, output, session) {
         h4("minidataset"),
         tags$div(
           # style = "flex-grow: 1; overflow-y: auto;",
-          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
           tags$div(
             # style = "flex-grow: 1; overflow-y: auto;",
-            style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
+            # style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
             tableOutput("df_my_minidataset")
           )
         )
@@ -1640,7 +1834,7 @@ server <- function(input, output, session) {
         h4("Control"),
         tags$div(
           # style = "flex-grow: 1; overflow-y: auto;",
-          style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+          # style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
 
           "- Original vs. Filtered Row Count.", br(),
           "- Rows Removed Due to Missing Data (NA) in selected columns.", br(),
@@ -1649,7 +1843,7 @@ server <- function(input, output, session) {
           tags$hr(style = "border-top: 3px solid #000000;"),
           tags$div(
             # Aplicamos Flexbox para control vertical
-            style = "display: flex; flex-direction: column; height: 60vh; overflow-y: auto; padding: 10px;",
+            # style = "display: flex; flex-direction: column; height: 60vh; overflow-y: auto; padding: 10px;",
 
             # Elementos que deben fluir
             DT::DTOutput("df_control01"),
@@ -1658,40 +1852,142 @@ server <- function(input, output, session) {
 
             DT::DTOutput("df_control02"),
 
-            tags$hr(style = "border-top: 3px solid #000000;"),
+            tags$hr(style = "border-top: 3px solid #000000;")#,
 
             # Aseguramos que el Plotly tenga un alto que respete el contenedor
             # plotlyOutput por defecto puede ser muy alto o tener un alto fijo.
-            plotly::plotlyOutput("control03_plotly", height = "600px") # Dale un alto inicial manejable
+            # plotly::plotlyOutput("control03_plotly", height = "600px") # Dale un alto inicial manejable
           )
         )
-      ),
+      )
 
+    )
     )
 
     # )
 
 
-    # [CAMBIO APLICADO] Utilizamos tags$div para envolver y aplicar el estilo de altura y ancho.
-    # tags$div(
-    #   style = "height: 90vh; width: 100%; overflow: hidden; display: flex; flex-direction: column;",
-    #   bslib::navset_card_tab(
-    #     # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-    #
-    #     title = 'Input',
-    #
-    #     bslib::nav_panel(
-    #       title = "user_selection",
-    #       # El CSS ahora fuerza a este contenedor (tab-pane.active) a llenar el 100%
-    #       # del espacio disponible (90vh - encabezado de la tarjeta).
-    #       p("Mostramos la selección... (Este texto es mínimo, pero el contenedor ocupa el 90vh completo.)")
-    #     ),
-    #     bslib::nav_panel(
-    #       title = "dataset",
-    #       "Mostramos el dataset..."
-    #     )
-    #   )
-    # )
+
+  })
+  }
+
+  output$"main_input_general" <- renderUI({
+
+    div(
+      style = "height: 100%; width: 100%;",
+
+      tags$div(
+        class = "fill",
+        style = "height: 100%; width: 100%;",
+
+        bslib::navset_card_tab(
+          title = h4("Inputs"),
+          height = "100%",  # ← Esto es clave para bslib
+          # 1. user_selection
+          bslib::nav_panel(
+            title = "user_selection",
+            style = "height: 100%; width: 100%;",
+            bslib::card_body(
+              fillable = TRUE,
+              style = "height: 100%; width: 100%; padding: 0;",
+              tags$div(
+                style = "display: flex; flex-direction: column; height: 100%; width: 100%; gap: 15px; padding: 15px;",  # ← Padding general y gap
+
+                # 20% - Primera sección con padding
+                div(
+                  style = "flex: 0 0 20%; min-height: 0; display: flex; flex-direction: column; padding: 10px;",  # ← Padding interno
+                  div(
+                    style = "flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;",
+                    fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone))
+                  )
+                ),
+
+                # 20% - Segunda sección con padding
+                div(
+                  style = "flex: 0 0 20%; min-height: 0; display: flex; flex-direction: column; padding: 10px;",  # ← Padding interno
+                  div(
+                    style = "flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;",
+                    fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone))
+                  )
+                ),
+
+                # 60% - Tercera sección con padding
+                div(
+                  style = "flex: 0 0 50%; min-height: 0; display: flex; flex-direction: column; padding: 10px;",  # ← Padding interno
+                  fn_infoUI_zocalo_03_container(
+                    data_obj = reactiveValuesToList(the_list03_SpecialSettigns_stone),
+                    width = "100%",
+                    height = "100%"
+                  )
+                )
+              )
+            )
+          ),
+
+          # 2. dataset
+          bslib::nav_panel(
+            title = "dataset",
+            style = "height: 100%; width: 100%;",
+            bslib::card_body(
+              fillable = TRUE,
+              style = "height: 100%; width: 100%;",
+              h4("Dataset"),
+              tableOutput("df_my_dataset")
+            )
+          ),
+
+          # 3. minidataset
+          bslib::nav_panel(
+            title = "minidataset",
+            # style = "height: 100%; width: 100%;",
+            bslib::card_body(
+              fillable = TRUE,
+              # style = "height: 100%; width: 100%;",
+              h4("minidataset"),
+              tableOutput("df_my_minidataset")
+            )
+          ),
+
+          # 4. control
+          bslib::nav_panel(
+            title = "control",
+            style = "height: 100%; width: 100%;",
+            bslib::card_body(
+              fillable = TRUE,
+              style = "height: 100%; width: 100%;",
+              h4("Control"),
+              tags$div(
+                # style = "flex-grow: 1; overflow-y: auto;",
+                # style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
+
+                "- Original vs. Filtered Row Count.", br(),
+                "- Rows Removed Due to Missing Data (NA) in selected columns.", br(),
+                "- Min/Max by Factor Level for the Response Variable (RV)", br(),
+
+                tags$hr(style = "border-top: 3px solid #000000;"),
+                tags$div(
+                  # Aplicamos Flexbox para control vertical
+                  # style = "display: flex; flex-direction: column; height: 60vh; overflow-y: auto; padding: 10px;",
+
+                  # Elementos que deben fluir
+                  DT::DTOutput("df_control01"),
+
+                  tags$hr(style = "border-top: 3px solid #000000;"),
+
+                  DT::DTOutput("df_control02"),
+
+                  tags$hr(style = "border-top: 3px solid #000000;")#,
+
+                  # Aseguramos que el Plotly tenga un alto que respete el contenedor
+                  # plotlyOutput por defecto puede ser muy alto o tener un alto fijo.
+                  # plotly::plotlyOutput("control03_plotly", height = "600px") # Dale un alto inicial manejable
+                )
+              )
+            )
+          )
+        )
+      )
+    )
   })
 
   output$"main_output_general" <- renderUI({
@@ -1999,8 +2295,8 @@ server <- function(input, output, session) {
       bslib::card_header(
         style = "height: 60px; overflow: hidden;",
         fluidRow(
-          column(2, tags$h4("Output")),
-          column(8),
+          column(3, tags$h4("Output - ShowRoom")),
+          column(7),
           column(2, uiOutput("botonera_html"))
         )
       ),
@@ -2025,15 +2321,11 @@ server <- function(input, output, session) {
 
   output$"main_output_02_html_report" <- renderUI({
     div(
-      shiny::titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
+      # shiny::titlePanel("Gestor de Archivos con Estado Persistente (OUTPUT)"),
       bslib::navset_card_tab(
         # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-        title = 'Look at them penguins!',
+        title = tags$h4("Output - Download"),
 
-        bslib::nav_panel(
-          title = "folder_files",
-          "Despues aca el path y los files."
-        ),
         bslib::nav_panel(
           title = "nueva_descarga",
           # uiOutput("special01"),
@@ -2043,6 +2335,11 @@ server <- function(input, output, session) {
           mod_download_ui("report_pdf",  "File 04 - PDF medium report")
 
         ),
+        bslib::nav_panel(
+          title = "folder_files",
+          "Despues aca el path y los files."
+        ),
+
         bslib::nav_panel(
           title = "PDF",
 
@@ -2502,6 +2799,12 @@ server <- function(input, output, session) {
   # - Toma la hora del sistema
   # - Crea la carpeta temporal nueva
   # - Copia los archivos locales a la carpeta temporal
+  # - Suplantar los elementos en el codigo del archvio .qmd
+  # - Ejecutar y obtener HTML master
+  # - Ejecutar y obtener pDF
+  # - Ejecutar y obtener Word
+  # - Ejecutar y obtener Excel
+  # - Ejecutar y obtejer presentacion HTML
 
   # -
   observeEvent(ANCESTRAL_PLAY(), {
@@ -2695,11 +2998,11 @@ server <- function(input, output, session) {
       # Construir el código JavaScript
       js_code <- paste0(
         # 1. Cambia visualmente el estado del checkbox
-        "var checkbox = document.getElementById('toggle01_input');",
+        "var checkbox = document.getElementById('toggle02_input');",
         "checkbox.checked = ", tolower(nuevo_estado), ";",
 
         # 2. ¡CLAVE! Notifica a Shiny (R) del nuevo valor
-        "Shiny.setInputValue('toggle01_input', checkbox.checked, {priority: 'event'});"
+        "Shiny.setInputValue('toggle02_input', checkbox.checked, {priority: 'event'});"
       )
 
       # 3. Ejecutar el código JavaScript
@@ -3083,8 +3386,8 @@ server <- function(input, output, session) {
     shinyjs::removeClass(id = "btn_var_selector", class = "btn-success")
     shinyjs::addClass(id = "btn_var_selector",  class = "btn-primary")
 
-    shinyjs::removeClass(id = "btn_config", class = "btn-success")
-    shinyjs::addClass(id = "btn_config",  class = "btn-primary")
+    shinyjs::removeClass(id = "btn_settings", class = "btn-success")
+    shinyjs::addClass(id = "btn_settings",  class = "btn-primary")
 
     shinyjs::removeClass(id = "btn_play_front", class = "btn-success")
     shinyjs::addClass(id = "btn_play_front",  class = "btn-primary")
@@ -3363,8 +3666,13 @@ server <- function(input, output, session) {
     req(str_output_file_path_xlsx())
     print("El folder...")
     print(str_output_folder02())
-    print(dir.exists(print(str_output_folder02())))
+    print(dir.exists(str_output_folder02()))
     print("\n")
+    print("El folder del excel")
+    print(dirname(str_output_file_path_xlsx()))
+    print(dir.exists(dirname(str_output_file_path_xlsx())))
+    print("\n")
+    print("El file del excel")
     print(str_output_file_path_xlsx())
     print(file.exists(str_output_file_path_xlsx()))
   })

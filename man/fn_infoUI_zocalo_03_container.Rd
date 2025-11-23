@@ -4,11 +4,14 @@
 \alias{fn_infoUI_zocalo_03_container}
 \title{Función auxiliar para generar el contenedor UI del zócalo de metadatos.}
 \usage{
-fn_infoUI_zocalo_03_container(dt_output_id)
+fn_infoUI_zocalo_03_container(data_obj, width = "100\%", height = "100\%")
 }
 \arguments{
-\item{dt_output_id}{El ID del objeto DTOutput (ej. "settings_table_display")
-que se incrustará dentro del zócalo.}
+\item{data_obj}{Objeto de datos con la información a mostrar}
+
+\item{width}{Ancho del contenedor (ej: "100\%", "500px", "50vw")}
+
+\item{height}{Alto del contenedor (ej: "100\%", "300px", "50vh")}
 }
 \value{
 Un objeto de tagList (código HTML/Shiny UI).
