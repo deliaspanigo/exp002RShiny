@@ -574,12 +574,23 @@ Only if there is homogeneity from raw error variances then is a good idea take d
 ```{r eval=TRUE, echo=TRUE}
 
 # 1. Identificar objetos esenciales para CADA reporte
-objetos_reporte_word <- c("df_summary_anova")
-objetos_reporte_excel <- c("df_summary_anova")
+vector_obj_pdf <- c("df_summary_anova")
+vector_obj_docx <- vector_obj_pdf
+vector_obj_xlsx <- c("df_summary_anova")
 
 # 2. Guardar por lote específico
-save(list = objetos_reporte_word, file = "output_folder/reporte_word_objetos.RData")
-save(list = objetos_reporte_excel, file = "output_folder/reporte_excel_objetos.RData")
+save(list = vector_obj_pdf,  file = "R_obj_pdf.RData")
+# save(list = vector_obj_docx, file = "R_obj_docx.RData")
+# Obtener todos los objetos del entorno global
+todos_los_objetos <- ls(envir = .GlobalEnv)
+
+# Excluir los que NO quieres guardar
+objetos_a_excluir <- c("params", "load_from_file")
+objetos_a_guardar <- setdiff(todos_los_objetos, objetos_a_excluir)
+
+# Guardar todo excepto los excluidos
+save(list = objetos_a_guardar, file = "R_obj_docx.RData")
+save(list = vector_obj_xlsx, file = "R_obj_xlsx.RData")
 
 
 ``` 

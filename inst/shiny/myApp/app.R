@@ -414,7 +414,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: left;",
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.21"),
+      tags$b("v1.0.22"),
       br(),
 
       # SideBar Panel--------------------------------------------------------
@@ -2455,6 +2455,8 @@ server <- function(input, output, session) {
         overwrite = T
       )
 
+
+
       # 3. Definir rutas (40%)
       FN_update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
       file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd())
@@ -3085,6 +3087,19 @@ server <- function(input, output, session) {
       overwrite = T
     )
 
+    ###########################################################################
+    # Buscar y eliminar archivos .RData
+    archivos_rdata <- list.files(STR_INTERNAL_temp_folder_path$"folder_path",
+                                 pattern = "\\.RData$",
+                                 full.names = TRUE,
+                                 ignore.case = TRUE)
+
+    if (length(archivos_rdata) > 0) {
+      unlink(archivos_rdata)
+      message("✓ Archivos .RData eliminados: ", length(archivos_rdata))
+    }
+    ###########################################################################
+
     isolate({
       TOTEM_data_analysis$"step05"$"check"  <- TRUE
       TOTEM_data_analysis$"step05"$"status_info" <- "Done!"
@@ -3117,7 +3132,13 @@ server <- function(input, output, session) {
     str_temp_folder_path <- STR_INTERNAL_temp_folder_path$"folder_path"
     str_output_folder_path <- file.path(str_temp_folder_path, subfolder_output)
 
-    dir.create(str_output_folder_path, recursive = TRUE)
+    # Create output folder
+    dir.create(str_output_folder_path, recursive = TRUE, showWarnings = FALSE)
+
+    # Cleaning output_folder
+    unlink(list.files(str_output_folder_path, full.names = TRUE), recursive = TRUE)
+
+    # Check if exists
     check_output_folder_path <- dir.exists(str_output_folder_path)
 
     STR_INTERNAL_output_folder_path$"folder_path" <- str_output_folder_path
@@ -3185,7 +3206,7 @@ server <- function(input, output, session) {
 
     # 3. Basics ----------------------------------------------------------------
     str_work_dir_original <- TOTEM_special_paths$"getwd"
-    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+    str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
 
 
     # 4. Changing work directory -----------------------------------------------
@@ -3239,9 +3260,14 @@ server <- function(input, output, session) {
                           #execute_params = my_bag,
                           quiet = FALSE)
 
-    # 7. Moving file to output folder ------------------------------------------
-    file.rename(from = my_output_file_name,
-                to = file.path(subfolder_output, my_output_file_name))
+    # # 7. Moving file to output folder ------------------------------------------
+
+    file_path_01 <- file.path(str_work_dir_new, my_output_file_name)
+    file_path_02 <- file.path(str_work_dir_new, subfolder_output, my_output_file_name)
+    print(file_path_01)
+    print(file_path_02)
+    file.rename(from = file_path_01,
+                to = file_path_02)
 
 
     # 8. Checking output file exists -------------------------------------------
@@ -3271,7 +3297,7 @@ server <- function(input, output, session) {
 
     # 3. Basics ----------------------------------------------------------------
     str_work_dir_original <- TOTEM_special_paths$"getwd"
-    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+    str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
 
 
     # 4. Changing work directory -----------------------------------------------
@@ -3319,7 +3345,7 @@ server <- function(input, output, session) {
 
     # 3. Basics ----------------------------------------------------------------
     str_work_dir_original <- TOTEM_special_paths$"getwd"
-    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+    str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
 
 
     # 4. Changing work directory -----------------------------------------------
@@ -3372,10 +3398,10 @@ server <- function(input, output, session) {
 
 
 
-      dir_original <- getwd()
-      my_temporal_folder <- STR_INTERNAL_input_folder_path$"folder_path"
+      str_work_dir_original <- TOTEM_special_paths$"getwd"
+      str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
 
-      setwd(my_temporal_folder)
+      setwd(str_work_dir_new)
 
 
       # #########################################################################################
@@ -3431,7 +3457,7 @@ server <- function(input, output, session) {
       ####################################################################################
       print(list.files())
       print(list.files("output_folder"))
-      setwd(dir_original)
+      setwd(str_work_dir_original)
 
       # 6. Progreso tras el bloqueo (90%)
       FN_update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
