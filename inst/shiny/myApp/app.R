@@ -66,21 +66,7 @@ mod_download_ui <- function(id, title) {
     # Column for the action buttons
     column(8,
 
-      # Download Button
-      downloadButton(
-        outputId = ns("btn_download"),
-        label = NULL,
-        icon = icon("download", class = "fa-2x"),
-        class = "btn-warning btn-sm"
-      ),
-
-      # Open Button (Binoculars)
-      actionButton(
-        inputId = ns("btn_open"),
-        label = NULL,
-        icon = icon("binoculars", class = "fa-2x"),
-        class = "btn-warning btn-sm"
-      )
+      div(uiOutput(ns("set_btn")))
     )
   )
 }
@@ -93,6 +79,73 @@ mod_download_server <- function(id, r_file_path) {
     # Get the namespace function for use inside the server
     ns <- session$ns
 
+    super_btn_download <- reactiveValues()
+    super_btn_download$"class" <- "btn-warning btn-sm"
+
+    super_btn_open <- reactiveValues()
+    super_btn_open$"class" <- "btn-warning btn-sm"
+
+    output$"set_btn" <- renderUI({
+      # Download Button
+      div(
+        downloadButton(
+          outputId = ns("btn_download"),
+          label = NULL,
+          icon = icon("download", class = "fa-2x"),
+          class = super_btn_download$"class"
+        ),
+
+        # Open Button (Binoculars)
+        actionButton(
+          inputId = ns("btn_open"),
+          label = NULL,
+          icon = icon("binoculars", class = "fa-2x"),
+          class = super_btn_open$"class"
+        )
+      )
+    })
+    observeEvent(r_file_path(), {
+
+      print("DENTRO")
+      print(r_file_path())
+      print(is.null(r_file_path()))
+
+
+      # print(file.exists(r_file_path()))
+
+      if(is.null(r_file_path())){
+        print("paso 1")
+        print(r_file_path())
+
+        super_btn_download$"class" <- "btn-danger btn-sm"
+        super_btn_open$"class"     <- "btn-danger btn-sm"
+
+        # shinyjs::runjs(paste0("
+        #     $('#", ns("btn_download"), "').removeClass('disabled');
+        #     $('#", ns("btn_download"), "').removeClass('btn-warning');
+        #     $('#", ns("btn_download"), "').addClass('btn-danger');
+        #   "))
+
+        # shinyjs::removeClass("btn_open", "btn-warning")
+        # shinyjs::addClass("btn_open", "btn-primary")
+        print(" ")
+        print(" ")
+        print(" ")
+      } else
+        if(!file.exists(r_file_path())) {
+
+          super_btn_download$"class" <- "btn-danger btn-sm"
+          super_btn_open$"class"     <- "btn-danger btn-sm"
+
+      } else
+      if(!is.null(r_file_path()) & file.exists(r_file_path())) {
+        # shinyjs::removeClass("btn_open", "btn-primary")
+        # shinyjs::removeClass("btn_open", "btn-warning")
+        super_btn_download$"class" <- "btn-warning btn-sm"
+        super_btn_open$"class"     <- "btn-warning btn-sm"
+      }
+    },  ignoreNULL = FALSE,
+    ignoreInit = FALSE)
     # ----------------------------------------
     # Logic for the Open Button (btn_open)
     # ----------------------------------------
@@ -361,7 +414,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: left;",
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.20"),
+      tags$b("v1.0.21"),
       br(),
 
       # SideBar Panel--------------------------------------------------------
@@ -1760,116 +1813,6 @@ server <- function(input, output, session) {
     the_list02_VarSelection_stone$"minidataset"
   })
 
-  if(FALSE){
-  output$"main_input_general" <- renderUI({
-    # titlePanel("Gestor de Archivos con Estado Persistente (INPUT)"),
-
-
-    # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%;"
-    # str_style_NAV_PANEL <- "flex-grow: 1; overflow-y: auto; height: 80vh; width: 100%; overflow: hidden;"
-    # str_style_NAV_PANEL <- "flex: 0 0 100%; width: 100%;"
-    # str_style_NAV_PANEL <- "flex: 0 0 100%; min-height: 100; overflow: hidden;"
-
-    div(
-      style = "height: 100%; width: 100%; min-height: 0;", # 'min-height: 0' ayuda en contextos Flexbox
-    bslib::navset_card_tab(
-      # Puedes mantener un header para toda la tarjeta si quieres, o omitirlo
-      title = tags$div(
-        style = "
-        min-height: 10px;
-        padding-top: 0px;      /* ↑ Arriba */
-        padding-right: 0px;    /* → Derecha */
-        padding-bottom: 0px;   /* ↓ Abajo */
-        padding-left: 0px;     /* ← Izquierda */
-      ",
-        tags$h4("Input"),
-      ),
-      # title =
-      # div(
-      # style = "height: 90vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
-
-      bslib::nav_panel(
-        title = "user_selection",
-                 tags$div(
-                   div(
-                     fn_infoUI_zocalo_01_dataset(data_obj = reactiveValuesToList(the_list01_Dataset_stone))
-                   ),
-
-                   div(
-                     fn_infoUI_zocalo_02_VarSelection(data_obj = reactiveValuesToList(the_list02_VarSelection_stone))
-                   ),
-
-                   div(
-                     fn_infoUI_zocalo_03_container(data_obj = reactiveValuesToList(the_list03_SpecialSettigns_stone))
-                   )
-                 )
-
-      ),
-      bslib::nav_panel(
-        title = "dataset",
-        h4("Dataset"),
-        tags$div(
-          # style = "flex-grow: 1; overflow-y: auto;",
-          tags$div(
-            # style = "flex-grow: 1; overflow-y: auto;",
-            # style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-            tableOutput("df_my_dataset")
-          )
-        )
-      ),
-      bslib::nav_panel(
-        title = "minidataset",
-        h4("minidataset"),
-        tags$div(
-          # style = "flex-grow: 1; overflow-y: auto;",
-          tags$div(
-            # style = "flex-grow: 1; overflow-y: auto;",
-            # style = "flex-grow: 1; overflow-y: auto; height: 74vh; width: 100%; overflow: auto;",
-            tableOutput("df_my_minidataset")
-          )
-        )
-      ),
-      bslib::nav_panel(
-        title = "control",
-        h4("Control"),
-        tags$div(
-          # style = "flex-grow: 1; overflow-y: auto;",
-          # style = str_style_NAV_PANEL, # Asegurar que el contenedor tenga altura suficiente
-
-          "- Original vs. Filtered Row Count.", br(),
-          "- Rows Removed Due to Missing Data (NA) in selected columns.", br(),
-          "- Min/Max by Factor Level for the Response Variable (RV)", br(),
-
-          tags$hr(style = "border-top: 3px solid #000000;"),
-          tags$div(
-            # Aplicamos Flexbox para control vertical
-            # style = "display: flex; flex-direction: column; height: 60vh; overflow-y: auto; padding: 10px;",
-
-            # Elementos que deben fluir
-            DT::DTOutput("df_control01"),
-
-            tags$hr(style = "border-top: 3px solid #000000;"),
-
-            DT::DTOutput("df_control02"),
-
-            tags$hr(style = "border-top: 3px solid #000000;")#,
-
-            # Aseguramos que el Plotly tenga un alto que respete el contenedor
-            # plotlyOutput por defecto puede ser muy alto o tener un alto fijo.
-            # plotly::plotlyOutput("control03_plotly", height = "600px") # Dale un alto inicial manejable
-          )
-        )
-      )
-
-    )
-    )
-
-    # )
-
-
-
-  })
-  }
 
   output$"main_input_general" <- renderUI({
 
@@ -2389,54 +2332,7 @@ server <- function(input, output, session) {
 
   })
 
-  str_input_folder_package <- reactive({
 
-    find_my_folder_path_package <- function(){
-
-      selected_package_path <- tryCatch(
-        # Intenta ejecutar este código
-        expr = {
-          find.package(MY_PACKAGE_NAME)
-        },
-        # Si ocurre un error, ejecuta este código y devuelve su resultado
-        error = function(e) {
-          # El error de 'find.package' se dispara cuando no encuentra el paquete.
-          # En ese caso, devolvemos getwd(), que es el path del archivo app.R
-          # y lo recortamos para quedarnos en la subcarpeta del package.
-          the_local_path <- strsplit(getwd(), MY_PACKAGE_NAME)
-          the_local_path <-file.path(the_local_path[[1]][1], MY_PACKAGE_NAME, "inst")
-          return(the_local_path)
-        }
-      )
-
-
-
-
-      vector_folder_paths <- list.dirs(path = selected_package_path, recursive = T)
-      dt_selected_quarto_folder <- grepl("quarto$", vector_folder_paths, ignore.case = TRUE)
-      selected_quarto_folder_path <- vector_folder_paths[dt_selected_quarto_folder]
-
-      #print(selected_quarto_folder_path)
-
-      return(selected_quarto_folder_path)
-    }
-    find_my_folder_path_package()
-
-  })
-
-  str_input_folder_quarto <- reactive({
-
-    selected_package_path <- str_input_folder_package()
-
-    vector_folder_paths <- list.dirs(path = selected_package_path, recursive = T)
-    dt_selected_quarto_folder <- grepl("quarto$", vector_folder_paths, ignore.case = TRUE)
-    selected_quarto_folder_path <- vector_folder_paths[dt_selected_quarto_folder]
-
-    return(selected_quarto_folder_path)
-
-
-
-  })
   ##############################################################################
 
   # 01 - PDF
@@ -2512,7 +2408,7 @@ server <- function(input, output, session) {
     ))
 
     # 2. FUNCIÓN DE ACTUALIZACIÓN PERSONALIZADA (JS + R)
-    update_modal_progress <- function(value, message, detail = "") {
+    FN_update_modal_progress <- function(value, message, detail = "") {
       progress$set(value = value, message = message, detail = detail)
 
       # Lógica JavaScript para actualizar la UI del modal
@@ -2543,16 +2439,16 @@ server <- function(input, output, session) {
     tryCatch({
 
       # === PASOS INTERMEDIOS (Se mantienen iguales) ===
-      update_modal_progress(value = 0.05, message= "Inicializando", detail = "Preparando variables y entorno...")
+      FN_update_modal_progress(value = 0.05, message= "Inicializando", detail = "Preparando variables y entorno...")
 
       # 1. Crear carpeta temporal (10%)
-      update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
+      FN_update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
       my_output_folder01 <- create_new_temporal_output_folder_path()
       str_output_folder01(my_output_folder01)
       dir.create(my_output_folder01, recursive = TRUE)
 
       # 2. Copiar archivos (25%)
-      update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
+      FN_update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
       fs::dir_copy(
         path = str_input_folder_quarto(),
         new_path = str_output_folder01(),
@@ -2560,7 +2456,7 @@ server <- function(input, output, session) {
       )
 
       # 3. Definir rutas (40%)
-      update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
+      FN_update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
       file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd())
       str_pdf_file_name <- paste0(file_name_no_ext,"_", the_time_here_format(), ".pdf")
       str_output_file_name_pdf(str_pdf_file_name)
@@ -2568,13 +2464,13 @@ server <- function(input, output, session) {
       str_output_file_path_pdf(my_str_pdf)
 
       # 4. Configurar entorno de renderizado (50%)
-      update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+      FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
       dir_original <- getwd()
       my_temporal_folder <- str_output_folder01()
       setwd(my_temporal_folder)
 
       # 5. Llamada BLOQUEANTE (50% -> 90%)
-      update_modal_progress(0.55, "Renderizando Quarto", detail = "Ejecutando el renderizado (puede tardar)...")
+      FN_update_modal_progress(0.55, "Renderizando Quarto", detail = "Ejecutando el renderizado (puede tardar)...")
 
       quarto::quarto_render(input = str_file_name_input_qmd(),
                             output_format = "typst",
@@ -2597,13 +2493,13 @@ server <- function(input, output, session) {
       setwd(dir_original)
 
       # 6. Progreso tras el bloqueo (90%)
-      update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
+      FN_update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
 
 
       # === PASO C: Finalización Exitosa (90% - 100%) ===
 
       # C1. Terminar barra de progreso al 100%
-      update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
+      FN_update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
 
       # C2. Actualizar estado y color del botón
       removeClass("generar", "btn-warning")
@@ -2756,32 +2652,7 @@ server <- function(input, output, session) {
   })
 
   #####################################################
-  str_file_name_input_qmd02 <- reactive({"report_template_html.qmd"})
-  str_file_path_input_qmd02 <- reactive({
 
-
-    str_path_qmd <- file.path(str_input_folder_quarto(), str_file_name_input_qmd02())
-    str_path_qmd
-  })
-
-  #################################################################################
-  str_file_name_output_xlsx <- reactive({"report_02_anova_1_way.xlsx"})
-  str_output_file_path_xlsx <- reactiveVal(NULL)
-
-  str_file_name_output_docx <- reactive({"report_03_anova_1_way.docx"})
-  str_output_file_path_docx <- reactiveVal(NULL)
-
-  str_file_name_output_pdf <- reactive({"report_04_anova_1_way.pdf"})
-  str_output_file_path_pdf <- reactiveVal(NULL)
-
-  str_output_folder02 <- reactiveVal(NULL)
-  str_subfolder_output <- "output_folder"
-  #################################################################################
-
-  str_output_file_name_html <- reactiveVal(NULL)
-  str_output_file_path_html <- reactiveVal(NULL)
-  the_time_here_format02    <- reactiveVal(NULL)
-  # --- Lógica del Botón "Generar" (Naranja -> Verde) ---
 
 
   ANCESTRAL_PLAY <- reactiveVal(FALSE)
@@ -2795,9 +2666,174 @@ server <- function(input, output, session) {
   })
 
 
-  # - Da clic en play
+  #################################################################################
+
+  #################################################################################
+
+
+
+
+
+
+  ####################################################
+  TOTEM_special_paths <- reactiveValues()
+  TOTEM_special_paths$"STR_REACTIVE_folder_path_package" <- NULL
+  TOTEM_special_paths$"STR_REACTIVE_folder_path_quarto"  <- NULL
+  TOTEM_special_paths$"getwd"  <- getwd()
+  TOTEM_special_paths$"check"  <- FALSE
+
+  STR_REACTIVE_folder_path_package <- reactive({
+
+    find_my_folder_path_package <- function(){
+
+      selected_package_path <- tryCatch(
+        # Intenta ejecutar este código
+        expr = {
+          find.package(MY_PACKAGE_NAME)
+        },
+        # Si ocurre un error, ejecuta este código y devuelve su resultado
+        error = function(e) {
+          # El error de 'find.package' se dispara cuando no encuentra el paquete.
+          # En ese caso, devolvemos getwd(), que es el path del archivo app.R
+          # y lo recortamos para quedarnos en la subcarpeta del package.
+          the_local_path <- strsplit(getwd(), MY_PACKAGE_NAME)
+          the_local_path <-file.path(the_local_path[[1]][1], MY_PACKAGE_NAME, "inst")
+          return(the_local_path)
+        }
+      )
+
+
+
+
+      vector_folder_paths <- list.dirs(path = selected_package_path, recursive = T)
+      dt_selected_quarto_folder <- grepl("quarto$", vector_folder_paths, ignore.case = TRUE)
+      selected_quarto_folder_path <- vector_folder_paths[dt_selected_quarto_folder]
+
+      #print(selected_quarto_folder_path)
+
+      return(selected_quarto_folder_path)
+    }
+    find_my_folder_path_package()
+
+  })
+  STR_REACTIVE_folder_path_quarto <- reactive({
+
+    selected_package_path <- STR_REACTIVE_folder_path_package()
+
+    vector_folder_paths <- list.dirs(path = selected_package_path, recursive = T)
+    dt_selected_quarto_folder <- grepl("quarto$", vector_folder_paths, ignore.case = TRUE)
+    selected_quarto_folder_path <- vector_folder_paths[dt_selected_quarto_folder]
+
+    return(selected_quarto_folder_path)
+
+
+
+  })
+
+  observeEvent(STR_REACTIVE_folder_path_package(), {
+    req(STR_REACTIVE_folder_path_package())
+    TOTEM_special_paths$"STR_REACTIVE_folder_path_package" <- STR_REACTIVE_folder_path_package()
+  })
+
+  observeEvent(STR_REACTIVE_folder_path_quarto(), {
+    req(STR_REACTIVE_folder_path_quarto())
+    TOTEM_special_paths$"STR_REACTIVE_folder_path_quarto" <- STR_REACTIVE_folder_path_quarto()
+  })
+
+  observeEvent(TOTEM_special_paths, {
+    req(STR_REACTIVE_folder_path_quarto())
+    check_01 <- !is.null(TOTEM_special_paths$"STR_REACTIVE_folder_path_package")
+    check_02 <- !is.null(TOTEM_special_paths$"STR_REACTIVE_folder_path_quarto")
+    check_03 <- !is.null(TOTEM_special_paths$"getwd")
+
+    vector_check <- c(check_01, check_02, check_03)
+    check_general <- sum(vector_check) == length(vector_check)
+    if(check_general)   TOTEM_data_analysis$"check"   <- TRUE
+  })
+
+  #################################################################################
+  TOTEM_input_folder_path <- reactiveValues()
+  TOTEM_input_folder_path$"folder_path" <- NULL
+  TOTEM_input_folder_path$"check"       <- NULL
+
+  observe({
+    req(!is.null(TOTEM_special_paths$"STR_REACTIVE_folder_path_quarto"))
+    str_folder_path   <- TOTEM_special_paths$"STR_REACTIVE_folder_path_quarto"
+    check_folder_path <- dir.exists(str_folder_path)
+
+    TOTEM_input_folder_path$"folder_path" <- str_folder_path
+    TOTEM_input_folder_path$"check"       <- check_folder_path
+
+  })
+  #################################################################################
+
+  # Filename
+  list_R_file_name_input_template <- list()
+  list_R_file_name_output_report  <- list()
+
+  list_R_file_name_input_template$"html" <- "report_template_html.qmd"
+  list_R_file_name_output_report$"html"  <- "report_template_html.html"
+
+  list_R_file_name_input_template$"pdf"  <- "save_word.qmd"
+  list_R_file_name_output_report$"pdf"   <- "report_04_anova_1_way.pdf"
+
+  list_R_file_name_input_template$"docx" <- "save_word.qmd"
+  list_R_file_name_output_report$"docx"  <- "report_03_anova_1_way.docx"
+
+  list_R_file_name_input_template$"xlsx" <-  ""
+  list_R_file_name_output_report$"xlsx"  <- "report_02_anova_1_way.xlsx"
+
+  #################################################################################
+  TOTEM_file_path_input_template <- reactiveValues()
+  TOTEM_file_path_input_template$"html"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_input_template$"pdf"   <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_input_template$"docx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_input_template$"xlsx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_input_template$"check_general" <- FALSE
+
+  observe({
+    req(TOTEM_input_folder_path$"check")
+    input_folder_path <- TOTEM_input_folder_path$"folder_path"
+
+    str_file_path_input_html <- file.path(input_folder_path, list_R_file_name_input_template$"html")
+    TOTEM_file_path_input_template$"html"$"file_path"  <-  str_file_path_input_html
+    TOTEM_file_path_input_template$"html"$"check"     <-  file.exists(str_file_path_input_html)
+
+    str_file_path_input_pdf <- file.path(input_folder_path, list_R_file_name_input_template$"pdf")
+    TOTEM_file_path_input_template$"pdf"$"file_path"  <-  str_file_path_input_pdf
+    TOTEM_file_path_input_template$"pdf"$"check"     <-  file.exists(str_file_path_input_pdf)
+
+    str_file_path_input_docx <- file.path(input_folder_path, list_R_file_name_input_template$"docx")
+    TOTEM_file_path_input_template$"docx"$"file_path"  <-  str_file_path_input_docx
+    TOTEM_file_path_input_template$"docx"$"check"     <-  file.exists(str_file_path_input_docx)
+
+    str_file_path_input_xlsx <- file.path(input_folder_path, list_R_file_name_input_template$"xlsx")
+    TOTEM_file_path_input_template$"xlsx"$"file_path"  <-  str_file_path_input_xlsx
+    TOTEM_file_path_input_template$"xlsx"$"check"     <-  file.exists(str_file_path_input_xlsx)
+
+
+    vector_check <- c(TOTEM_file_path_input_template$"html"$"check",
+                       TOTEM_file_path_input_template$"pdf"$"check",
+                       TOTEM_file_path_input_template$"docx"$"check",
+                       TOTEM_file_path_input_template$"xlsx"$"check")
+
+    TOTEM_file_path_input_template$"check_general" <- sum(vector_check) == length(vector_check)
+
+    if(TOTEM_file_path_input_template$"check_general") {
+      print("TODO OK")
+    }
+  })
+  # - Control Pre Play:
+  # Debe tener todos los botones compeltos anteriores, y debe haber encontrado la carpeta
+  # del package.
+  # ----------------------------------------------------------------------------
+# - Da clic en play
+  #-----------------------------------------------------------------------------
+  # - Abre el modal...
+  # ----------------------------------------------------------------------------
   # - Toma la hora del sistema
   # - Crea la carpeta temporal nueva
+  # ----------------------------------------------------------------------------
   # - Copia los archivos locales a la carpeta temporal
   # - Suplantar los elementos en el codigo del archvio .qmd
   # - Ejecutar y obtener HTML master
@@ -2805,51 +2841,110 @@ server <- function(input, output, session) {
   # - Ejecutar y obtener Word
   # - Ejecutar y obtener Excel
   # - Ejecutar y obtejer presentacion HTML
+  # - Cierra el model...
 
   # -
-  observeEvent(ANCESTRAL_PLAY(), {
+
+  TOTEM_data_analysis <- reactiveValues()
+  TOTEM_data_analysis$"step01" <- list("step_number" = 1, "str_summary" = "Play button pressed."           , "check" = FALSE, "status_info" = "Waiting...")
+  TOTEM_data_analysis$"step02" <- list("step_number" = 2, "str_summary" = "Upgrade for modal."             , "check" = FALSE, "status_info" = "Waiting...")
+  TOTEM_data_analysis$"step03" <- list("step_number" = 3, "str_summary" = "Open Modal."                    , "check" = FALSE, "status_info" = "Waiting...")
+  TOTEM_data_analysis$"step04" <- list("step_number" = 4, "str_summary" = "Time and new temporal folder."  , "check" = FALSE, "status_info" = "Waiting...")
+  TOTEM_data_analysis$"step05" <- list("step_number" = 5, "str_summary" = "Coping files."                  , "check" = FALSE, "status_info" = "Waiting...")
+
+  # Step 01 - Clic on play -----------------------------------------------------
+  step01 <- eventReactive(ANCESTRAL_PLAY(), {
     req(ANCESTRAL_PLAY())
+
+    isolate({
+      TOTEM_data_analysis$"step01"$"check"  <- TRUE
+      TOTEM_data_analysis$"step01"$"status_info" <- "Done!"
+    })
+
+    js_code <- "
+    // Función para cambiar los estilos de los botones
+    function updateButtons() {
+      // 1. Botón 'btn_play_html'
+      var btn_html = document.getElementById('btn_play_html');
+      if (btn_html) {
+        btn_html.classList.remove('btn-warning');
+        btn_html.classList.add('btn-success');
+      }
+
+      // 2. Botón 'btn_play_front'
+      var btn_front = document.getElementById('btn_play_front');
+      if (btn_front) {
+        btn_front.classList.remove('btn-primary');
+        btn_front.classList.add('btn-success');
+      }
+    }
+
+    // Ejecutar inmediatamente por si ya existen
+    updateButtons();
+
+    // Observar cambios en el DOM por si se añaden después
+    var observer = new MutationObserver(function(mutations) {
+      updateButtons();
+    });
+
+    // Configurar y iniciar el observador
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Opcional: dejar de observar después de 10 segundos
+    setTimeout(function() {
+      observer.disconnect();
+    }, 10000);
+  "
+
+    shinyjs::runjs(js_code)
+
+    print("step01 ---")
+    return(list("check" = TOTEM_data_analysis$"step01"$"check"))
+  })
+
+
+  # Step 02 - Upgrade for modal ------------------------------------------------
+  RVs_progress <- reactiveValues()
+  RVs_progress$"progress_bar" <- NULL
+  RVs_progress$"my_show_modal" <- NULL
+  RVs_progress$"FN_update_modal_progress" <- NULL
+  step02 <- eventReactive(step01(), {
+    req(step01()$"check")
+
     # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
+    progress_bar <- shiny::Progress$new(session, min = 0, max = 1)
 
-
-
-    progress <- Progress$new(session, min = 0, max = 1)
-
-    # Modal inicial con la barra de progreso integrada
-    showModal(modalDialog(
+    my_show_modal <- showModal(modalDialog(
       id = "processing_modal",
       title = tags$div(
-        tags$i(class = "fa fa-cog fa-spin fa-1x"), # Spinner en el título
-        " Rscience Proccesing Data..."
+        tags$i(class = "fa fa-cog fa-spin fa-1x"),
+        " Rscience Processing Data..."
       ),
       tagList(
         tags$div(id = "modal_content",
-
-                 # Inicialmente un spinner grande.
-
-                 tags$p(tags$b("Proccesing state:"), tags$span(id = "ID_progress_message", "Initializing...")),
+                 tags$p(tags$b("Processing state:"), tags$span(id = "ID_progress_message", "Initializing...")),
                  tags$p(tags$i(tags$span(id = "ID_progress_detail", ""))),
-
-                 # Barra de progreso: style="height: 30px;" para hacerla más gruesa
                  tags$div(class = "progress", style = "height: 30px;",
                           tags$div(id = "ID_progress_bar",
                                    class = "progress-bar progress-bar-striped active",
                                    role = "progressbar",
                                    style = "width: 0%;")),
                  br(),
-                 # Contenedor del check/spinner que vamos a manipular
                  tags$div(id = "ID_my_check",
                           style = "text-align: center; height: 200px;",
-                          tags$i(class = "fa fa-spinner fa-spin fa-6x")) # Spinner inicial
+                          tags$i(class = "fa fa-spinner fa-spin fa-6x"))
         )
       ),
       easyClose = FALSE,
       footer = NULL
     ))
 
-    # 2. FUNCIÓN DE ACTUALIZACIÓN PERSONALIZADA (JS + R)
-    update_modal_progress <- function(value, message, detail = "") {
-      progress$set(value = value, message = message, detail = detail)
+
+    FN_update_modal_progress <- function(value, message, detail = "") {
+      progress_bar$set(value = value, message = message, detail = detail)
 
       # Lógica JavaScript para actualizar la UI del modal
       percentage <- round(value * 100)
@@ -2862,6 +2957,52 @@ server <- function(input, output, session) {
         )
       )
     }
+
+    isolate({
+        RVs_progress$"progress_bar"  <- progress_bar
+        RVs_progress$"my_show_modal" <- my_show_modal
+        RVs_progress$"FN_update_modal_progress" = FN_update_modal_progress
+
+        TOTEM_data_analysis$"step02"$"check"  <- TRUE
+        TOTEM_data_analysis$"step02"$"status_info" <- "Done!"
+    })
+
+    print("step02 ---")
+
+    return(list("check" = TOTEM_data_analysis$"step02"$"check"))
+  })
+
+
+  # Step 03 - Open Modal -------------------------------------------------------
+  step03 <- eventReactive(step02(), {
+    req(step02()$"check")
+
+    # Upload modal
+    my_show_modal <- RVs_progress$"my_show_modal"
+
+    # Modal activation!!!
+    my_show_modal
+
+    isolate({
+      TOTEM_data_analysis$"step03"$"check"  <- TRUE
+      TOTEM_data_analysis$"step03"$"status_info" <- "Done!"
+    })
+
+    print("step03 ---")
+
+    return(list("check" = TOTEM_data_analysis$"step03"$"check"))
+  })
+
+  # Step 04 - Time and new temporal folder -------------------------------------
+  STR_INTERNAL_temp_folder_path <- reactiveValues()
+  STR_INTERNAL_temp_folder_path$"folder_path" <- NULL
+  STR_INTERNAL_temp_folder_path$"check" <- FALSE
+  step04 <- eventReactive(step03(), {
+    req(step03()$"check")
+
+
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
 
     # Definición de la función de creación de carpeta (se mantiene)
     create_new_temporal_output_folder_path <- function(){
@@ -2878,113 +3019,428 @@ server <- function(input, output, session) {
       return(nueva_carpeta)
     }
 
+    # === PASOS INTERMEDIOS (Se mantienen iguales) ===
+    FN_update_modal_progress(value = 0.05, message = "Inicializando", detail = "Preparando variables y entorno...")
+
+    # 1. Crear carpeta temporal (10%)
+    FN_update_modal_progress(value = 0.10, message = "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
+    str_new_temp_folder_path <- create_new_temporal_output_folder_path() #file.path(my_output_folder02, str_subfolder_output)
+
+    dir.create(str_new_temp_folder_path, recursive = TRUE)
+
+    check_new_temp_folder_path <- dir.exists(str_new_temp_folder_path)
+
+
+    STR_INTERNAL_temp_folder_path$"folder_path" <- str_new_temp_folder_path
+    STR_INTERNAL_temp_folder_path$"check" <- check_new_temp_folder_path
+
+
+    isolate({
+      TOTEM_data_analysis$"step04"$"check"  <- check_new_temp_folder_path
+      if(check_new_temp_folder_path){
+        TOTEM_data_analysis$"step04"$"status_info" <- "Done!"
+      } else TOTEM_data_analysis$"step04"$"status_info" <- "Problem!"
+
+    })
+
+    print("step04 ---")
+
+    return(list("check" = TOTEM_data_analysis$"step04"$"check"))
+  })
+
+  # Step 05 - Coping files -----------------------------------------------------
+  ## Input Folder path
+  STR_INTERNAL_input_folder_path <- reactiveValues()
+  STR_INTERNAL_input_folder_path$"folder_path" <- NULL
+  STR_INTERNAL_input_folder_path$"check" <- FALSE
+
+  ## Seting input folder path
+  observeEvent(STR_REACTIVE_folder_path_quarto(), {
+    # Solo actualiza si el valor no es NULL o la ruta es válida
+    if (!is.null(STR_REACTIVE_folder_path_quarto())) {
+      # Usamos () para leer el valor, y () para ESCRIBIR en el reactiveVal
+      str_folder_path <- STR_REACTIVE_folder_path_quarto()
+      check_folder_path <- dir.exists(str_folder_path)
+      STR_INTERNAL_input_folder_path$"folder_path" <- str_folder_path
+      STR_INTERNAL_input_folder_path$"check" <- check_folder_path
+    }
+  })
+
+  ## Coping files from input folder to temporal folder...
+  step05 <- eventReactive(step04(), {
+    req(step04()$"check")
+
+    print("step05 --- End")
+
+    # my_show_modal <- RVs_progress$"my_show_modal"
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+
+
+    FN_update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
+
+    fs::dir_copy(
+      path = STR_INTERNAL_input_folder_path$"folder_path",
+      new_path = STR_INTERNAL_temp_folder_path$"folder_path",
+      overwrite = T
+    )
+
+    isolate({
+      TOTEM_data_analysis$"step05"$"check"  <- TRUE
+      TOTEM_data_analysis$"step05"$"status_info" <- "Done!"
+    })
+
+    print("step05 --- End")
+
+    return(list("check" = TOTEM_data_analysis$"step05"$"check"))
+  })
+
+
+  # Step 06 - Create output folder
+  STR_INTERNAL_output_folder_path <- reactiveValues()
+  STR_INTERNAL_output_folder_path$"folder_path" <- NULL
+  STR_INTERNAL_output_folder_path$"check" <- FALSE
+  subfolder_output <- "output_folder"
+
+  step06 <- eventReactive(step05(), {
+    req(step05()$"check")
+
+    print("step06 --- Init")
+
+    # my_show_modal <- RVs_progress$"my_show_modal"
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+
+
+    FN_update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
+
+    str_temp_folder_path <- STR_INTERNAL_temp_folder_path$"folder_path"
+    str_output_folder_path <- file.path(str_temp_folder_path, subfolder_output)
+
+    dir.create(str_output_folder_path, recursive = TRUE)
+    check_output_folder_path <- dir.exists(str_output_folder_path)
+
+    STR_INTERNAL_output_folder_path$"folder_path" <- str_output_folder_path
+    STR_INTERNAL_output_folder_path$"check" <- check_output_folder_path
+
+    isolate({
+      TOTEM_data_analysis$"step06"$"check"  <- TRUE
+      TOTEM_data_analysis$"step06"$"status_info" <- "Done!"
+    })
+
+    print("step06 --- End")
+
+    return(list("check" = TRUE))
+  })
+
+  # Step 07 - Create output file paths
+  TOTEM_file_path_output_report <- reactiveValues()
+  TOTEM_file_path_output_report$"html"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_output_report$"pdf"   <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_output_report$"docx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_output_report$"xlsx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_output_report$"check_general" <- FALSE
+
+  step07 <- eventReactive(step06(), {
+
+    print("step07 --- Init")
+
+    # req(TOTEM_input_folder_path$"check")
+    str_output_folder_path <- STR_INTERNAL_output_folder_path$"folder_path"
+
+    str_file_path_input_html <- file.path(str_output_folder_path, list_R_file_name_output_report$"html")
+    TOTEM_file_path_output_report$"html"$"file_path" <- str_file_path_input_html
+
+
+    str_file_path_input_pdf <- file.path(str_output_folder_path, list_R_file_name_output_report$"pdf")
+    TOTEM_file_path_output_report$"pdf"$"file_path" <- str_file_path_input_pdf
+
+    str_file_path_input_docx <- file.path(str_output_folder_path, list_R_file_name_output_report$"docx")
+    TOTEM_file_path_output_report$"docx"$"file_path" <- str_file_path_input_docx
+
+    str_file_path_input_xlsx <- file.path(str_output_folder_path, list_R_file_name_output_report$"xlsx")
+    TOTEM_file_path_output_report$"xlsx"$"file_path" <- str_file_path_input_xlsx
+
+
+    isolate({
+      TOTEM_data_analysis$"step07"$"check"  <- TRUE
+      TOTEM_data_analysis$"step07"$"status_info" <- "Done!"
+    })
+
+    print("step07 --- End")
+
+    return(list("check" = TRUE))
+  })
+
+
+  step08 <- eventReactive(step07(), {
+
+    # 1. Print -----------------------------------------------------------------
+    print("step08 --- Init")
+
+    # 2. Modal -----------------------------------------------------------------
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+    FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+
+    # 3. Basics ----------------------------------------------------------------
+    str_work_dir_original <- TOTEM_special_paths$"getwd"
+    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+
+
+    # 4. Changing work directory -----------------------------------------------
+    setwd(str_work_dir_new)
+
+    # 5. New content -----------------------------------------------------------
+    list_for_replace <- list()
+    list_for_replace[["AAA_import_dataset_internal_AAA"]] <-  the_list01_Dataset_internal()$"str_import_internal"
+    list_for_replace[["AAA_import_dataset_external_AAA"]] <-  the_list01_Dataset_internal()$"str_import_external"
+    list_for_replace["BBB_var_name_rv_BBB"] <- the_list02_VarSelection_stone$"var_name_rv"
+    list_for_replace["BBB_var_name_factor_BBB"] <- the_list02_VarSelection_stone$"var_name_factor"
+    list_for_replace["BBB_alpha_value_BBB"] <- the_list02_VarSelection_stone$"alpha_value"
+    list_for_replace["CCC_vector_ordered_levels_CCC"] <- paste0("c(", paste(shQuote(the_list03_SpecialSettigns_stone$"vector_ordered_levels", type = "sh"), collapse = ", "), ")")
+    list_for_replace["CCC_vector_ordered_colors_CCC"] <- paste0("c(", paste(shQuote(the_list03_SpecialSettigns_stone$"vector_ordered_colors", type = "sh"), collapse = ", "), ")")
+
+    ## 5.1 Selected file for changes
+    str_file_name <- "file00_01_RQuarto.qmd"
+
+    ## 5.2 Basics
+    vector_for_replace <- unlist(list_for_replace)
+    vector_file_content <- readLines(str_file_name, warn = FALSE)
+    names(vector_for_replace) <- names(list_for_replace)
+
+    ## 5.3 Replacement...
+    vector_new_content <- stringr::str_replace_all(string = vector_file_content,
+                                                      vector_for_replace)
+
+
+    vector_new_content <- stringr::str_replace_all(string = vector_new_content,
+                                                      pattern = "\\#\\+\\+\\+---",
+                                                      replacement = "")
+
+
+    ## 5.4 Saving new file
+    writeLines(vector_new_content, str_file_name)
+
+    # 6. Rendering quarto ------------------------------------------------------
+    my_input_file_name  <- list_R_file_name_input_template$"html"
+    my_output_file_name <- basename(TOTEM_file_path_output_report$"html"$"file_path")
+
+    quarto::quarto_render(input = my_input_file_name,
+                          output_format = "html",
+                          output_file = my_output_file_name,
+                          execute_params = list(    activate_params= "FALSE",
+                                                    file_source= "from_params",
+                                                    file_name= "from_params",
+                                                    the_package= "from_params",
+                                                    tool_used= "from_params",
+                                                    script_used= "from_params",
+                                                    current_time= "from_params"),
+                          #execute_params = my_bag,
+                          quiet = FALSE)
+
+    # 7. Moving file to output folder ------------------------------------------
+    file.rename(from = my_output_file_name,
+                to = file.path(subfolder_output, my_output_file_name))
+
+
+    # 8. Checking output file exists -------------------------------------------
+    check_file_exists <- file.exists(TOTEM_file_path_output_report$"html"$"file_path")
+    TOTEM_file_path_output_report$"html"$"check" <- check_file_exists
+
+
+    # 9. Return to original work directory -------------------------------------
+    setwd(str_work_dir_original)
+
+    # 10. Final print ----------------------------------------------------------
+    print("step08 --- End")
+
+    # 11. Return ---------------------------------------------------------------
+    return(list("check" = TRUE))
+  })
+
+  step09 <- eventReactive(step08(), {
+
+    # 1. Print -----------------------------------------------------------------
+    print("step09 --- Init")
+
+    # 2. Modal -----------------------------------------------------------------
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+    FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+
+    # 3. Basics ----------------------------------------------------------------
+    str_work_dir_original <- TOTEM_special_paths$"getwd"
+    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+
+
+    # 4. Changing work directory -----------------------------------------------
+    setwd(str_work_dir_new)
+
+    # 6. Rendering quarto ------------------------------------------------------
+    my_input_file_name  <- list_R_file_name_input_template$"pdf"
+    my_output_file_name <- basename(TOTEM_file_path_output_report$"pdf"$"file_path")
+
+    quarto::quarto_render(input = my_input_file_name,
+                          output_format = "pdf",
+                          output_file = my_output_file_name,
+                          quiet = FALSE)
+
+
+    # 7. Moving file to output folder ------------------------------------------
+    file.rename(from = my_output_file_name,
+                to = file.path(subfolder_output, my_output_file_name))
+
+
+    # 8. Checking output file exists -------------------------------------------
+    check_file_exists <- file.exists(TOTEM_file_path_output_report$"pdf"$"file_path")
+    TOTEM_file_path_output_report$"pdf"$"check" <- check_file_exists
+
+
+    # 9. Return to original work directory -------------------------------------
+    setwd(str_work_dir_original)
+
+    # 10. Final print ----------------------------------------------------------
+    print("step09 --- End")
+
+    # 11. Return ---------------------------------------------------------------
+    return(list("check" = TRUE))
+  })
+
+  step10 <- eventReactive(step09(), {
+
+    # 1. Print -----------------------------------------------------------------
+    print("step10 --- Init")
+
+    # 2. Modal -----------------------------------------------------------------
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+    FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+
+    # 3. Basics ----------------------------------------------------------------
+    str_work_dir_original <- TOTEM_special_paths$"getwd"
+    str_work_dir_new <- STR_INTERNAL_input_folder_path$"folder_path"
+
+
+    # 4. Changing work directory -----------------------------------------------
+    setwd(str_work_dir_new)
+
+    # 6. Rendering quarto ------------------------------------------------------
+    my_input_file_name  <- list_R_file_name_input_template$"docx"
+    my_output_file_name <- basename(TOTEM_file_path_output_report$"docx"$"file_path")
+
+    quarto::quarto_render(input = my_input_file_name,
+                          output_format = "docx",
+                          output_file = my_output_file_name,
+                          quiet = FALSE)
+
+
+    # 7. Moving file to output folder ------------------------------------------
+    file.rename(from = my_output_file_name,
+                to = file.path(subfolder_output, my_output_file_name))
+
+
+    # 8. Checking output file exists -------------------------------------------
+    check_file_exists <- file.exists(TOTEM_file_path_output_report$"docx"$"file_path")
+    TOTEM_file_path_output_report$"docx"$"check" <- check_file_exists
+
+
+    # 9. Return to original work directory -------------------------------------
+    setwd(str_work_dir_original)
+
+    # 10. Final print ----------------------------------------------------------
+    print("step10 --- End")
+
+    # 11. Return ---------------------------------------------------------------
+    return(list("check" = TRUE))
+  })
+
+  observeEvent(step10(), {
+    # req(FALSE)
+    req(step10()$"check")
+    # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
+
+    print("step11 --- Init")
+
+    my_show_modal <- RVs_progress$"my_show_modal"
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+
+
     # 3. MANEJO DEL FLUJO CON tryCatch (Avanzando paso a paso)
     tryCatch({
 
-      # === PASOS INTERMEDIOS (Se mantienen iguales) ===
-      update_modal_progress(value = 0.05, message= "Inicializando", detail = "Preparando variables y entorno...")
 
-      # 1. Crear carpeta temporal (10%)
-      update_modal_progress(0.10, "Preparación de archivos", detail = "Creando carpeta temporal de trabajo...")
-      my_output_folder02 <- create_new_temporal_output_folder_path()
-      str_output_folder_path <- file.path(my_output_folder02)  #file.path(my_output_folder02, str_subfolder_output)
-      str_output_folder02(str_output_folder_path)
-      dir.create(my_output_folder02, recursive = TRUE)
 
-      # 2. Copiar archivos (25%)
-      update_modal_progress(0.25, "Preparación de archivos", detail = "Copiando plantillas y dependencias...")
-      fs::dir_copy(
-        path = str_input_folder_quarto(),
-        new_path = str_output_folder02(),
-        overwrite = T
-      )
-
-      # 3. Definir rutas (40%)
-      update_modal_progress(0.40, "Preparación de archivos", detail = "Calculando rutas y nombres de archivo...")
-      file_name_no_ext <- tools::file_path_sans_ext(str_file_name_input_qmd02())
-      str_html_file_name <- paste0(file_name_no_ext,"_", the_time_here_format(), ".html")
-      str_output_file_name_html(str_html_file_name)
-      my_str_html <- file.path(str_output_folder02(), str_output_file_name_html())
-      str_output_file_path_html(my_str_html)
-
-      my_str_xlsx <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_xlsx())
-      str_output_file_path_xlsx(my_str_xlsx)
-
-      my_str_docx <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_docx())
-      str_output_file_path_docx(my_str_docx)
-
-      my_str_pdf <- file.path(str_output_folder02(), str_subfolder_output,  str_file_name_output_pdf())
-      str_output_file_path_pdf(my_str_pdf)
-
-      # 4. Configurar entorno de renderizado (50%)
-      update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
       dir_original <- getwd()
-      my_temporal_folder <- str_output_folder02()
+      my_temporal_folder <- STR_INTERNAL_input_folder_path$"folder_path"
+
       setwd(my_temporal_folder)
 
-      # 5. Llamada BLOQUEANTE (50% -> 90%)
-      update_modal_progress(0.55, "Renderizando Quarto", detail = "Ejecutando el renderizado (puede tardar)...")
 
-      # print()
-      list_for_replace <- list()
-      list_for_replace[["AAA_import_dataset_internal_AAA"]] <-  the_list01_Dataset_internal()$"str_import_internal"
-      list_for_replace[["AAA_import_dataset_external_AAA"]] <-  the_list01_Dataset_internal()$"str_import_external"
-      list_for_replace["BBB_var_name_rv_BBB"] <- the_list02_VarSelection_stone$"var_name_rv"
-      list_for_replace["BBB_var_name_factor_BBB"] <- the_list02_VarSelection_stone$"var_name_factor"
-      list_for_replace["BBB_alpha_value_BBB"] <- the_list02_VarSelection_stone$"alpha_value"
-      list_for_replace["CCC_vector_ordered_levels_CCC"] <- paste0("c(", paste(shQuote(the_list03_SpecialSettigns_stone$"vector_ordered_levels", type = "sh"), collapse = ", "), ")")
-      list_for_replace["CCC_vector_ordered_colors_CCC"] <- paste0("c(", paste(shQuote(the_list03_SpecialSettigns_stone$"vector_ordered_colors", type = "sh"), collapse = ", "), ")")
-      #
-      # print(list.files())
-      the_file <- "file00_01_RQuarto.qmd"
-      # the_file <- "inst/quarto/file00_01_RQuarto.qmd"
-      contenido_archivo <- readLines(the_file, warn = FALSE)
-      # # --- PASO 2: Realizar el reemplazo masivo ---
-      # # str_replace_all(string_a_modificar, lista_patrones_y_reemplazos)
-      # # 1. Convertir la lista en un vector con nombre
-      vector_for_replace <- unlist(list_for_replace)
-      names(vector_for_replace) <- names(list_for_replace)
-      #
-      # # 2. Realizar el reemplazo masivo con el vector
-      contenido_reemplazado <- stringr::str_replace_all(string = contenido_archivo,
-                                                        vector_for_replace)
-
-      # contenido_reemplazado <- stringr::str_replace_all(string = contenido_archivo,
-      #                                                   pattern = names(vector_for_replace),
-      #                                                   replacement = vector_for_replace)
-
-      contenido_reemplazado <- stringr::str_replace_all(string = contenido_reemplazado,
-                                                        pattern = "\\#\\+\\+\\+---",
-                                                        replacement = "")
+      # #########################################################################################
 
 
-      # --- PASO 3: Guardar el archivo modificado ---
-      writeLines(contenido_reemplazado, the_file)
+      # #########################################################################################
 
 
-      quarto::quarto_render(input = basename(str_file_name_input_qmd02()),
-                            output_format = "html",
-                            output_file = basename(str_output_file_name_html()),
-                            execute_params = list(    activate_params= "FALSE",
-                                                      file_source= "from_params",
-                                                      file_name= "from_params",
-                                                      the_package= "from_params",
-                                                      tool_used= "from_params",
-                                                      script_used= "from_params",
-                                                      current_time= "from_params"),
-                            #execute_params = my_bag,
-                            quiet = FALSE)
+      # 1. Cargar la librería (asegúrate de que esté instalada)
+      library(writexl)
 
+      # 2. Crear los tres dataframes de ejemplo (Tus df_summary_anova, etc.)
+      df_anova_model <- data.frame(
+        Source = c("A", "Error"),
+        DF = c(1, 18),
+        SS = c(100.5, 95.3)
+      )
+
+      df_posthoc_tests <- data.frame(
+        Comparison = c("Group 1 vs 2", "Group 2 vs 3"),
+        Mean_Diff = c(5.2, 1.1),
+        P_Value = c(0.001, 0.45)
+      )
+
+      df_summary_stats <- data.frame(
+        Group = c("G1", "G2", "G3"),
+        Mean = c(15.2, 20.4, 21.5),
+        SD = c(2.1, 1.8, 2.5)
+      )
+
+      # 3. Crear una lista con los dataframes
+      # NOTA CLAVE: El nombre que le asignes a cada elemento de la lista
+      # será el nombre de la pestaña en el archivo Excel.
+      list_of_dataframes <- list(
+        "ANOVA_Modelo" = df_anova_model,
+        "Pruebas_PostHoc" = df_posthoc_tests,
+        "Estadisticas_Descriptivas" = df_summary_stats
+      )
+
+      # 4. Definir el nombre del archivo
+      file_name_xlsx <- paste0("report_02_anova_1_way.xlsx")
+      subfolder_output <- "output_folder"
+      dir.create(subfolder_output, recursive = TRUE)
+
+      file_path_xlsx <- file.path(subfolder_output, file_name_xlsx)
+
+      # 5. Guardar la lista de dataframes en el archivo Excel
+      # Cada elemento de la lista se convierte en una hoja de cálculo.
+      writexl::write_xlsx(
+        x = list_of_dataframes,
+        path = file_path_xlsx
+      )
+      ####################################################################################
+      print(list.files())
+      print(list.files("output_folder"))
       setwd(dir_original)
 
       # 6. Progreso tras el bloqueo (90%)
-      update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
+      FN_update_modal_progress(0.90, "Renderizando Quarto", detail = "Renderizado completado. Finalizando...")
 
 
       # === PASO C: Finalización Exitosa (90% - 100%) ===
 
       # C1. Terminar barra de progreso al 100%
-      update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
+      FN_update_modal_progress(1.0, "¡Proceso Completado!", detail = "Éxito al generar el reporte.")
 
       # C2. Actualizar estado y color del botón
       message(crayon::green("Process completed!"))
@@ -3055,7 +3511,7 @@ server <- function(input, output, session) {
       return(NULL)
     }, finally = {
       # 4. LIMPIEZA: Cerrar el objeto de progreso de R siempre
-      progress$close()
+      progress_bar$close()
     })
 
     # 5. 🟢 DESBLOQUEAR LA PANTALLA
@@ -3063,54 +3519,12 @@ server <- function(input, output, session) {
     message("")
 
 
+    print("step09 --- END")
 
   })
 
 
-  # En tu server
-  observeEvent(ANCESTRAL_PLAY(), {
-    req(ANCESTRAL_PLAY())
 
-    js_code <- "
-    // Función para cambiar los estilos de los botones
-    function updateButtons() {
-      // 1. Botón 'btn_play_html'
-      var btn_html = document.getElementById('btn_play_html');
-      if (btn_html) {
-        btn_html.classList.remove('btn-warning');
-        btn_html.classList.add('btn-success');
-      }
-
-      // 2. Botón 'btn_play_front'
-      var btn_front = document.getElementById('btn_play_front');
-      if (btn_front) {
-        btn_front.classList.remove('btn-primary');
-        btn_front.classList.add('btn-success');
-      }
-    }
-
-    // Ejecutar inmediatamente por si ya existen
-    updateButtons();
-
-    // Observar cambios en el DOM por si se añaden después
-    var observer = new MutationObserver(function(mutations) {
-      updateButtons();
-    });
-
-    // Configurar y iniciar el observador
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
-    // Opcional: dejar de observar después de 10 segundos
-    setTimeout(function() {
-      observer.disconnect();
-    }, 10000);
-  "
-
-    shinyjs::runjs(js_code)
-  })
 
   observeEvent(input$btn_open_html, {
     # C2. Actualizar estado y color del botón
@@ -3126,7 +3540,7 @@ server <- function(input, output, session) {
     # Usamos isolate() para asegurarnos de que el observeEvent solo reaccione a input$open02
     # y no a cambios en str_output_file_path_html (si es un reactive)
 
-    html_path <- isolate(str_output_file_path_html())
+    html_path <- isolate(TOTEM_file_path_output_report$"html"$"file_path")
 
     # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
     if (!file.exists(html_path)) {
@@ -3224,7 +3638,7 @@ server <- function(input, output, session) {
 
 
     content = function(file) {
-      archivo_a_descargar <- str_output_file_path_html()
+      archivo_a_descargar <- TOTEM_file_path_output_report$"html"$"file_path"
       print(archivo_a_descargar)
       if (!is.null(archivo_a_descargar) && file.exists(archivo_a_descargar)) {
 
@@ -3251,9 +3665,9 @@ server <- function(input, output, session) {
 
   output$html_viewer <- renderText({
     # 1. Asegúrate de que el path exista
-    req(str_output_file_path_html())
+    req(TOTEM_file_path_output_report$"html"$"file_path")
 
-    html_path <- str_output_file_path_html()
+    html_path <- TOTEM_file_path_output_report$"html"$"file_path"
 
     if (!file.exists(html_path)) {
       return(p("Error: El archivo HTML aún no se ha generado o no se encuentra."))
@@ -3284,9 +3698,9 @@ server <- function(input, output, session) {
   output$html_viewer2 <- renderText({
 
     # 1. Asegúrate de que el path del archivo original exista
-    req(str_output_file_path_html())
+    req(TOTEM_file_path_output_report$"html"$"file_path")
 
-    html_path_original <- str_output_file_path_html()
+    html_path_original <- TOTEM_file_path_output_report$"html"$"file_path"
 
     if (!file.exists(html_path_original)) {
       return(p("Error: El archivo HTML original aún no se ha generado o no se encuentra."))
@@ -3593,7 +4007,7 @@ server <- function(input, output, session) {
     # Usamos isolate() para asegurarnos de que el observeEvent solo reaccione a input$open02
     # y no a cambios en str_output_file_path_html (si es un reactive)
 
-    html_path <- isolate(str_output_file_path_html())
+    html_path <- isolate(TOTEM_file_path_output_report$"html"$"file_path")
 
     # *** VERIFICACIÓN CRUCIAL: Asegúrate de que el archivo exista ***
     if (!file.exists(html_path)) {
@@ -3632,7 +4046,7 @@ server <- function(input, output, session) {
 
 
     content = function(file) {
-      archivo_a_descargar <- str_output_file_path_html()
+      archivo_a_descargar <- TOTEM_file_path_output_report$"html"$"file_path"
       print(archivo_a_descargar)
       if (!is.null(archivo_a_descargar) && file.exists(archivo_a_descargar)) {
 
@@ -3656,26 +4070,26 @@ server <- function(input, output, session) {
     }
   )
 
-  mod_download_server("report_html", reactive(str_output_file_path_html()))
-  mod_download_server("report_xlsx", reactive(str_output_file_path_xlsx()))
-  mod_download_server("report_docx", reactive(str_output_file_path_docx()))
-  mod_download_server("report_pdf", reactive(str_output_file_path_pdf()))
+  mod_download_server("report_html", reactive(TOTEM_file_path_output_report$"html"$"file_path"))
+  mod_download_server("report_pdf" , reactive(TOTEM_file_path_output_report$"pdf"$"file_path"))
+  mod_download_server("report_docx", reactive(TOTEM_file_path_output_report$"docx"$"file_path"))
+  mod_download_server("report_xlsx", reactive(TOTEM_file_path_output_report$"xlsx"$"file_path"))
 
 
-  observe({
-    req(str_output_file_path_xlsx())
-    print("El folder...")
-    print(str_output_folder02())
-    print(dir.exists(str_output_folder02()))
-    print("\n")
-    print("El folder del excel")
-    print(dirname(str_output_file_path_xlsx()))
-    print(dir.exists(dirname(str_output_file_path_xlsx())))
-    print("\n")
-    print("El file del excel")
-    print(str_output_file_path_xlsx())
-    print(file.exists(str_output_file_path_xlsx()))
-  })
+  # observe({
+  #   req(str_output_file_path_xlsx())
+  #   print("El folder...")
+  #   print(str_output_folder02())
+  #   print(dir.exists(str_output_folder02()))
+  #   print("\n")
+  #   print("El folder del excel")
+  #   print(dirname(str_output_file_path_xlsx()))
+  #   print(dir.exists(dirname(str_output_file_path_xlsx())))
+  #   print("\n")
+  #   print("El file del excel")
+  #   print(str_output_file_path_xlsx())
+  #   print(file.exists(str_output_file_path_xlsx()))
+  # })
 
 ##################################################################
 
