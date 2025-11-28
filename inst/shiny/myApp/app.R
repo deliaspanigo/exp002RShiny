@@ -414,7 +414,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: left;",
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.23"),
+      tags$b("v1.0.24"),
       br(),
 
       # SideBar Panel--------------------------------------------------------
