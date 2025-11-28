@@ -1,0 +1,221 @@
+---
+title: "Parameterized Report Excel"
+author: 'David Elias Panigo'
+format: 
+  html:
+    self-contained: true
+    link-citations: true 
+knitr: 
+    opts_chunk: 
+        collapse: true
+params:
+    activate_params: "TRUE"
+    load_from_file: "R_obj_env.RData"
+    file_name_xlsx: "report_04_anova_1_way.xlsx"
+    png_folder_name: "png_folder"
+---
+
+```{r setup, include=FALSE}
+
+source("fns.R")
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 6,
+  fig.height = 4,
+  dpi = 150,
+  fig.align = "center"
+)
+# knitr::opts_chunk$set(fig.width = 6, fig.height = 4, dpi = 150)
+# # Crear carpeta de salida si no existe
+# if (!dir.exists("output_folder")) {
+#   dir.create("output_folder")
+# }
+file_name_xlsx <- params$"file_name_xlsx"
+png_folder_name <- params$"png_folder_name"
+load(params$load_from_file)
+
+# load("R_obj_env.RData")
+```
+
+```{r }
+library(plotly)
+library(htmlwidgets)
+library(webshot2)
+
+# --- CONFIGURACIÓN ---
+
+#' Función principal para identificar y exportar gráficos SÓLO a PNG
+exportar_plotly_png <- function(output_dir) {
+  
+  # 1. Crear la carpeta de salida si no existe
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir)
+    message(paste("Carpeta creada:", output_dir))
+  }
+  
+  # 2. Identificar todos los objetos plotly en el entorno global
+  objetos_entorno <- ls(envir = .GlobalEnv)
+  graficos_plotly <- c()
+  
+  for (nombre_obj in objetos_entorno) {
+    # Obtener el objeto
+    obj <- get(nombre_obj, envir = .GlobalEnv)
+    
+    # Verificar si es un objeto Plotly o htmlwidget
+    if (inherits(obj, "plotly") || inherits(obj, "htmlwidget")) {
+      graficos_plotly <- c(graficos_plotly, nombre_obj)
+    }
+  }
+  
+  if (length(graficos_plotly) == 0) {
+    message("No se encontraron objetos Plotly en el entorno global.")
+    return(invisible())
+  }
+  
+  message(paste("Identificados", length(graficos_plotly), "gráficos Plotly para exportar a PNG..."))
+  
+  # 3. Iterar y exportar cada gráfico
+  for (nombre_g in graficos_plotly) {
+    g <- get(nombre_g, envir = .GlobalEnv)
+    message(paste("Procesando:", nombre_g))
+    
+    # --- EXPORTACIÓN PNG (Estático, SIN menú) ---
+    
+    # 3a. Aplicar la corrección para quitar el menú
+    g_sin_menu <- plotly::config(g, displayModeBar = FALSE)
+    
+    # 3b. Guardar el gráfico sin menú a un archivo HTML temporal
+    temp_html <- tempfile(fileext = ".html")
+    # Usamos selfcontained=TRUE para incluir todos los datos y librerías en el HTML
+    htmlwidgets::saveWidget(g_sin_menu, temp_html, selfcontained = TRUE)
+    
+    # 3c. Exportar el archivo HTML temporal a PNG
+    archivo_png <- file.path(output_dir, paste0(nombre_g, ".png"))
+    
+    # Parámetros opcionales de tamaño
+    webshot2::webshot(url = temp_html, 
+                      file = archivo_png,
+                      vwidth = 1200, 
+                      vheight = 700)
+    
+    # 3d. Limpiar el archivo temporal
+    unlink(temp_html)
+    
+    message(paste0("  -> Guardado como: ", basename(archivo_png)))
+  }
+  
+  message(paste("Proceso finalizado. Archivos PNG guardados en:", output_dir))
+}
+
+exportar_plotly_png(output_dir = png_folder_name)
+```
+
+
+```{r }
+comprimir_carpeta_multiplataforma <- function(carpeta, 
+                                              archivo_zip = NULL) {
+  
+  # Verificar que la carpeta existe
+  if (!dir.exists(carpeta)) {
+    stop("La carpeta '", carpeta, "' no existe")
+  }
+  
+  # Nombre por defecto del archivo ZIP
+  if (is.null(archivo_zip)) {
+    archivo_zip <- paste0(carpeta, ".zip")
+  }
+  
+  # Comprimir usando zip (funciona en todas las plataformas)
+  resultado <- tryCatch({
+    zip::zip(archivo_zip, carpeta)
+    TRUE
+  }, error = function(e) {
+    message("Error al comprimir: ", e$message)
+    FALSE
+  })
+  
+  # Verificar resultado
+  if (resultado && file.exists(archivo_zip)) {
+    tamano_mb <- file.size(archivo_zip) / 1024^2
+    n_archivos <- length(list.files(carpeta, recursive = TRUE))
+    
+    message("✅ Comprimido exitosamente:")
+    message("   Archivo: ", archivo_zip)
+    message("   Tamaño: ", round(tamano_mb, 2), " MB")
+    message("   Archivos incluidos: ", n_archivos)
+    message("   Plataforma: ", R.version$platform)
+    
+    return(archivo_zip)
+  } else {
+    stop("No se pudo crear el archivo ZIP")
+  }
+}
+
+# Usar
+comprimir_carpeta_multiplataforma(carpeta = png_folder_name)
+```
+
+```{r }
+# Cargar el paquete openxlsx
+# Si no lo tienes: install.packages("openxlsx")
+library(openxlsx) 
+
+# --- VARIABLES DE EJEMPLO (Ajusta estas rutas y nombres) ---
+
+# Tus dataframes (asumiendo que existen)
+# df_table_anova_classroom <- data.frame(...)
+# df_tukey_table_classroom <- data.frame(...)
+# df_normality <- data.frame(...)
+
+# 1. Ruta del archivo PNG que quieres insertar
+# ¡Asegúrate de que esta ruta sea correcta!
+archivo_png_path <- file.path(png_folder_name, "plot007_factor.png") 
+
+# Nombre del archivo Excel de salida
+# -----------------------------------------------------------
+
+# 2. Crear una lista con los dataframes
+list_of_dataframes <- list(
+    "ANOVA_Modelo" = df_table_anova_classroom,
+    "Tukey" = df_tukey_table_classroom,
+    "Normality" = df_normality
+)
+
+# 3. Crear un nuevo libro de trabajo (Workbook)
+wb <- createWorkbook()
+
+# 4. Iterar sobre la lista para agregar las hojas de dataframes
+for (sheet_name in names(list_of_dataframes)) {
+    # Agregar hoja con el nombre de la lista
+    addWorksheet(wb, sheet_name) 
+    
+    # Escribir los datos en esa hoja
+    writeData(wb, sheet = sheet_name, x = list_of_dataframes[[sheet_name]])
+}
+
+# 5. Agregar la hoja para la imagen PNG
+sheet_name_png <- "Grafico_Principal"
+addWorksheet(wb, sheet_name_png)
+
+# 6. Insertar la imagen PNG en la nueva hoja
+# 'startRow' y 'startCol' definen la esquina superior izquierda de la imagen (Ej: celda A1)
+insertImage(
+    wb = wb, 
+    sheet = sheet_name_png, 
+    file = archivo_png_path,
+    startRow = 2,  # Comienza en la fila 2
+    startCol = 2,  # Comienza en la columna B
+    width = 10,    # Ancho deseado (en cm o unidades relativas)
+    height = 6     # Alto deseado
+)
+
+# 7. Guardar el libro de trabajo completo
+saveWorkbook(wb, file = file_name_xlsx, overwrite = TRUE)
+
+message(paste("Archivo Excel con dataframes e imagen PNG guardado en:", file_name_xlsx))
+```
+ 
+  

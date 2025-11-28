@@ -1,0 +1,473 @@
+---
+title: "Anova 1 way"
+subtitle: "Auto report"
+author: "Rscience"
+format:
+  revealjs:
+    self-contained: true
+    transition: none
+    theme: sky
+    background-color: "#F8F9FA"
+    navigation-mode: linear
+    controls: true
+    controls-layout: edges
+    controls-back-arrows: visible
+    progress: true
+    mouse-wheel: true
+    slide-number: true
+    footer: "Rscience - Anova 1 way"
+    mathjax: cdn
+css: styles.css
+params:
+    activate_params: "TRUE"
+    load_from_file: "R_obj_env.RData"
+---
+
+```{r setup, include=FALSE}
+
+# Configura knitr para cachear TODOS los chunks de R
+knitr::opts_chunk$set(
+  cache = TRUE,
+  cache.lazy = FALSE # Guarda todos los objetos, no solo los usados. Útil para entornos.
+)
+
+source("fns.R")
+
+load(params$load_from_file)
+
+# Generar la tabla con estilo
+fn_special_table <- function(my_df, font_size = 20){
+  
+  kable(my_df, format = "html", 
+      caption = caption_text, 
+      align = col_align) %>%
+  
+  # 2. Configuración Principal: Asegurar ancho completo
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                            full_width = TRUE, 
+                            position = "center") %>%
+    kableExtra::kable_styling(font_size = font_size)
+}
+
+fn_special_text <- function(my_text, font_size = 20, line_height = 1.2){
+    
+    # 1. Definir la plantilla CSS con variables para font-size y line-height
+    text_with_style <- paste0('<span style="font-size: _font_size_px; line-height: _line_height_; display: inline-block;">',
+                              my_text, 
+                              '</span>')
+
+    # 2. Reemplazar el tamaño de fuente
+    text_with_style <- sub(pattern = "_font_size_", 
+                           replacement = font_size, 
+                           x = text_with_style)
+    
+    # 3. Reemplazar el interlineado (line-height)
+    text_with_style <- sub(pattern = "_line_height_", 
+                           replacement = line_height, 
+                           x = text_with_style)
+    
+    knitr::asis_output(text_with_style)
+}
+```
+
+# Understanding ANOVA {data-background-color="#EBF5FB"}
+General Linear Model - Fixed Effects - Balanced tratments - Anova - Anova 1 Way 
+
+
+## Analysis of Variance Fundamentals
+
+<br>
+
+**A comprehensive guide to comparing multiple group means**
+
+
+---
+
+## R-Automatic Statistic Asesor (RASA)
+
+- 🔬 RASA Level I: Anova outputs 
+- 🔬 RASA Level II: Short Comments
+- 🔬 RASA Level III: Long Comments 
+- 🔬 RASA Level IV: Profesional Comments
+
+---
+
+
+
+
+# 🔬 RASA Level I: Anova outputs 
+
+---
+
+##  RASA Level I: Anova outputs 
+### 1 de 5 - Anova Table
+::: {.center}
+
+
+```{r include=TRUE}
+#| label: tabla-anova-ajuste-automatico
+#| echo: FALSE 
+
+fn_special_table(my_df = df_table_anova_classroom, font_size = 30)
+```
+:::
+---
+
+##  RASA Level I: Anova outputs 
+### 2 de 5 - Tukey Table
+::: {.center}
+```{r include=TRUE}
+fn_special_table(my_df = df_tukey_table_classroom, font_size = 30)
+
+```
+:::
+
+---
+
+##  RASA Level I: Anova outputs 
+### 3 de 5 - Tukey Plot
+```{r}
+#| warning: false
+#| echo: false
+#| fig-align: "center"
+plot007_factor
+```
+
+---
+
+##  RASA Level I: Anova outputs 
+### 4 de 5 - Requeriments - Normality from residuals
+```{r include=TRUE}
+fn_special_table(my_df = df_normality, font_size = 30)
+
+```
+
+---
+
+##  RASA Level I: Anova outputs 
+### 5 de 5 - Requeriments - Homogeneity
+```{r include=TRUE}
+fn_special_table(my_df = df_homogeneity, font_size = 30)
+
+```
+
+
+---
+
+# 🔬 RASA Level II: Short Comments
+
+---
+
+##  RASA Level II: Short Comments
+### 1 de 5 - Summary Anova
+```{r include=TRUE}
+fn_special_table(my_df = df_summary_anova, font_size = 20)
+
+```
+
+---
+
+```{r}
+#| eval: true
+#| include: false
+#| warning: false
+#| echo: false
+
+
+# 
+my_text <- c(phrase01_normality_selected, 
+    phrase01_homogeneity_selected,
+    phrase01A_requeriments_selected,
+    phrase01B_requeriments_selected,
+    phrase01C_requeriments_selected,
+    phrase01_anova_selected,
+    phrase01A_tukey_selected,
+    phrase01B_tukey_selected,
+    phrase01C_tukey_selected,
+    phrase01_anova_tukey_selected)
+
+
+
+```
+
+##  RASA Level II: Short Comments
+### 1 de 5 - Understanding Anova
+`r my_text[1]`  
+`r my_text[2]`
+`r my_text[3]`  
+`r my_text[4]`
+---
+
+##  RASA Level II: Short Comments
+### 2 de 5 - Understanding Anova
+`r my_text[5]`
+
+---
+
+##  RASA Level II: Short Comments
+### 3 de 5 - Understanding Anova
+`r my_text[6]`
+`r my_text[7]`
+
+---
+
+
+##  RASA Level II: Short Comments
+### 4 de 5 - Understanding Anova
+`r my_text[8]`
+`r my_text[9]`
+
+---
+
+##  RASA Level II: Short Comments
+### 5 de 5 - Understanding Anova
+`r my_text[10]`
+
+---
+
+# 🔬 RASA Level III: Long Comments
+
+---
+
+##  RASA Level III: Long Comments
+
+**Step 01:** Normality Verification  
+**Step 02:** Homogeneity Verification  
+**Step 03:** Global Requirements Check  
+**Step 04:** ANOVA Validation  
+**Step 05:** ANOVA Interpretation  
+**Step 06:** Tukey Test Validation  
+**Step 07:** Tukey Test Interpretation  
+**Step 08:** ANOVA-Tukey Consistency Analysis  
+**Step 09:** Final Conclusion
+
+---
+
+##  RASA Level III: Long Comments
+
+**Step 01:** Normality Verification  
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_table(my_df = df_normality, font_size = 30)
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02_normality_selected, font_size = 30)
+
+```
+
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 02:** Homogeneity Verification 
+
+```{r}
+#| warning: false
+#| echo: false
+
+# fn_show_table_dynamic(object_name = "df_homogeneity", caption_text = "")
+fn_special_table(my_df = df_homogeneity, font_size = 30)
+
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02_homogeneity_selected, font_size = 30)
+
+
+```
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 03:** Global Requirements Check  
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02A_requeriments_selected, font_size = 30)
+
+# knitr::asis_output(phrase02A_requeriments_selected)
+```
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 04:** ANOVA Validation  
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02B_requeriments_selected, font_size = 25)
+
+
+
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02C_requeriments_selected, font_size = 25)
+
+
+```
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 05:** ANOVA Interpretation   
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_table(my_df = df_table_anova_classroom, font_size = 25)
+
+# fn_show_table_dynamic(object_name = "df_table_anova_classroom", caption_text = "")
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02_anova_selected, font_size = 25)
+
+```
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 06:** Tukey Test Validation 
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = knitr::asis_output(phrase02A_tukey_selected)
+, font_size = 25)
+
+
+
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02B_tukey_selected, font_size = 25)
+
+
+```
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 07:** Tukey Test Interpretation  
+
+```{r}
+#| warning: false
+#| echo: false
+# fn_show_table_dynamic(object_name = "", caption_text = "")
+fn_special_table(my_df = df_tukey_table_classroom, font_size = 25)
+
+```
+
+<br>
+
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase02C_tukey_selected, font_size = 25)
+
+
+```
+
+
+
+
+---
+
+##  RASA Level III: Long Comments
+### **Step 08:** ANOVA-Tukey Consistency Analysis   
+<br>
+```{r}
+#| warning: false
+#| echo: false
+
+fn_special_text(my_text = phrase01_anova_tukey_selected, font_size = 25)
+
+# knitr::asis_output()
+```
+
+---
+
+# 🔬 RASA Level IV:  Profesional Comments
+
+---
+
+##  RASA Level IV:  Profesional Comments
+### 1 de 4 - General understunding
+
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+fn_special_text(my_text = text_asa_01_human, font_size = 25, line_height = 1)
+  
+```
+
+
+---
+
+##  RASA Level IV:  Profesional Comments
+### 2 de 4 - Requeriments
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+
+fn_special_text(my_text = text_asa_02_model_requeriments, font_size = 25, line_height = 1)
+
+```
+
+---
+
+##  RASA Level IV:  Profesional Comments
+### 3 de 4 - Anova
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+fn_special_text(my_text = text_asa_03_anova, font_size = 25, line_height = 1)
+
+```
+
+
+---
+
+##  RASA Level IV:  Profesional Comments
+### 4 de 4 - Tukey
+```{r, eval=TRUE, include=TRUE, echo=FALSE}
+fn_special_text(my_text = text_asa_04_tukey, font_size = 25, line_height = 1)
+
+
+```
+
+---
+
+

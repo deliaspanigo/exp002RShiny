@@ -1,6 +1,7 @@
 ## Section 14 - Data Analysis - Part 01 of 03
-Tomaremos los valores p del test de normalidad de Shapiro-Wilk para los residuos, el valor p del test de homogeneidad de varianza de Bartlett para los residuos, el valor p del test de Anova y la cantidad de grupos estadísticos detectados por el test de Tukey.
-Con esta información y el valor alfa armaremos una tabla resumen general del lo que ha ocurrido en el análisis de datos. Esta tabla no representa la interpretación final del test, pero es un buen comienzo.
+We will take the p-values from the Shapiro-Wilk normality test for the residuals, the p-value from Bartlett's variance homogeneity test for the residuals, the p-value from the ANOVA test, and the number of statistical groups detected by the Tukey test.
+
+Using this information and the alpha value, we will assemble a general summary table of what has occurred in the data analysis. This table does not represent the final interpretation of the test but is a good start.
 
 ```{=html}
 <script>
@@ -124,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function(){
 ```
 
 ### Table
-Como es una tabla particularmente importante, nos daremos el lujo de detallarla también de una hermosa manera.
+As this is a particularly important table, we will indulge ourselves by detailing it in a beautiful manner as well.
 ```{r eval=TRUE, echo=FALSE}
 
 knitr::kable(df_summary_anova, 
@@ -134,9 +135,7 @@ knitr::kable(df_summary_anova,
 
 
 ## Section 15 - Data Analysis - Part 02 of 03
-Hasta el momento tenemos una tabla resumen, ordenada con información general de la interpretación del test.  
-Generamos ahora la primera tanda de frases automáticas explicativas para cada test por separado.
-
+So far, we have a summary table, organized with general information for the test interpretation. We will now generate the first batch of automatic explanatory phrases for each separate test.
 
 
 
@@ -161,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function(){
 ####  R Code
 
 ##### Normality test for residuals
-Armamos una frase mínima con dos casos posibles.
+We will assemble a minimal phrase with two possible cases.
 ```{r eval=TRUE, echo=TRUE}
   phrase01_normality_yes_rejected <- "
 The null hypothesis of normal distribution of residuals is rejected.
@@ -177,7 +176,7 @@ The null hypothesis of normal distribution of residuals is not rejected.
   cat(phrase01_normality_selected)
 ```
   
-Armamos una segunda frase con una explicación más detallada.
+We will assemble a second phrase with a more detailed explanation.
 ```{r eval=TRUE, echo=TRUE}
 phrase02_normality_yes_rejected <- "
 The p value about normality distibution is _p_value_.  
@@ -231,7 +230,7 @@ The hypothesis of homogeneity of variances (homoscedasticity) is rejected.
   cat(phrase01_homogeneity_selected)
 ```
 
-Definimos una segunda frase con una explicación más detallada.
+We define a second phrase with a more detailed explanation.
 ```{r eval=TRUE, echo=TRUE}
   phrase02_homogeneity_yes_rejected <- "
 The p value about homogeneity variances from residuals is _p_value_.  
@@ -268,7 +267,7 @@ phrase02_homogeneity_selected <- str_replace_all(
 ```
 
 ##### All requeriments
-Determinamos una frase corta para explicar lo que ocurre con los requisitos del modelo.
+We determine a short phrase to explain what occurs with the model requirements.
 ```{r eval=TRUE, echo=TRUE} 
   phrase01A_requeriments_yes_valid <- "
 All requirements for the model are met.
@@ -301,13 +300,10 @@ It is NOT valid to draw conclusions from the ANOVA test.
 
 ```{r eval=TRUE, echo=TRUE} 
   phrase01C_requeriments_yes_valid <- "
-Se prosigue con el análisis.
+The analysis proceeds.
 "
   phrase01C_requeriments_no_valid  <- "
-Al no cumplirse los requisitos del modelo debe descartarse el análisis de Anova y Tukey
-indistintamente de los valores estadísticos obtenidos. Se detalla a continuación la 
-interpretación literal y descontextualizada del test de Anova y el test de Tukey solo 
-a fines demostrativos, pero sin ninguna validez para obtener conclusiones a partir de ellos.
+As the model requirements are not met, the ANOVA and Tukey analyses must be discarded, irrespective of the statistical values obtained. The literal and decontextualized interpretation of the ANOVA test and the Tukey test is detailed below for demonstrative purposes only, but holds no validity for drawing conclusions from them.
 "
   
   phrase01C_requeriments_selected  <- ifelse(test = check_ok_all_requeriments, 
@@ -317,7 +313,7 @@ a fines demostrativos, pero sin ninguna validez para obtener conclusiones a part
   cat(phrase01C_requeriments_selected)  
 ```  
 
-Agregamos una frase larga, que detalla tambien otros temas de cada caso.
+We add a long phrase, which also details other topics for each case.
 ```{r eval=TRUE, echo=TRUE} 
   phrase02A_requeriments_yes_valid <- phrase01A_requeriments_yes_valid
 
@@ -332,16 +328,13 @@ Agregamos una frase larga, que detalla tambien otros temas de cada caso.
   cat(phrase02A_requeriments_selected)  
 ```  
 
-Agregamos una frase larga, que detalla tambien otros temas de cada caso.
+We add a long phrase, which also details other topics for each case.
 ```{r eval=TRUE, echo=TRUE} 
   phrase02B_requeriments_yes_valid <- "
 All requirements for the model are met.
 "
   phrase02B_requeriments_no_valid  <- "
-It is NOT valid to draw conclusions from the ANOVA test. Este set de datos debe ser analizado con otra herramienta estadística como podrían ser el test de Kruskal-Wallis.
-Si se quiere una herramienta más sofisticada, podría evaluarse la posibilidad de utilizar modelos lineales
-generales mixtos, modelos lineales generales, modelos lineales generalizados mixtos, modelos lineales de
-distribución exacta, etc.
+It is NOT valid to draw conclusions from the ANOVA test. This dataset must be analyzed with another statistical tool such as the Kruskal-Wallis test. If a more sophisticated tool is desired, the possibility of utilizing generalized linear mixed models, generalized linear models, generalized linear models, exact distribution linear models, etc., could be evaluated.
 "
   phrase02B_requeriments_selected  <- ifelse(test = check_ok_all_requeriments, 
                                           yes = phrase02B_requeriments_yes_valid, 
@@ -351,18 +344,13 @@ distribución exacta, etc.
   cat(phrase02B_requeriments_selected)  
 ```  
 
-Armamos una frase más que servirá como aviso al usuario de que si los requisitos no se cumplen el resultado 
-de Anova y Tukey no debe ser interpretado.
+We assemble one more phrase that will serve as a warning to the user that if the requirements are not met, the result of ANOVA and Tukey must not be interpreted.
 ```{r eval=TRUE, echo=TRUE} 
   phrase02C_requeriments_yes_valid <- "
 It is valid to draw conclusions from the ANOVA test
 "
   phrase02C_requeriments_no_valid  <- "
-It is NOT valid to draw conclusions from the ANOVA test.
-Al no cumplirse los requisitos del modelo debe descartarse el análisis de Anova y Tukey
-indistintamente de los valores estadísticos obtenidos. Se detalla a continuación la 
-interpretación literal y descontextualizada del test de Anova y el test de Tukey solo 
-a fines demostrativos, pero sin ninguna validez para obtener conclusiones a partir de ellos.
+It is NOT valid to draw conclusions from the ANOVA test. As the model requirements are not met, the ANOVA and Tukey analyses must be discarded, irrespective of the statistical values obtained. The literal and decontextualized interpretation of the ANOVA test and the Tukey test is detailed below for demonstrative purposes only, but holds no validity for drawing conclusions from them.
 "
   
   phrase02C_requeriments_selected  <- ifelse(test = check_ok_all_requeriments, 
@@ -373,8 +361,8 @@ a fines demostrativos, pero sin ninguna validez para obtener conclusiones a part
 ```  
 
 ##### Anova test
-Definimos si se rechaza o no H0 para el test de Anova.
-Definimos una frase mínima con dos casos posibles.
+We define whether or not H0 for the ANOVA test is rejected.  
+We define a minimal phrase with two possible cases.
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase01_anova_yes_rejected <- "
@@ -400,23 +388,20 @@ Definimos una segunda frase con una explicación más detallada.
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase02_anova_yes_rejected <- "
-Para el test de anova el valor p de es _p_value_.  
-El valor alpha es _alpha_value_.  
-El valor p es menor al valor alpha.  
-Se rechaza la hipotesis nula de igual de medias del test de Anova.  
-There are statistically significant differences in at least one level of the factor.
-Al rechazarse la hipotesis nula el test de Anova garantiza diferencias estadísticamente significativas 
-al menos entre el nivel del factor con la media menor y el nivel del factor con la media mayor. 
+The p-value for the ANOVA test is _p_value_. The alpha value is _alpha_value_. 
+The p-value is less than the alpha value. 
+The null hypothesis of equal means for the ANOVA test is rejected. 
+There are statistically significant differences in at least one level of the factor. 
+By rejecting the null hypothesis, the ANOVA test guarantees statistically significant differences in at least one level of the factor with the lowest mean and the level of the factor with the highest mean.
 "
 
   phrase02_anova_no_rejected  <- "
-Para el test de Anova el valor p es _p_value_.  
-El valor alpha es _alpha_value_.  
-El valor p es mayor o igual al valor alpha.  
-No se rechaza la hipotesis nula de igual de medias del test de Anova.  
-There are not statistically significant differences entre los niveles del factor.  
-Las diferencias observadas entre los niveles del factor han ocurrido por azar.
-Todos los niveles del factor son estadísticamente iguales.  
+The p-value for the ANOVA test is _p_value_. 
+The alpha value is _alpha_value_. 
+The p-value is greater than or equal to the alpha value. 
+The null hypothesis of equal means for the ANOVA test is not rejected. 
+There are not statistically significant differences between the factor levels. 
+The observed differences between the factor levels occurred by chance. All factor levels are statistically equal.
 "
 
   phrase02_anova_selected     <- ifelse(test = check_anova_ho_rejected, 
@@ -444,11 +429,10 @@ Definimos una frase mínima con dos casos posibles.
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase01A_tukey_yes_groups <- "
-Al ser rechazada la hipótesis nula de Anova, es válida la utilización de un test de comparaciones 
-múltiple que acompañe al test de Anova.
+Since the ANOVA null hypothesis is rejected, the use of a multiple comparison test to accompany the ANOVA test is valid.
 "
   phrase01A_tukey_no_groups  <- "
-Al no ser rechazada la hipótesis nula de Anova, no es válida la utilización de un test de comparaciones múltiple.
+Since the ANOVA null hypothesis is not rejected, the use of a multiple comparison test is not valid.
 "
   phrase01A_tukey_selected     <- ifelse(test = check_anova_ho_rejected, 
                                       yes = phrase01A_tukey_yes_groups, 
@@ -462,12 +446,10 @@ Al no ser rechazada la hipótesis nula de Anova, no es válida la utilización d
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase01B_tukey_yes_groups <- "
-Es seleccionado el test de Tukey como test de comparaciones múltiple para este script.
+The Tukey test is selected as the multiple comparison test for this script.
 "
   phrase01B_tukey_no_groups  <- "
-Se detalla a continuación la 
-interpretación literal y descontextualizada del test de Tukey solo 
-a fines demostrativos, pero sin ninguna validez para obtener conclusiones a partir de ellos.
+The literal and decontextualized interpretation of the Tukey test is detailed below for demonstrative purposes only, but holds no validity for drawing conclusions from them.
 "
   phrase01B_tukey_selected     <- ifelse(test = check_anova_ho_rejected, 
                                       yes = phrase01B_tukey_yes_groups, 
@@ -481,11 +463,11 @@ a fines demostrativos, pero sin ninguna validez para obtener conclusiones a part
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase01C_tukey_yes_groups <- "
-El test de Tukey indica que existen al menos 2 grupos entre los niveles del factor.
-Cantidad de grupos y estructura debe ser analizada en detalle con la tabla de Tukey.
+The Tukey test indicates that there are at least 2 groups among the factor levels. 
+The number of groups and their structure must be analyzed in detail using the Tukey table.
 "
   phrase01C_tukey_no_groups  <- "
-El test de Tukey indica que entre los niveles del factor existe un solo grupo estadístico.
+The Tukey test indicates that there is only one statistical group among the factor levels.
 "
   phrase01C_tukey_selected     <- ifelse(test = check_tukey_groups, 
                                       yes = phrase01C_tukey_yes_groups, 
@@ -531,13 +513,13 @@ Definimos una segunda frase con una explicación más detallada.
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase02C_tukey_yes_groups <- "
-En el test de Tukey detalla al menos 2 grupos estadísticamente diferentes. 
-Ahora debe considerarse la estructura de grupos detallada por el test de Tukey para poder dar una recomendación en su área de trabajo.
+The Tukey test details at least 2 statistically different groups. 
+The group structure detailed by the Tukey test must now be considered in order to provide a recommendation in your area of work.
 "
 
   phrase02C_tukey_no_groups  <- "
-El test de Tukey detalla que todos los niveles del factor conforman un único grupo.
-Desde el punto de vista de Tukey todos los niveles del factor son estadísticamente iguales.
+The Tukey test details that all factor levels form a single group. 
+From the Tukey perspective, all factor levels are statistically equal.
 "
 
   phrase02C_tukey_selected     <- ifelse(test = check_tukey_groups, 
@@ -550,28 +532,22 @@ Desde el punto de vista de Tukey todos los niveles del factor son estadísticame
 ```
 
 ##### Anova and Tukey relation
-Podría ocurrir que ambos análisis no sean coherentes entre si, en el sentido que uno detecte diferencias
-entre los niveles dle factor y el otro no; o visceversa. Anova es un test más potente que cualquier 
-test de comparación múltiple, por lo tanto siempre la última palabra respecto a los niveles del factor la tiene Anova.
-Es por ello que para tener en cuenta este punto, generamos una frase en particular.
+It might occur that both analyses are not coherent with each other, in the sense that one detects differences between the factor levels and the other does not, or vice versa. 
+ANOVA is a more powerful test than any multiple comparison test; therefore, ANOVA always has the final word regarding the factor levels. That is why we generate a particular phrase to account for this point.
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase01_anova_yes_tukey_no <- "
-Anova indica que existen al menos 2 grupos mientras Tukey indica que hay solo un grupo estadśitico. 
-Indistintamente de que Tukey no ha encontrado grupos, al rechazarse la hipótesis nula de anova, 
-al menos puede afirmarse que existen diferencias estadísticamente significativas entre el nivel del 
-factor con la media mayor y el nivel del factor con la media menor.
+ANOVA indicates that there are at least two groups, while Tukey indicates there is only one statistical group. 
+Irrespective of Tukey's failure to find groups, since the ANOVA null hypothesis was rejected, it can still be stated that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean.
 "
 
   phrase01_anova_no_tukey_yes  <- "
-Anova indica que todos los niveles del factor son iguales mientras que Tukey a encontrado al menos 2 grupos.  
-Tukey está supeditado al rechazo de la hipótesis de Anova.  
-Al no rechazarse la hipótesis nula de anova el test de Tukey no debe ser tenido en cuenta para tomar decisiones.
-Todos los niveles del factor son iguales.
+ANOVA indicates that all factor levels are equal, while Tukey has found at least 2 groups. 
+Tukey is subject to the rejection of the ANOVA hypothesis. Since the ANOVA null hypothesis is not rejected, the Tukey test must not be taken into account for decision-making. All factor levels are equal.
 "
 
 
-phrase01_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,                                                                                   yes = phrase01_anova_yes_tukey_no, 
+phrase01_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,                                                                 yes = phrase01_anova_yes_tukey_no, 
                                               no = phrase01_anova_no_tukey_yes)
   
 
@@ -582,18 +558,15 @@ phrase01_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,    
 ```{r eval=TRUE, echo=TRUE} 
 
   phrase02_anova_yes_tukey_no <- "
-Indistintamente de que Tukey no ha encontrado grupos, al rechazarse la hipótesis nula de anova, 
-al menos puede afirmarse que existen diferencias estadísticamente significativas entre el nivel del 
-factor con la mayor media y el nivel del factor con la menor media.
+Irrespective of Tukey's failure to find groups, since the ANOVA null hypothesis was rejected, it can at least be affirmed that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean.
 "
 
   phrase02_anova_no_tukey_yes  <- "
-Indistintamente de que Tukey a encontrado grupos, al no rechazarse la hipótesis nula de anova
-todos los niveles del factor son iguales.
+Irrespective of Tukey's finding groups, since the ANOVA null hypothesis was not rejected, all factor levels are equal.
 "
 
 
-phrase02_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,                                                                                   yes = phrase02_anova_yes_tukey_no, 
+phrase02_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,                                                                 yes = phrase02_anova_yes_tukey_no, 
                                               no = phrase02_anova_no_tukey_yes)
   
 
@@ -601,8 +574,7 @@ phrase02_anova_tukey_selected     <- ifelse(test = check_anova_yes_tukey_no,    
 
 ```
 
-Tenemos entonces ya todo un conjunto de salidas con frases cortas que se pueden usar en 
-diferentes partes del reporte.
+We now have an entire set of outputs with short phrases that can be used in different parts of the report.
 ```{r eval=TRUE, echo=TRUE}
 cat(phrase01_normality_selected, 
     phrase01_homogeneity_selected,
@@ -617,8 +589,7 @@ cat(phrase01_normality_selected,
 
 ```
 
-Y un segundo conjunto conformado dpor frases más largas que sirven para acompaár a resultados estadísticos
-o propiamente para armar un párrafo o una página del informe.
+And a second set comprised of longer phrases that serve to accompany statistical results or to properly assemble a paragraph or a page of the report.
 
 ```{r eval=TRUE, echo=TRUE}
 cat(phrase02_normality_selected, 
@@ -635,7 +606,7 @@ cat(phrase02_normality_selected,
 ```
 
 ####  Phrases
-La primera frase es corta, y sirve para resumir. Sin detalles.
+The first phrase is short, and serves to summarize. Without details.
 ```{r eval=TRUE, echo=FALSE}
 cat(phrase01_normality_selected, 
     phrase01_homogeneity_selected,
@@ -650,7 +621,7 @@ cat(phrase01_normality_selected,
 
 ```
 
-La segunda frase es más larga y sirve para ayudar al operador (usted) a interpretar de manera apropiada el valor p obtenido para el test de normalidad de Shapiro-Wilk aplicado sobre los residuos.
+The second phrase is longer and serves to help the operator (you) appropriately interpret the p-value obtained for the Shapiro-Wilk normality test applied to the residuals.
 ```{r eval=TRUE, echo=FALSE}
 cat(phrase02_normality_selected, 
     phrase02_homogeneity_selected,
@@ -672,42 +643,27 @@ cat(phrase02_normality_selected,
 
 
 ## Section 16 - Data Analysis - Part 03 of 03
-En las secciones anteriores hemos armado una tabla simple pero que logra resumir toda 
-la información de Anova en sentido amplio.
+In the previous sections, we assembled a simple table that successfully summarizes all the information from ANOVA in a broad sense.
 
-En la parte 02 manifestamos todas decisiones de manera explícita y obtuvimos que ello
-un conjunto de frases explciativas que por separado podrán acompañar a tablas y gráficos, y que juntan 
-conforman ya un buen párrafo respecto a nuestros datos.
+In part 02, we explicitly stated all decisions, and from that, we obtained a set of explanatory phrases that, separately, can accompany tables and graphs, and when put together, already form a good paragraph regarding our data.
 
-En esta 3ra parte iremos más allá y ordenaremos la forma en que piensa un asesor estadístico humano
-a la hora de enfrentarse a un test de Anova y conformaremos un asesor estadístico automatizado. 
-La idea será obtener aún más frases y explicaciones de los valores estadísticos obtenidos, pero 
-con alguna explicación extra teórica cuando sea necesario y oportuno.
+In this 3rd part, we will go further and structure the way a human statistical advisor thinks when facing an ANOVA test, and we will create an automated statistical advisor. The idea will be to obtain even more phrases and explanations of the statistical values obtained, but with some extra theoretical explanation when necessary and appropriate.
 
-La sección siguiente se llama 'Orden y Progreso', y merece algunas palabras de introducción.  
-El sentido central, directo y explícito de la sección 'Orden y Progreso' es quitar toda la niebla, magia, misterio y miedo alrededor de lo que conforma el análisis de datos para Anova. Quedará también en manifiesto que el orden 
-y el progreso obtenidos no son por utilizar R ni cualquier otro software, sino que el orden y el progreso serán debido a la manifestación clara y explícita de los criterios netamente estadísticos, que brillan por su
-ausencia tanto en los cursos de estadística y como en las publicaciones científicas modernas a la vez que polulan los script de trabajo.
+The following section is called 'Order and Progress', and it deserves a few introductory words. The central, direct, and explicit purpose of the 'Order and Progress' section is to remove all the fog, magic, mystery, and fear surrounding data analysis for ANOVA. It will also be made evident that the order and progress achieved are not due to using R or any other software, but rather that the order and progress will be due to the clear and explicit manifestation of the purely statistical criteria, which are conspicuously absent in both statistics courses and modern scientific publications, while work scripts abound.
 
-Los criterios bien podrás ser aplicados en cualquier otro software o incluso realizando a mano los resultados. 
-Al finalizar la sección esperamos que usted adquiera una visión mucho más perspicaz sobre como un 
-asesor estadístico humano encara a la toma de decisiones, y lo ayude a navegar aguas que parecen inciertas con total certeza de lo que debe hacer.    
-Dicho esto, comenzamos.  
+The criteria could well be applied in any other software or even when calculating results by hand. At the end of the section, we hope that you acquire a much more insightful vision of how a human statistical advisor approaches decision-making, and that it helps you navigate waters that seem uncertain with complete confidence in what you should do.
 
-### Orden y progreso
-Para la toma de decisiones, debemos tener en cuenta 3 aspectos:  
-- Si se cumplen o no todos los requisitos del modelo.  
-- Si se rechaza o no Ho de Anova.  
-- Si se encuentran o no al menos 2 grupos en el test de Tukey.  
+Having said that, let's begin.
 
-Cada aspecto a tener en cuenta tiene 2 posibilidades, y son 3 aspectos en total.  
-La teoría de combinatoria indica entonces que tenemos 2^3 = 8 combinaciones posibles.  
-Cualquier conjunto de resultados estadístico de anova obtenido por cualquier medio cae en un caso, solo en un caso y nada más que en un caso, sin excepciones.  
-Debido a que todas las combinaciones en donde no se cumplen los requisitos del modelo llevan al 
-mismo destino es que estos 8 casos pueden resumirse directamente en 5 casos estadísticos.  
+### Order and progress
+For decision-making, we must consider 3 aspects:  
+- Whether or not all the model requirements are met.  
+- Whether or not the ANOVA H0 is rejected.  
+- Whether or not at least 2 groups are found in the Tukey test.  
 
-Lo que hemos hecho es pasar de no tener idea a qué nos podemos enfrentar cuando analizamos un test de Anova, a saber que solo existen 5 casos posibles y que cada uno de los casos puede ser perfectamente tipificado.  
-Es completametne factible detallar 5 casos con todos sus detalles, y luego verificar en que caso hemos caído con nuestros datos.
+Each aspect has 2 possibilities, and there are 3 aspects in total. Combinatorial theory thus indicates that we have 23=8 possible combinations. Any set of ANOVA statistical results obtained by any means falls into one case, and only one case, with no exceptions. Because all combinations where the model requirements are not met lead to the same outcome, these 8 cases can be directly summarized into 5 statistical cases.
+
+What we have done is move from having no idea what we might face when analyzing an ANOVA test, to knowing that only 5 possible cases exist and that each one of these cases can be perfectly typified. It is completely feasible to detail 5 cases with all their specifics, and then verify which case our data falls into.
 
 ```{=html}
 <script>
@@ -726,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 ```
 
-#### Tabla General de casos
+#### General Table of Cases
 ::: {.panel-tabset #mi-z33}
 ##### R Code
 
@@ -745,7 +701,7 @@ df_decision_cases_init
 ```
 
 #####  Table
-Como es una tabla particularmente importante, nos daremos el lujo de detallarla también de una hermosa manera.
+As this is a particularly important table, we will indulge ourselves by detailing it in a beautiful manner as well.
 ```{r eval=TRUE, echo=FALSE}
 
 knitr::kable(x = df_decision_cases_init, 
@@ -776,35 +732,30 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 ```
 
-Tendremos esta estructura de casos para 4 temáticas en particular.  
-Temática 1) Visión General y teoría estadística.  
-Temática 2) Toma de decisiones, especificaciones y teoría estadística de los Requisitos.  
-Temática 3) Toma de decisiones, especificaciones y teoría estadística del test de Anova.  
-Temática 4) Toma de decisiones, especificaciones y teoría estadística de Tukey.  
+We will have this case structure for 4 specific themes:  
+Theme 1) General Overview and statistical theory.  
+Theme 2) Decision-making, specifications, and statistical theory of the Requirements.  
+Theme 3) Decision-making, specifications, and statistical theory of the ANOVA test.  
+Theme 4) Decision-making, specifications, and statistical theory of the Tukey test.  
 
-Estos 4 temáticas serán detallados para los 5 casos estadísticos.
-Serán detalladas las 4 temáticas para los 5 casos estadísticos como texto en objetos dataframe.
-Son en total 4x5=20 frases explicativas que serán seleccionadas según el caso al cual nuestros datos correspondan.
+These 4 themes will be detailed for the 5 statistical cases. The 4 themes will be detailed for the 5 statistical cases as text within dataframe objects. There will be a total of 4×5=20 explanatory phrases that will be selected according to the case to which our data corresponds.
 
 
-#### El caso de nuestros datos
-Tenemos ya el marco genereal de casos.  
-Nosotros ya tenemos la información suficiente como para determinar en qué caso nos encontramos aunque aún no sabemos que consecuencias trae eso.  
-Determinamos el caso de nuestros datos, y luego veremos las consecuencias.  
+#### The case of our data
+We already have the general framework of cases. We already have enough information to determine which case we are in, although we don't yet know what the consequences of that are. We will determine the case of our data, and then we will look at the consequences.
 
 
 ::: {.panel-tabset #mi-z55}
 #####  R Code
 
-Las siguientes sentencias lo que hacen es detectar nuestros resultados a que caso corresponde.
-Primero ordenamos la información de nuestro análisis en el mismo orden que la tabla.
+The following statements detect which case our results correspond to. First, we order the information from our analysis in the same order as the table.
 ```{r eval=TRUE, echo = TRUE}
 vector_observed_details <- c(AQ_all_requeriments_ok, AQ_anova_rejected_ho,  AQ_tukey_groups)
 names(vector_observed_details) <- c("All_requeriments_ok", "anova_rejected_ho", "tukey_groups")
 vector_observed_details
 ```
 
-Ahora buscamos esas características en la tabla, y detallamos la fila:
+Now we search for those characteristics in the table, and we detail the row:
 ```{r eval=TRUE, echo = TRUE}
 selected_col <- 1:length(vector_observed_details) + 1
 
@@ -849,13 +800,11 @@ knitr::kable(df_decision_cases_selected)%>%
     )
 ```
 :::
+Within the possible cases, our obtained results fall into <strong style="font-size: 1.2em;">case `r row_match_index`</strong>. 
+What we will do next is complete all the casuistry associated with each part of the analysis so that we can then simply visualize the interpretation of our particular case.
 
-Dentro de los casos posibles, nuestros resultados obtenidos se encuentran en 
-el <strong style="font-size: 1.2em;">caso `r row_match_index`</strong>.  
-Lo que haremos a continuación es completar toda la casuística asociada a cada parte del análisis para luego simplemente poder visualizar las interpretación de nuestro caso en particular.
-
-### Asesor estadístico automatizado - Temática 1) Visión General
-Comenzamos detallando la visión general y los aspectos que comunmente tiene en mente un asesor estadístico humano a la hora de analizar el test de Anova. Lo que se otorga es una visión global resumina con detalles teóricos.
+### Automated Statistical Advisor - Theme 1) General Overview
+We begin by detailing the general overview and the aspects that a human statistical advisor commonly keeps in mind when analyzing the ANOVA test. What is provided is a global, summarized vision with theoretical details.
 
 ```{=html}
 <script>
@@ -876,48 +825,25 @@ document.addEventListener('DOMContentLoaded', function(){
 
 ::: {.panel-tabset #mi-tabset}
 #####  R Code
-Conformamos en el código de R un dataframe que contiene el conjunto de criterios estadísticos a ser tenidos en cuenta a la hora de interpretar el test de Anova en la Temática 1) Visión General.
+We form a dataframe in the R code that contains the set of statistical criteria to be considered when interpreting the ANOVA test in Theme 1) General Overview.
 ```{r eval=TRUE, echo=TRUE}
 
 df_decision_cases_01_human <- df_decision_cases_init
 
-df_decision_cases_01_human$"Decision"[1] <- "Cuando no se cumplen todos los requisitos del modelo, inmediatamente el análisis de Anova queda descartado.  
-El descarte del análisis ocurre indistintamente de si no se cumple la normalidad de los residuos, la homogeneidad o ambos requisitos.  
-Indistintamente de los valores estadísticos obtenidos en el test de Anova y en el test de Tukey, no es válido sacar conclusiones de ningún tipo. El análisis queda descartado en su totalidad.  
-Debe buscarse otra herramienta estadística para analizar los datos de este dataset u otro camino estadístico.  
-La herramienta más rápida de recomendar es el test de Kruskal-Wallis; pero un mejor análisis de las características del dataset tal vez permitan usar alguna herramienta de modelos lineales generales mixtos, modelos lineales generalizados, modelos lineales generalizados mixtos, o estadística exacta.  
-El camino estadístico alternativo es realizar una transformación sobre la variable respuesta e intentar nuevamente un test de Anova a 1 Factor.  
-Las opciones estadísticas son sugerencias de cuya factibilidad de uso debe ser verificada y justificada. La consulta la bibliografía de su área de estudio puede ser un buen paso determinar como han trabajado otros colegas ante esta situación.  
+df_decision_cases_01_human$"Decision"[1] <- "When not all model requirements (Normality and/or Homogeneity) are met, the ANOVA analysis is immediately discarded. 
+This invalidation occurs irrespective of whether the failure is due to non-normality of the residuals, non-homogeneity, or both requirements. 
+Indistinctly of the statistical values obtained in the ANOVA test and the Tukey test, it is NOT valid to draw conclusions of any type; the entire analysis is completely discarded. 
+An alternative statistical tool or path must be sought to analyze the data, with the quickest recommended tool being the Kruskal-Wallis test, although a better analysis may allow for the use of more robust tools such as Generalized Linear Mixed Models or Exact Statistics; the alternative statistical path is to perform a transformation on the response variable and attempt the 1-Factor ANOVA test again. 
+The statistical options suggested must be verified and justified for their feasibility of use. Continuing with statistical interpretations without fulfilling the model's requirements is a serious error common among those new to statistics, and a common practice among those lacking the sufficient statistical knowledge to correctly analyze the reality they intend to study. If, despite all these warnings, you continue with the analysis, you expose your work to severe criticism from colleagues, evaluation committees, and publication reviewers."
 
-Continuar con las interpretaciones estadísticas sin el cumplimiento de los requisistos es un error grave de quien se inicia en la estadística, y una práctica común de quien no tiene el suficiente conocimiento estadístico para analizar de manera correcta a la realidad que intenta analizar.
-
-Si a pesar de todas estas advertencias usted continua con el análisis, se expone severamente a que su trabajo sea duramente criticado por colegas, tribunales evaluativos y árbitros de publicaciones."
-
-df_decision_cases_01_human$"Decision"[2] <- "Como se cumplen los requisitos del modelo it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. Según Anova, all means are statistically equal. La utilización de cualquier test comparaciones múltiple está supeditada al rechazo de la hipótesis nula de Anova, por lo tanto, queda inmediatamente descartada la utilización de cualquier test de comparaciones múltiple para analizar este dataset, ya sea el test de Tukey o cualquier otro.
-La teoría estadística indica que el test de Anova es un test más potente que cualquier test de comparaciones múltiples.
-Si bien en este la salida de Tukey coincide con la visión de Anova, en este contexto el test de Tukey no es válido. Nada debe decirse respecto al test de Tukey o cualquier test de comparaciones que se quiera utilizar.
-En este caso afirmar que no hay diferencias por que Tukey no detectó grupos o afirmar que la interpretación es más fuerte por que anova y tukey coinciden es un error ya que en este caso no es válido sacar conclusiones de cualquier test de comparaciones múltiples.
-If the operator needs to make a recommendation, they should recommend any factor level equally.
-The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance. Otra forma de decir esto es que de repetirse el experimento por segunda vez existe una gran probabilidad de que incluso ocurra que intercambio del valor de las medias entre los niveles del factor con la misma diferencia entre medias que ocurrió en la primera experiencia. Es un error común y grave insistir en que hay diferencias en alguna parte de los niveles del factor cuando se cumplen los requisitos del modelo y no se rechaza Ho de Anova.
-La acción por parte del operador (usted) de insistir en diferencias cuando no se rechazó la hipótesis nula manifiesta una falta total de conocimientos estadísticos para interpretar los resultados obtenidos.
-Como resumen, la teoría estadística indica que si se cumplen los requisitos del modelo el criterio de anova es un criterio de toma de decisiones superior a cualquier criterio que pueda determinar el operador. En este caso el criterio estadístico es el correcto en cualquier contexto."
+df_decision_cases_01_human$"Decision"[2] <- "As the model requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. According to ANOVA, all means are statistically equal. The use of any multiple comparison test is subject to the rejection of the ANOVA null hypothesis; therefore, the use of any multiple comparison test to analyze this dataset, whether it be the Tukey test or any other, is immediately discarded. Statistical theory indicates that the ANOVA test is a more powerful test than any multiple comparison test. Although in this case the Tukey output coincides with the ANOVA view, the Tukey test is not valid in this context. Nothing should be said regarding the Tukey test or any multiple comparison test that one might wish to use. In this case, asserting that there are no differences because Tukey did not detect groups or asserting that the interpretation is stronger because ANOVA and Tukey coincide is an error, since it is not valid to draw conclusions from any multiple comparison test in this context. If the operator needs to make a recommendation, they should recommend any factor level equally. The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance. Another way of saying this is that if the experiment were repeated a second time, there is a high probability that the mean values might even switch positions between factor levels with the same mean difference as occurred in the first experiment. It is a common and serious error to insist that there are differences somewhere within the factor levels when the model requirements are met and the ANOVA H0 is not rejected. The action by the operator (you) of insisting on differences when the null hypothesis was not rejected demonstrates a total lack of statistical knowledge for interpreting the obtained results. In summary, statistical theory indicates that if the model requirements are met, the ANOVA criterion is a superior decision-making criterion to any criterion the operator might determine. In this case, the statistical criterion is the correct one in any context."
 
 
-df_decision_cases_01_human$"Decision"[3] <- "Como se cumplen los requisitos del modelo it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. Según Anova, all means are statistically equal. La utilización de cualquier test comparaciones múltiple está supeditada al rechazo de la hipótesis nula de Anova, por lo tanto, queda inmediatamente descartada la utilización de cualquier test de comparaciones múltiple para analizar este dataset, ya sea el test de Tukey o cualquier otro.
-La teoría estadística indica que el test de Anova es un test más potente que cualquier test de comparaciones múltiples.
-Si bien en este caso usted tiene una salida de Tukey que le indica grupos, el test de Tukey no es válido. Nada debe decirse respecto al test de Tukey o cualquier test de comparaciones que se quiera utilizar.
-En este caso afirmar hay diferencias por que Tukey detectó grupos o afirmar que la interpretación del test de Tukey es más fuerte que Anova es un error muy grave ya que en este caso no es válido sacar conclusiones de ningún test de comparaciones múltiples.
-If the operator needs to make a recommendation, they should recommend any factor level equally.
-The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance. Otra forma de decir esto es que de repetirse el experimento por segunda vez existe una gran probabilidad de que incluso ocurra que intercambio del valor de las medias entre los niveles del factor con la misma diferencia entre medias que ocurrió en la primera experiencia. Es un error común y grave insistir en que hay diferencias en alguna parte de los niveles del factor cuando se cumplen los requisitos del modelo y no se rechaza Ho de Anova.
-La acción por parte del operador (usted) de insistir en diferencias entre los niveles del factor cuando no se rechazó la hipótesis nula de anova manifiesta una falta total de conocimientos estadísticos para interpretar los resultados obtenidos.
-Como resumen, la teoría estadística indica que si se cumplen los requisitos del modelo el criterio de anova es un criterio de toma de decisiones superior a cualquier criterio que pueda determinar el operador. En este caso el criterio estadístico es el correcto en cualquier contexto."
+df_decision_cases_01_human$"Decision"[3] <- "As the model requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is not rejected. According to ANOVA, all means are statistically equal. The use of any multiple comparison test is subject to the rejection of the ANOVA null hypothesis; therefore, the use of any multiple comparison test to analyze this dataset, whether it be the Tukey test or any other, is immediately discarded. Statistical theory indicates that the ANOVA test is a more powerful test than any multiple comparison test. Although in this case you have a Tukey output that indicates groups, the Tukey test is not valid. Nothing should be said regarding the Tukey test or any multiple comparison test that one might wish to use. In this case, asserting that there are differences because Tukey detected groups or asserting that the interpretation of the Tukey test is stronger than ANOVA is a very serious error, since it is not valid to draw conclusions from any multiple comparison test in this context. If the operator needs to make a recommendation, they should recommend any factor level equally. The fact of not rejecting the null hypothesis indicates that the mathematical differences between the means are due only to chance. Another way of saying this is that if the experiment were repeated a second time, there is a high probability that the mean values might even switch positions between factor levels with the same mean difference as occurred in the first experiment. It is a common and serious error to insist that there are differences somewhere within the factor levels when the model requirements are met and the ANOVA H0​ is not rejected. The action by the operator (you) of insisting on differences between factor levels when the ANOVA null hypothesis was not rejected demonstrates a ** total lack of statistical knowledge** for interpreting the obtained results. In summary, statistical theory indicates that if the model requirements are met, the ANOVA criterion is a superior decision-making criterion to any criterion the operator might determine. In this case, the statistical criterion is the correct one in any context."
 
-df_decision_cases_01_human$"Decision"[4] <- "All ANOVA requirements are met. It is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret cualqueir test de comparaciones elegido, en este caso the Tukey test. In this case, the Tukey test does not distinguish statistical groups even though ANOVA rejected the null hypothesis. ANOVA is a more powerful test than Tukey, therefore it is affirmed that there are differences at least between the factor level with the largest mean and the factor level with the smallest one; and nothing can be said about the rest of the levels. It is a rare case, but it happens. Consider changing the multiple comparison test to another one, if appropriate, with the hope of being able to detect differences between factor levels with a different comparison test than Tukey.
-La teoría estadística indica que las diferencias estadísticas entre niveles del factor pueden no ser diferencias significativas en reales en el área de estudio. El operador (usted) debe contextualizar la información estadística y decidir con buen criterio si las diferencias estadísticas son significativas en el contexto del trabajo. En caso de análisis el criterio del operador es superior al criterio estadístico."
+df_decision_cases_01_human$"Decision"[4] <- "All ANOVA requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected; there is at least one different mean, and the differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret any chosen multiple comparison test, in this case the Tukey test. In this specific case, the Tukey test does not distinguish statistical groups even though ANOVA rejected the null hypothesis. Since ANOVA is a more powerful test than Tukey, it is affirmed that there are differences at least between the factor level with the largest mean and the factor level with the smallest one, and nothing can be said about the rest of the levels. It is a rare case, but it happens. Consider changing the multiple comparison test to another one, if appropriate, with the hope of being able to detect differences between factor levels with a different comparison test than Tukey. Statistical theory indicates that the statistical differences between factor levels may not be real or significant differences in the area of study. The operator (you) must contextualize the statistical information and decide with good judgment if the statistical differences are significant in the context of the work. In terms of practical analysis, the operator's criterion is superior to the statistical criterion."
 
-df_decision_cases_01_human$"Decision"[5] <- "All ANOVA requirements are met. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected. There is at least one different mean. The differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret cualquier test de comparaciones múltiples, en esta oportunidad the Tukey test. In this case, the Tukey test distinguishes at least 2 statistical groups. The operator must observe the Tukey table and interpret the groups according to the letters assigned by the Tukey test, taking into account that Tukey can assign multiple letters to each factor level. The operator must make recommendations of factor levels taking into account the statistical framework and the original work framework. It is common to recommend the highest means or the lowest means according to the context of the data.
-In the context of Tukey, factor levels that share at least 1 letter are statistically equal. It takes some time to get used to correctly interpreting the Tukey table. There are also other contexts where the lowest or highest means are not necessarily sought, such as specifically looking for which factor levels are statistically equal to a particular level. The Tukey test can also be applied in this context.
-El operador (usted) debe contextualizar la información estadística y decidir con buen criterio si las diferencias estadísticas son significativas en el contexto del trabajo. En caso de análisis el criterio del operador es superior al criterio estadístico."
+df_decision_cases_01_human$"Decision"[5] <- "All ANOVA requirements are met. The conclusions obtained from ANOVA are valid. The null hypothesis of ANOVA is rejected; there is at least one different mean, and the differences between the means are not only due to chance. At this point, ANOVA provides sufficient evidence to say that there are statistically significant differences between the factor level with the highest mean and the factor level with the lowest mean. By rejecting the null hypothesis of ANOVA, it is valid to interpret any chosen multiple comparison test, which in this opportunity is the Tukey test. In this case, the Tukey test distinguishes at least 2 statistical groups. The operator must observe the Tukey table and interpret the groups according to the letters assigned by the Tukey test, taking into account that Tukey can assign multiple letters to each factor level. The operator must make recommendations of factor levels taking into account the statistical framework and the original work framework. It is common to recommend the highest means or the lowest means according to the context of the data. In the context of Tukey, factor levels that share at least 1 letter are statistically equal. It takes some time to get used to correctly interpreting the Tukey table. There are also other contexts where the lowest or highest means are not necessarily sought, such as specifically looking for which factor levels are statistically equal to a particular level; the Tukey test can also be applied in this context. The operator (you) must contextualize the statistical information and decide with good judgment if the statistical differences are significant in the context of the work. In terms of practical analysis, the operator's criterion is superior to the statistical criterion."
 
 
 colnames(df_decision_cases_01_human)[ncol(df_decision_cases_01_human)] <- "General_Decision"
@@ -925,15 +851,14 @@ colnames(df_decision_cases_01_human)[ncol(df_decision_cases_01_human)] <- "Gener
 
 
 
-Podemos visualizar el caso seleccionado en la salida de R
+We can visualize the selected case in the R output.
 ```{r eval=TRUE, echo = TRUE}
 df_selected_row_01_human <- df_decision_cases_01_human[row_match_index, ]
 df_selected_row_01_human
 ```
 
 #####  Full table cases
-Detallamos en un formato más estético nuestra tabla con los 5 casos.  
-La fila que corresponde a nuestro caso de análisis será en color.
+We detail our table with the 5 cases in a more aesthetic format. The row corresponding to our case of analysis will be highlighted in color.
 ```{r eval=TRUE, echo = FALSE}
 
 my_df <- df_decision_cases_01_human
@@ -965,7 +890,7 @@ col_align[length(col_align)] <- "l"
 
 
 #####  Selected case
-Detallamos en un formato más estético solo el caso de análisis que se aplica a nuestros datos. 
+We detail in a more aesthetic format only the case of analysis that applies to our data.
 ```{r eval=TRUE, echo = FALSE}
 
 # 4. Extraer la fila o el resultado deseado
@@ -1018,8 +943,8 @@ knitr::kable(df_decision_cases_init)%>%
 
 
 
-### Asesor estadístico automatizado - Temática 2) Model Requeriments
-Comenzamos detallando la visión general y los aspectos que comunmente tiene en mente un asesor estadístico humano a la hora de analizar el test de Anova. Lo que se otorga es una visión global resumina con detalles teóricos.
+### Automated Statistical Advisor - Theme 2) Model Requirements
+We begin by detailing the general overview and the aspects that a human statistical advisor commonly keeps in mind when analyzing the ANOVA test. What is provided is a global, summarized vision with theoretical details.
 
 ```{=html}
 <script>
@@ -1040,14 +965,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
 ::: {.panel-tabset #mi-tabset111}
 ##### R Code
-Conformamos en el código de R un dataframe que contiene el conjunto de criterios estadísticos a ser tenidos en cuenta a la hora de interpretar el test de Anova. 
+We form a dataframe in the R code that contains the set of statistical criteria to be considered when interpreting the ANOVA test.
 ```{r eval=TRUE, echo=TRUE}
 
 df_decision_cases_02_model_requeriments <- df_decision_cases_init
 
-df_decision_cases_02_model_requeriments$"Decision"[1] <- "El test estadístico anova tiene 3 puntos sobre los que se basa para tomar decisiones: forma, dispersión y posición. La forma será la distribución normal de los residuos. La dispersión será varianzas homogéneas en los residuos y la posición será la media de la variable respuesta para uno de los niveles del factor. Garantizando que la forma y la dispersión de los residuos tienen cierta estructura en particular es que anova logra poner a prueba la posición en la variable respuesta. Por ello es requisito el cumplimiento de normalidad y homogeneidad de varianzas de los residuos, y solo con el cumplimiento de ambos requisitos de manerea simultánea es válido tomar la interpretación del las medias. Al no cumplir con todos los requisitos de manera simultánea debe ser descartado el análisis de anova indistintamente de los resultados que hubiera arrojado. No hay escapatoria y debe usted buscar otra herramienta estadística para interpretar estos resultados."
+df_decision_cases_02_model_requeriments$"Decision"[1] <- "The ANOVA statistical test is based on 3 points for decision-making: shape, dispersion, and position. The shape is the normal distribution of the residuals. The dispersion is the homogeneous variances in the residuals, and the position is the mean of the response variable for one of the factor levels. By guaranteeing that the shape and dispersion of the residuals have a certain particular structure, ANOVA manages to test the position in the response variable. This is why the fulfillment of normality and homogeneity of variances of the residuals is a requirement, and only with the simultaneous fulfillment of both requirements is it valid to make an interpretation of the means. If all requirements are not met simultaneously, the ANOVA analysis must be discarded, irrespective of the results it may have yielded. There is no escape, and you must seek another statistical tool to interpret these results."
 
-df_decision_cases_02_model_requeriments$"Decision"[2] <- "Como se cumplen los requisitos del modelo it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. El hecho de que los residuos posean distribución normal y homogeneidad de varianzas en una característica que muchas veces es pasada por algo como un detalle menor. Lo que está usted viendo es una característica especial de datos. en muchos contextos pensar en el por qué los residuos de los niveles del factor son normales y homogéneos lleva a ideas que no se habían tenido en cuenta y enriquese muchísimo el trabajo que se está realizando. Si bien Anova es un test para las medias, Anova es abreviación 'Analisis de la Varianza' y no 'Analisis de las Medias', justamente por que através del análisis de la descomposición de varianzas en que logra decir algo de las medias. Pensar entonces en las varianzas de los residuos puede ser una idea interesante."
+df_decision_cases_02_model_requeriments$"Decision"[2] <- "As the model requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The fact that the residuals possess normal distribution and homogeneity of variances is a characteristic that is often overlooked as a minor detail. What you are observing is a special characteristic of the data. In many contexts, thinking about why the factor level residuals are normal and homogeneous leads to ideas that had not been considered and greatly enriches the work being performed. Although ANOVA is a test for means, ANOVA is an abbreviation for 'Analysis of Variance' and not 'Analysis of Means', precisely because it manages to say something about the means through the analysis of variance decomposition. Therefore, thinking about the variances of the residuals can be an interesting idea."
 
 
 df_decision_cases_02_model_requeriments$"Decision"[3] <- df_decision_cases_02_model_requeriments$"Decision"[2]
@@ -1061,15 +986,14 @@ colnames(df_decision_cases_02_model_requeriments)[ncol(df_decision_cases_02_mode
 
 
 
-Podemos visualizar el caso seleccionado en la salida de R
+We can visualize the selected case in the R output.
 ```{r eval=TRUE, echo = TRUE}
 df_selected_row_02_model_requeriments <- df_decision_cases_02_model_requeriments[row_match_index, ]
 df_selected_row_02_model_requeriments
 ```
 
 ##### Full table cases
-Detallamos en un formato más estético nuestra tabla con los 5 casos.  
-La fila que corresponde a nuestro caso de análisis será en color.
+We detail our table with the 5 cases in a more aesthetic format. The row corresponding to our case of analysis will be highlighted in color.
 ```{r eval=TRUE, echo = FALSE}
 
 my_df <- df_decision_cases_02_model_requeriments
@@ -1101,7 +1025,7 @@ col_align[length(col_align)] <- "l"
 
 
 ##### Selected case
-Detallamos en un formato más estético solo el caso de análisis que se aplica a nuestros datos. 
+We detail in a more aesthetic format only the case of analysis that applies to our data.
 ```{r eval=TRUE, echo = FALSE}
 
 # 4. Extraer la fila o el resultado deseado
@@ -1136,8 +1060,8 @@ col_align[length(col_align)] <- "l"
 
 ##### ASA
 <div style="background-color: #ff8c00; padding: 15px; border-radius: 5px;">
- Temática 2) Model Requeriments
- 
+Theme 2) Model Requirements
+
 ```{r eval=TRUE, echo = FALSE}
 text_asa_02_model_requeriments <- df_selected_row_02_model_requeriments[1, ncol(df_selected_row_02_model_requeriments)]
 knitr::kable(df_decision_cases_selected)%>%
@@ -1152,8 +1076,8 @@ knitr::kable(df_decision_cases_selected)%>%
 :::
 
 
-### Asesor estadístico automatizado - Temàtica 3) Anova
-Comenzamos detallando la visión general y los aspectos que comunmente tiene en mente un asesor estadístico humano a la hora de analizar el test de Anova. Lo que se otorga es una visión global resumina con detalles teóricos.
+### Automated Statistical Advisor - Theme 3) ANOVA
+We begin by detailing the general overview and the aspects that a human statistical advisor commonly keeps in mind when analyzing the ANOVA test. What is provided is a global, summarized vision with theoretical details.
 
 ```{=html}
 <script>
@@ -1174,31 +1098,21 @@ document.addEventListener('DOMContentLoaded', function(){
 
 ::: {.panel-tabset #mi-tabset222}
 #####  R Code
-Conformamos en el código de R un dataframe que contiene el conjunto de criterios estadísticos a ser tenidos en cuenta a la hora de interpretar el test de Anova. 
+We form a dataframe in the R code that contains the set of statistical criteria to be considered when interpreting the ANOVA test.
 ```{r eval=TRUE, echo=TRUE}
 
 df_decision_cases_03_anova <- df_decision_cases_init
 
-df_decision_cases_03_anova$"Decision"[1] <- "No se cumplen los requisitos del modelo. El test estadístico anova tiene el requisito indispensable de normaldiad de los residuos y homogeneidad de varianzas. Ambos requisitos deben cumplirse de manera conjunta para que sea válido realizar conclusiones sobre los niveles del factor. Continuar con la interpretación estadística sin el cumplimiento de todos los requisitos es un error catastrófico. Los requisitos del modelo de Anova no son optativos y tampoco pueden asuminarse. Los requisitos del modelo son la base fundamental sobre la que se basa el test de Anova para tomar decisiones sobre las medias de los niveles del factor. En este caso, usted deberá buscar otra herramienta estadística para realizar el análisis de sus datos."
+df_decision_cases_03_anova$"Decision"[1] <- "The model requirements are not met. The ANOVA statistical test has the indispensable requirement of residual normality and homogeneity of variances. Both requirements must be met jointly for it to be valid to draw conclusions about the factor levels. Continuing with the statistical interpretation without fulfilling all the requirements is a catastrophic error. The ANOVA model requirements are neither optional nor can they be assumed. The model requirements are the fundamental basis upon which the ANOVA test relies to make decisions about the means of the factor levels. In this case, you must seek another statistical tool to perform the analysis of your data."
 
-df_decision_cases_03_anova$"Decision"[2] <- "Como se cumplen los requisitos del modelo it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. No se rechaza la hipótesis nula de Anova, por lo tanto no existen diferencias estadísticamente significativas entre los niveles del factor. Todos los niveles del factor son estadísticamente iguales. Si se necesita hacer una recomendación de niveles del factor, todos los nivelesl del factor deben ser recomendados por igual.
-En el caso en que se cumplen los requisitos del modelo y no se rechaza la hipótesis nula las diferencias matemáticas observadas entre los niveles del factor es solo por azar. Esto quiere decir que si se repitiera la experiencia podría ocurrir uno de dos escenarios.
-Escenario 1) Las diferencias entre las medias serían aún menor y también podría cambiar el orden de las medias si se ordenan los niveles del factor de mayor a menor.
-Escenario 2) Las diferencias y las medias se mantienen pero las medias recaen en diferentes niveles del factor, cambiando entonces el orden de los niveles del factor si se ordenan los niveles del mayor a menor.
-
-La teoría estadística es muy clara al respecto e indica que en caso de no rechazar la hipótesis nula entonces no existen diferencias, y si a ojo del operador si existen diferencias, prevalece el criterio estadístico por sobre el criterio del operador.
-La acciones de insistir y argumentar en favor de conceptos como diferencias marginales o a ojímetro por parte del operador eso es un error estadístico grave que manifiesta un desconocimiento profundo de la estadística por parte del operador. 
+df_decision_cases_03_anova$"Decision"[2] <- "As the model requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The ANOVA null hypothesis is not rejected; therefore, there are no statistically significant differences between the factor levels. All factor levels are statistically equal. If a recommendation of factor levels is needed, all factor levels must be recommended equally. In the case where the model requirements are met and the null hypothesis is not rejected, the mathematical differences observed between the factor levels are due only to chance. This means that if the experiment were repeated, one of two scenarios could occur: Scenario 1) The differences between the means would be even smaller, and the order of the means could also change if the factor levels were ordered from highest to lowest. Scenario 2) The differences and the means remain, but the means fall into different factor levels, thus changing the order of the factor levels if they are ordered from highest to lowest. Statistical theory is very clear on this and indicates that in case the null hypothesis is not rejected, then no differences exist, and if the operator perceives differences visually (by eye), the statistical criterion prevails over the operator's criterion. Actions of insisting and arguing in favor of concepts such as 'marginal differences' or 'by eye' on the part of the operator constitute a serious statistical error that demonstrates a profound lack of statistical knowledge on the part of the operator.
 "
 
 
 df_decision_cases_03_anova$"Decision"[3] <- df_decision_cases_03_anova$"Decision"[2]
 
 
-df_decision_cases_03_anova$"Decision"[4] <- "Como se cumplen los requisitos del modelo it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. Se rechaza la hipótesis nula de Anova, por lo tanto existen diferencias estadísticamente significativas entre los niveles del factor. Las diferencias encontradas entre los niveles del factor no son solo por azar. Existen al menos dos grupos dentro de los niveles del factor. Anova garantiza que hay diferencias estadísticamente significativas entre el nivel del factor con la media menor y el nivel del factor con la media mayor. Solo eso. Nada dice del resto de los niveles del factor. La utilización de cualquier test de comparaciones está supeditada al rechazo de hipótesis nula de Anova. En este caso entonces es válido utilizar cualquier test de comparaciones múltiples para intentar visualizar una estructura de grupos entre los niveles del factor.
-
-Si existe una discrepancia entre el test de Anova que indica que hay diferencias significativas y el operador que a su ojo no ve diferencias significativas, la teoría estadística es muy clara al respecto. Este marco en el cual anova indica que hay diferencias y el criterio del operador dice que no hay diferencias, el criterio del operador prevalece siempre y cuando sea argumento de manera correcta y profunda.
-
-Como el test de anova es váido, y se ha rechazado la hipótesis nula de Anova, entonces es válido realizar cualquier test de comparaciones múltiple. En este caso 
+df_decision_cases_03_anova$"Decision"[4] <- "As the model requirements are met, it is valid to interpret the ANOVA p-value. The conclusions obtained from ANOVA are valid. The ANOVA null hypothesis is rejected; therefore, statistically significant differences exist between the factor levels. The differences found between the factor levels are not due only to chance. There are at least two groups within the factor levels. ANOVA guarantees that there are statistically significant differences between the factor level with the lowest mean and the factor level with the highest mean. Only that. It says nothing about the rest of the factor levels. The use of any comparison test is subject to the rejection of the ANOVA null hypothesis. In this case, then, it is valid to use any multiple comparison test to try to visualize a group structure among the factor levels. If there is a discrepancy between the ANOVA test, which indicates that there are significant differences, and the operator, who does not see significant differences with the naked eye, statistical theory is very clear on the matter. In this framework, where ANOVA indicates differences and the operator's criterion says there are no differences, the operator's criterion always prevails, provided it is argued correctly and thoroughly. Since the ANOVA test is valid, and the ANOVA null hypothesis has been rejected, it is therefore valid to perform any multiple comparison test.
 "
 
 df_decision_cases_03_anova$"Decision"[5] <- df_decision_cases_03_anova$"Decision"[4]
@@ -1208,15 +1122,15 @@ colnames(df_decision_cases_03_anova)[ncol(df_decision_cases_03_anova)] <- "Anova
 
 
 
-Podemos visualizar el caso seleccionado en la salida de R
+We can visualize the selected case in the R output.
 ```{r eval=TRUE, echo = TRUE}
 df_selected_row_03_anova <- df_decision_cases_03_anova[row_match_index, ]
 df_selected_row_03_anova
 ```
 
 ##### Full table cases
-Detallamos en un formato más estético nuestra tabla con los 5 casos.  
-La fila que corresponde a nuestro caso de análisis será en color.
+We detail our table with the 5 cases in a more aesthetic format. 
+The row corresponding to our case of analysis will be highlighted in color.
 ```{r eval=TRUE, echo = FALSE}
 
 my_df <- df_decision_cases_03_anova
@@ -1248,7 +1162,7 @@ col_align[length(col_align)] <- "l"
 
 
 ##### Selected case
-Detallamos en un formato más estético solo el caso de análisis que se aplica a nuestros datos. 
+We detail in a more aesthetic format only the case of analysis that applies to our data.
 ```{r eval=TRUE, echo = FALSE}
 
 # 4. Extraer la fila o el resultado deseado
@@ -1282,7 +1196,7 @@ col_align[length(col_align)] <- "l"
 
 ##### ASA
 <div style="background-color: #ff8c00; padding: 15px; border-radius: 5px;">
- Temática 3) Anova
+ Theme 3) ANOVA
  
 ```{r eval=TRUE, echo = FALSE}
 text_asa_03_anova <- df_selected_row_03_anova[1, ncol(df_selected_row_03_anova)]
@@ -1297,8 +1211,8 @@ knitr::kable(df_decision_cases_selected)%>%
 </div>
 :::
 
-### Asesor estadístico automatizado - Temática 4) Tukey
-Comenzamos detallando la visión general y los aspectos que comunmente tiene en mente un asesor estadístico humano a la hora de analizar el test de Anova. Lo que se otorga es una visión global resumina con detalles teóricos.
+### Automated Statistical Advisor - Theme 4) Tukey
+We begin by detailing the general overview and the aspects that a human statistical advisor commonly keeps in mind when analyzing the ANOVA test. What is provided is a global, summarized vision with theoretical details.
 
 ```{=html}
 <script>
@@ -1319,48 +1233,29 @@ document.addEventListener('DOMContentLoaded', function(){
 
 ::: {.panel-tabset #mi-tabset333}
 #####  R Code
-Conformamos en el código de R un dataframe que contiene el conjunto de criterios estadísticos a ser tenidos en cuenta a la hora de interpretar el test de Anova. 
+We form a dataframe in the R code that contains the set of statistical criteria to be considered when interpreting the ANOVA test.
 ```{r eval=TRUE, echo=TRUE}
 
 df_decision_cases_04_tukey <- df_decision_cases_init
 
-df_decision_cases_04_tukey$"Decision"[1] <- "La utilización del test de Tukey está supeditada a la validez del modelo de Anova y al rechazo de la hipótesis de anova. Al no se cumplen los requisitos del modelo no es válido el test de Anova y por lo tanto tampoco es válido el test de Tukey. La información relacionada al test de Tukey debe ser descartada. Como ya se ha detallado antes, en este contexto continuar con la interpretación estadística es un error estadístico grave que manifiesta un desconocimiento total del criterios estadísticos para tomar decisiones."
+df_decision_cases_04_tukey$"Decision"[1] <- "The use of the Tukey test is subject to the validity of the ANOVA model and the rejection of the ANOVA hypothesis. As the model requirements are not met, the ANOVA test is not valid, and therefore the Tukey test is not valid either. The information related to the Tukey test must be discarded. As detailed before, in this context, continuing with the statistical interpretation is a serious statistical error that demonstrates a total lack of statistical criteria for decision-making."
 
-df_decision_cases_04_tukey$"Decision"[2] <- "La utilización del test de Tukey está supeditada a la validez del modelo de Anova y al rechazo de la hipótesis de anova. Como el modelo es válido por cumplirse los requisitos y no se ha rechazado la hipótesis nula de anova, inmediatamente queda descartada la utilización no solo de Tukey sino de cualquier otro test de comparaciones múltiple. Todos los niveles del factor son estadísticamente iguales.
-En este caso 2 Anova y Tukey son coherentes, en el sentido que ambos detallan que existe un solo grupo estadístico.  
-La idea de afirmar que los resultados tienen más peso por que Anova y Tukey son coherentes en solo detectar un grupo, es un error ya desde un principio no es válido sacar ningún tipo de conclusiones o afirmaciones basado en cualquier test de comparaciones múltiple ya que la hipótesis nula de anova no ha sido rechazada.
+df_decision_cases_04_tukey$"Decision"[2] <- "The use of the Tukey test is subject to the validity of the ANOVA model and the rejection of the ANOVA hypothesis. As the model is valid because the requirements are met, and the ANOVA null hypothesis has not been rejected, the use of not only Tukey but any other multiple comparison test is immediately discarded. All factor levels are statistically equal. In this Case 2, ANOVA and Tukey are coherent, in the sense that both detail that only one statistical group exists. The idea of asserting that the results have more weight because ANOVA and Tukey are coherent in only detecting one group is an error, since from the outset it is not valid to draw any conclusions or make any assertions based on any multiple comparison test, as the ANOVA null hypothesis has not been rejected.
 "
 
 
-df_decision_cases_04_tukey$"Decision"[3] <- "La utilización del test de Tukey está supeditada a la validez del modelo de Anova y al rechazo de la hipótesis de anova. Como el modelo es válido por cumplirse los requisitos y efectivamente  se ha rechazado la hipótesis nula de anova, inmediatamente queda habilitada la posibilidad de algún test de comparaciones múltiples. Para nustro caso es el test de Tukey. Al utilziar el test de Tukey recordar la importancia de detallar en la sentencia que utiliza al test de Tukey en R si hay o no descalance en repeticiones entre los niveles del factor.
-En este caso 3 Anova y Tukey no son coherentes, en el sentido que Anova detalla que existen diferencias y Tukey no las encuentra.  
-La teoría estadística indica que siempre prevalece Anova por sobr Tukey por ser Anova un test más pontente, por lo tanto existen diferencias estadísticamente significativas al menos entre el nivel del factor con la media menor y el nivel del factor con la media mayor; y nada podrá decirse del resto de los niveles del factor.
-En algunos contextos esta situación dificulta la interprtación estadística o la posibilidad de recomendar niveles del factor. En tal caso, si es correcto, puede ayudar utilizar otro test de comparacicones múltiple que no sea Tukey, con la idea de encontrar efectivamente grupos entre los niveles del factor.
-La discrepacia entre Anova y Tukey no es muy común, pero es posible. La mayoría de los casos se dan sobre todo cuando el operador insiste en ingresar al test estadístico sin cumplir los requisitos del modelo, o cuando el operador no detalla en la sentencia de R que hay un desbalance en los niveles del factor para que internamente Tukey aplique una corrección a su estimación. Pero aún cumpliendo los requisitos y detallando el argumento de manera correcta existe una chance de que esto pueda ocurrir ya que despsués de todo Anova y Tukey son dos test diferentes.
+df_decision_cases_04_tukey$"Decision"[3] <- "Aquí tiene la traducción del texto, manteniendo el formato de bloque continuo sin listas ni encabezados, y preservando el tono técnico y la explicación de la discrepancia.
+
+English Translation:
+
+The use of the Tukey test is subject to the validity of the ANOVA model and the rejection of the ANOVA hypothesis. As the model is valid because the requirements are met and the ANOVA null hypothesis has indeed been rejected, the possibility of using a multiple comparison test is immediately enabled. For our case, this is the Tukey test. When using the Tukey test, remember the importance of detailing in the R command whether or not there is an imbalance in the repetitions between the factor levels. In this Case 3, ANOVA and Tukey are not coherent, in the sense that ANOVA details that differences exist but Tukey does not find them. Statistical theory indicates that ANOVA always prevails over Tukey because ANOVA is a more powerful test; therefore, statistically significant differences exist at least between the factor level with the lowest mean and the factor level with the highest mean, and nothing can be said about the rest of the factor levels. In some contexts, this situation complicates the statistical interpretation or the ability to recommend factor levels. In such a case, if appropriate, it may help to use another multiple comparison test other than Tukey, with the idea of actually finding groups among the factor levels. The discrepancy between ANOVA and Tukey is not very common, but it is possible. Most cases occur primarily when the operator insists on running the statistical test without meeting the model requirements, or when the operator fails to specify in the R command that there is an imbalance in the factor levels so that Tukey can internally apply a correction to its estimation. But even when the requirements are met and the argument is specified correctly, there is a chance that this may occur, since ANOVA and Tukey are, after all, two different tests.
 "
 
-df_decision_cases_04_tukey$"Decision"[4] <- "La utilización del test de Tukey está supeditada a la validez del modelo de Anova y al rechazo de la hipótesis de anova. Como el modelo es válido por cumplirse los requisitos y no  se ha rechazado la hipótesis nula de anova, inmediatamente queda inhabilitada la posibilidad de aplicar algún test de comparaciones múltiples para acompañar al test de Anova. 
-Indistintamente de los grupos estadísticos que pudieramos obtener en Tukey, el test de Tukey no debe ser tenido en cuenta para sacar conclusiones de ningún tipo.
-
-La teoría estadística indica que el test de Anova es más potente que el test de Tukey y que hay una gerarquía
-entre ellos a la hora de tomar decisiones: el test de Tukey solo es válido si se rechaza Ho de Anova.
-
-Esta incoherencia entre el test de Anova y el test de Tukey suele verse cuando el operador es aún más incoherente 
-y analiza Anova y Tukey sin cumplimiento requisitos del modelo. 
-
-En este caso 4, todos los nivelesl del factor son estadísticamente iguales.
-Y queda imposibilitada la utilización de cualquier test de comparaciones múltiple.
+df_decision_cases_04_tukey$"Decision"[4] <- "The use of the Tukey test is subject to the validity of the ANOVA model and the rejection of the ANOVA hypothesis. As the model is valid because the requirements are met and the ANOVA null hypothesis has not been rejected, the possibility of applying any multiple comparison test to accompany the ANOVA test is immediately invalidated. Irrespective of the statistical groups that we might obtain from Tukey, the Tukey test must not be taken into account for drawing conclusions of any kind. Statistical theory indicates that the ANOVA test is more powerful than the Tukey test and that there is a hierarchy between them when making decisions: the Tukey test is only valid if the ANOVA H0 is rejected. This incoherence between the ANOVA test and the Tukey test is usually seen when the operator is even more incoherent and analyzes ANOVA and Tukey without fulfilling the model requirements. In this Case 4, all factor levels are statistically equal. And the use of any multiple comparison test is rendered impossible.
 "
 
 
-df_decision_cases_04_tukey$"Decision"[5] <- "La utilización del test de Tukey está supeditada a la validez del modelo de Anova y al rechazo de la hipótesis de anova. Como el modelo es válido por cumplirse los requisitos y efeectivametne se ha rechazado la hipótesis nula de anova, inmediatamente queda abierta la posibilidad de aplicar algún test de comparaciones múltiples para acompañar al test de Anova. 
-En este caso 5 hay coherencia entre Anova y Tukey, en el sentido que ambos encuentran al menos dos grupos en los niveles del factor.
-
-La garantía de Anova es que existen diferencias estadísticamente significativas entre el nivel del factor con la media menor y el nivel del factor con la media mayor.
-Tukey entonces nos otorga una estructura de cómo son los grupos dentro de los niveles del factor.
-
-El test de Tukey tiene la particularidad de que genera grupos intermedios. Cada nivel del factor puede pertenecer a más de un grupo estadístico. Lleva un tiempo acostumbarse a como interpretar el test de Tukey. Todos los nivelesl del factor que comparte al menos una letra de grupo son estadísticamente iguales entre si.
-Es muy imporante contextualizar los grupos estadísticos en marco de referencia del trabajo.
+df_decision_cases_04_tukey$"Decision"[5] <- "The use of the Tukey test is subject to the validity of the ANOVA model and the rejection of the ANOVA hypothesis. As the model is valid because the requirements are met and the ANOVA null hypothesis has effectively been rejected, the possibility of applying a multiple comparison test to accompany the ANOVA test is immediately opened. In this Case 5, there is coherence between ANOVA and Tukey, in the sense that both find at least two groups among the factor levels. ANOVA's guarantee is that statistically significant differences exist between the factor level with the lowest mean and the factor level with the highest mean. Tukey then provides us with a structure of what the groups look like within the factor levels. The Tukey test has the particularity that it generates intermediate groups. Each factor level can belong to more than one statistical group. It takes some time to get used to how to interpret the Tukey test. All factor levels that share at least one grouping letter are statistically equal to each other. It is very important to contextualize the statistical groups within the framework of the work's reference.
 "
 
 colnames(df_decision_cases_04_tukey)[ncol(df_decision_cases_04_tukey)] <- "Tukey_Decision"
@@ -1368,15 +1263,14 @@ colnames(df_decision_cases_04_tukey)[ncol(df_decision_cases_04_tukey)] <- "Tukey
 
 
 
-Podemos visualizar el caso seleccionado en la salida de R
+We can visualize the selected case in the R output.
 ```{r eval=TRUE, echo = TRUE}
 df_selected_row_04_tukey <- df_decision_cases_04_tukey[row_match_index, ]
 df_selected_row_04_tukey
 ```
 
 #####  Full table cases
-Detallamos en un formato más estético nuestra tabla con los 5 casos.  
-La fila que corresponde a nuestro caso de análisis será en color.
+We detail our table with the 5 cases in a more aesthetic format. The row corresponding to our case of analysis will be highlighted in color.
 ```{r eval=TRUE, echo = FALSE}
 
 my_df <- df_decision_cases_04_tukey
@@ -1408,7 +1302,7 @@ col_align[length(col_align)] <- "l"
 
 
 #####  Selected case
-Detallamos en un formato más estético solo el caso de análisis que se aplica a nuestros datos. 
+We detail in a more aesthetic format only the case of analysis that applies to our data.
 ```{r eval=TRUE, echo = FALSE}
 
 # 4. Extraer la fila o el resultado deseado
@@ -1443,8 +1337,8 @@ col_align[length(col_align)] <- "l"
 
 ##### ASA
 <div style="background-color: #ff8c00; padding: 15px; border-radius: 5px;">
- Temática 4) Tukey
- 
+Theme 4) Tukey
+
 ```{r eval=TRUE, echo = FALSE}
 text_asa_04_tukey <- df_selected_row_04_tukey[1, ncol(df_selected_row_04_tukey)]
 knitr::kable(df_decision_cases_selected)%>%

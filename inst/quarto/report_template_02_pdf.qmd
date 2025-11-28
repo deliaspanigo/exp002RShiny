@@ -13,7 +13,7 @@ format:
     number-sections: true
 params:
     activate_params: "TRUE"
-    load_from_file: "R_obj_docx.RData"
+    load_from_file: "R_obj_env.RData"
 ---
 
 ```{r setup, include=FALSE}

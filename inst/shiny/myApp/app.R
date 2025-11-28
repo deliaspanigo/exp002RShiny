@@ -414,7 +414,7 @@ ui <- bslib::page_sidebar(
     div(
       style = "text-align: left;",
       tags$img(src = "Rscience_logo_01.png", width = "40%", style = "padding-bottom: 10px;"),
-      tags$b("v1.0.22"),
+      tags$b("v1.0.23"),
       br(),
 
       # SideBar Panel--------------------------------------------------------
@@ -2273,9 +2273,12 @@ server <- function(input, output, session) {
           title = "nueva_descarga",
           # uiOutput("special01"),
           mod_download_ui("report_html", "File 01 - html full report"),
-          mod_download_ui("report_xlsx", "File 02 - Excel medium report"),
+          mod_download_ui("report_pdf",  "File 02 - PDF medium report"),
           mod_download_ui("report_docx", "File 03 - Word medium report"),
-          mod_download_ui("report_pdf",  "File 04 - PDF medium report")
+          mod_download_ui("report_xlsx", "File 04 - Excel medium report"),
+          mod_download_ui("report_zip_png", "File 05 - PNG files on zip folder"),
+          mod_download_ui("reveal_html", "File 06 - Reveal HTML Presentation")
+
 
         ),
         bslib::nav_panel(
@@ -2773,24 +2776,31 @@ server <- function(input, output, session) {
   list_R_file_name_input_template <- list()
   list_R_file_name_output_report  <- list()
 
-  list_R_file_name_input_template$"html" <- "report_template_html.qmd"
-  list_R_file_name_output_report$"html"  <- "report_template_html.html"
+  list_R_file_name_input_template$"html" <- "report_template_01_html.qmd"
+  list_R_file_name_output_report$"html"  <- "report_template_01_html.html"
 
-  list_R_file_name_input_template$"pdf"  <- "save_word.qmd"
-  list_R_file_name_output_report$"pdf"   <- "report_04_anova_1_way.pdf"
+  list_R_file_name_input_template$"pdf"  <- "report_template_02_pdf.qmd"
+  list_R_file_name_output_report$"pdf"   <- "report_02_anova_1_way.pdf"
 
-  list_R_file_name_input_template$"docx" <- "save_word.qmd"
+  list_R_file_name_input_template$"docx" <- "report_template_03_docx.qmd"
   list_R_file_name_output_report$"docx"  <- "report_03_anova_1_way.docx"
 
-  list_R_file_name_input_template$"xlsx" <-  ""
-  list_R_file_name_output_report$"xlsx"  <- "report_02_anova_1_way.xlsx"
+  list_R_file_name_input_template$"xlsx" <-  "report_template_04_excel.qmd"
+  list_R_file_name_output_report$"xlsx"  <-  "report_04_anova_1_way.xlsx"
 
+  list_R_file_name_input_template$"zip_png" <-  ""
+  list_R_file_name_output_report$"zip_png"  <-  "png_plotly.zip"
+
+  list_R_file_name_input_template$"reveal_html" <-  "report_template_05_reveal.qmd"
+  list_R_file_name_output_report$"reveal_html"  <-  "report_05_anova_1_way.html"
   #################################################################################
   TOTEM_file_path_input_template <- reactiveValues()
   TOTEM_file_path_input_template$"html"  <- list("file_path" = "", "check" = "")
   TOTEM_file_path_input_template$"pdf"   <- list("file_path" = "", "check" = "")
   TOTEM_file_path_input_template$"docx"  <- list("file_path" = "", "check" = "")
   TOTEM_file_path_input_template$"xlsx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_input_template$"reveal_html"  <- list("file_path" = "", "check" = "")
+
   TOTEM_file_path_input_template$"check_general" <- FALSE
 
   observe({
@@ -2813,11 +2823,15 @@ server <- function(input, output, session) {
     TOTEM_file_path_input_template$"xlsx"$"file_path"  <-  str_file_path_input_xlsx
     TOTEM_file_path_input_template$"xlsx"$"check"     <-  file.exists(str_file_path_input_xlsx)
 
+    str_file_path_input_reveal_html <- file.path(input_folder_path, list_R_file_name_input_template$"reveal_html")
+    TOTEM_file_path_input_template$"reveal_html"$"file_path"  <-  str_file_path_input_reveal_html
+    TOTEM_file_path_input_template$"reveal_html"$"check"      <-  file.exists(str_file_path_input_reveal_html)
 
     vector_check <- c(TOTEM_file_path_input_template$"html"$"check",
                        TOTEM_file_path_input_template$"pdf"$"check",
                        TOTEM_file_path_input_template$"docx"$"check",
-                       TOTEM_file_path_input_template$"xlsx"$"check")
+                       TOTEM_file_path_input_template$"xlsx"$"check",
+                       TOTEM_file_path_input_template$"reveal_html"$"check")
 
     TOTEM_file_path_input_template$"check_general" <- sum(vector_check) == length(vector_check)
 
@@ -3160,6 +3174,8 @@ server <- function(input, output, session) {
   TOTEM_file_path_output_report$"pdf"   <- list("file_path" = "", "check" = "")
   TOTEM_file_path_output_report$"docx"  <- list("file_path" = "", "check" = "")
   TOTEM_file_path_output_report$"xlsx"  <- list("file_path" = "", "check" = "")
+  TOTEM_file_path_output_report$"reveal_html"  <- list("file_path" = "", "check" = "")
+
   TOTEM_file_path_output_report$"check_general" <- FALSE
 
   step07 <- eventReactive(step06(), {
@@ -3181,6 +3197,15 @@ server <- function(input, output, session) {
 
     str_file_path_input_xlsx <- file.path(str_output_folder_path, list_R_file_name_output_report$"xlsx")
     TOTEM_file_path_output_report$"xlsx"$"file_path" <- str_file_path_input_xlsx
+
+    str_file_path_input_zip_png <- file.path(str_output_folder_path, list_R_file_name_output_report$"zip_png")
+    TOTEM_file_path_output_report$"zip_png"$"file_path" <- str_file_path_input_zip_png
+
+    str_file_path_input_reveal_html <- file.path(str_output_folder_path, list_R_file_name_output_report$"reveal_html")
+    TOTEM_file_path_output_report$"reveal_html"$"file_path" <- str_file_path_input_reveal_html
+
+
+
 
 
     isolate({
@@ -3250,6 +3275,7 @@ server <- function(input, output, session) {
     quarto::quarto_render(input = my_input_file_name,
                           output_format = "html",
                           output_file = my_output_file_name,
+                          execute = TRUE,
                           execute_params = list(    activate_params= "FALSE",
                                                     file_source= "from_params",
                                                     file_name= "from_params",
@@ -3381,12 +3407,141 @@ server <- function(input, output, session) {
     return(list("check" = TRUE))
   })
 
-  observeEvent(step10(), {
+  step11 <- eventReactive(step10(), {
+
+    # 1. Print -----------------------------------------------------------------
+    print("step11 --- Init")
+
+    # 2. Modal -----------------------------------------------------------------
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+    FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+
+    # 3. Basics ----------------------------------------------------------------
+    str_work_dir_original <- TOTEM_special_paths$"getwd"
+    str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
+
+
+    # 4. Changing work directory -----------------------------------------------
+    setwd(str_work_dir_new)
+
+    # 6. Rendering quarto ------------------------------------------------------
+    my_input_file_name  <- list_R_file_name_input_template$"xlsx"
+    my_output_file_name <- basename(TOTEM_file_path_output_report$"xlsx"$"file_path")
+
+    png_zip_file_name <- list_R_file_name_output_report$"zip_png"
+
+    png_folder_name <- tools::file_path_sans_ext(png_zip_file_name)
+
+    str_html_file_name_from_xlsx <- sub(pattern = "[.]qmd", replacement = ".html", x = my_input_file_name)
+
+
+    # Prevention protocol
+    if (dir.exists(png_folder_name)) unlink(png_folder_name, recursive = TRUE)
+    if (file.exists(str_html_file_name_from_xlsx)) file.remove(str_html_file_name_from_xlsx)
+    if (file.exists(my_output_file_name)) file.remove(my_output_file_name)
+    if (file.exists(png_zip_file_name)) file.remove(png_zip_file_name)
+
+
+    quarto::quarto_render(input = my_input_file_name,
+                          output_format = "html",
+                          output_file = str_html_file_name_from_xlsx, #output_file = my_output_file_name,
+                          quiet = FALSE,
+                          execute_params = list(activate_params = "TRUE",
+                                                load_from_file = "R_obj_env.RData",
+                                                file_name_xlsx = my_output_file_name,
+                                                png_folder_name = png_folder_name)
+                          )
+
+
+    # 7. Moving file to output folder ------------------------------------------
+    # 7.1 Deleting html file from xlsx.
+    # Rendering was only for enviroment and objects.
+    if(file.exists(str_html_file_name_from_xlsx)) file.remove(str_html_file_name_from_xlsx)
+
+    # 7.2 xlsx file to output folder
+    file.rename(from = my_output_file_name,
+                to = file.path(subfolder_output, my_output_file_name))
+
+    # 7.3 png file on zip file to output folder
+    file.rename(from = png_zip_file_name,
+                to = file.path(subfolder_output, png_zip_file_name))
+
+
+    # 8. Checking output file exists -------------------------------------------
+    check_file_xlsx_exists <- file.exists(TOTEM_file_path_output_report$"xlsx"$"file_path")
+    TOTEM_file_path_output_report$"xlsx"$"check" <- check_file_xlsx_exists
+
+    check_file_zip_png_exists <- file.exists(TOTEM_file_path_output_report$"zip_png"$"file_path")
+    TOTEM_file_path_output_report$"zip_png"$"check" <- check_file_zip_png_exists
+
+    # 9. Return to original work directory -------------------------------------
+    setwd(str_work_dir_original)
+
+    # 10. Final print ----------------------------------------------------------
+    print("step11 --- End")
+
+    # 11. Return ---------------------------------------------------------------
+    return(list("check" = TRUE))
+  })
+
+  step12 <- eventReactive(step11(), {
+
+    # 1. Print -----------------------------------------------------------------
+    print("step12 --- Init")
+
+    # 2. Modal -----------------------------------------------------------------
+    progress_bar <-  RVs_progress$"progress_bar"
+    FN_update_modal_progress <- RVs_progress$"FN_update_modal_progress"
+    FN_update_modal_progress(0.50, "Renderizando Quarto", detail = "Cargando contexto de ejecución...")
+
+    # 3. Basics ----------------------------------------------------------------
+    str_work_dir_original <- TOTEM_special_paths$"getwd"
+    str_work_dir_new <- STR_INTERNAL_temp_folder_path$"folder_path"
+
+
+    # 4. Changing work directory -----------------------------------------------
+    setwd(str_work_dir_new)
+
+    # 6. Rendering quarto ------------------------------------------------------
+    my_input_file_name  <- list_R_file_name_input_template$"reveal_html"
+    my_output_file_name <- basename(TOTEM_file_path_output_report$"reveal_html"$"file_path")
+
+    quarto::quarto_render(input = my_input_file_name,
+                          output_format = "revealjs",
+                          output_file = my_output_file_name,
+                          quiet = FALSE,
+                          execute_params = list(activate_params = "TRUE",
+                                                load_from_file = "R_obj_env.RData")
+                          )
+
+
+    # 7. Moving file to output folder ------------------------------------------
+    file.rename(from = my_output_file_name,
+                to = file.path(subfolder_output, my_output_file_name))
+
+
+    # 8. Checking output file exists -------------------------------------------
+    check_file_exists <- file.exists(TOTEM_file_path_output_report$"reveal_html"$"file_path")
+    TOTEM_file_path_output_report$"reveal_html"$"check" <- check_file_exists
+
+
+    # 9. Return to original work directory -------------------------------------
+    setwd(str_work_dir_original)
+
+    # 10. Final print ----------------------------------------------------------
+    print("step12 --- End")
+
+    # 11. Return ---------------------------------------------------------------
+    return(list("check" = TRUE))
+  })
+
+  observeEvent(step12(), {
     # req(FALSE)
-    req(step10()$"check")
+    req(step12()$"check")
     # 1. INICIALIZACIÓN: Crear el objeto de progreso y bloquear la pantalla
 
-    print("step11 --- Init")
+    print("step13 --- Init")
 
     my_show_modal <- RVs_progress$"my_show_modal"
     progress_bar <-  RVs_progress$"progress_bar"
@@ -3410,51 +3565,7 @@ server <- function(input, output, session) {
       # #########################################################################################
 
 
-      # 1. Cargar la librería (asegúrate de que esté instalada)
-      library(writexl)
 
-      # 2. Crear los tres dataframes de ejemplo (Tus df_summary_anova, etc.)
-      df_anova_model <- data.frame(
-        Source = c("A", "Error"),
-        DF = c(1, 18),
-        SS = c(100.5, 95.3)
-      )
-
-      df_posthoc_tests <- data.frame(
-        Comparison = c("Group 1 vs 2", "Group 2 vs 3"),
-        Mean_Diff = c(5.2, 1.1),
-        P_Value = c(0.001, 0.45)
-      )
-
-      df_summary_stats <- data.frame(
-        Group = c("G1", "G2", "G3"),
-        Mean = c(15.2, 20.4, 21.5),
-        SD = c(2.1, 1.8, 2.5)
-      )
-
-      # 3. Crear una lista con los dataframes
-      # NOTA CLAVE: El nombre que le asignes a cada elemento de la lista
-      # será el nombre de la pestaña en el archivo Excel.
-      list_of_dataframes <- list(
-        "ANOVA_Modelo" = df_anova_model,
-        "Pruebas_PostHoc" = df_posthoc_tests,
-        "Estadisticas_Descriptivas" = df_summary_stats
-      )
-
-      # 4. Definir el nombre del archivo
-      file_name_xlsx <- paste0("report_02_anova_1_way.xlsx")
-      subfolder_output <- "output_folder"
-      dir.create(subfolder_output, recursive = TRUE)
-
-      file_path_xlsx <- file.path(subfolder_output, file_name_xlsx)
-
-      # 5. Guardar la lista de dataframes en el archivo Excel
-      # Cada elemento de la lista se convierte en una hoja de cálculo.
-      writexl::write_xlsx(
-        x = list_of_dataframes,
-        path = file_path_xlsx
-      )
-      ####################################################################################
       print(list.files())
       print(list.files("output_folder"))
       setwd(str_work_dir_original)
@@ -3545,7 +3656,7 @@ server <- function(input, output, session) {
     message("")
 
 
-    print("step09 --- END")
+    print("step13 --- END")
 
   })
 
@@ -4100,6 +4211,8 @@ server <- function(input, output, session) {
   mod_download_server("report_pdf" , reactive(TOTEM_file_path_output_report$"pdf"$"file_path"))
   mod_download_server("report_docx", reactive(TOTEM_file_path_output_report$"docx"$"file_path"))
   mod_download_server("report_xlsx", reactive(TOTEM_file_path_output_report$"xlsx"$"file_path"))
+  mod_download_server("report_zip_png", reactive(TOTEM_file_path_output_report$"zip_png"$"file_path"))
+  mod_download_server("reveal_html", reactive(TOTEM_file_path_output_report$"reveal_html"$"file_path"))
 
 
   # observe({
